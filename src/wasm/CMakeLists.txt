@@ -33,7 +33,7 @@ set_target_properties(test_library PROPERTIES
     LIBRARY_NAME "testLibrary"
     OUTPUT_NAME "index"
     EXECUTABLE_OUTPUT_PATH ${WASM_LIB_DIR}
-    RUNTIME_OUTPUT_DIRECTORY ${WASM_LIB_DIR} 
+    RUNTIME_OUTPUT_DIRECTORY ${WASM_LIB_DIR}
 )
 
 target_link_libraries(test_library PRIVATE embind)
