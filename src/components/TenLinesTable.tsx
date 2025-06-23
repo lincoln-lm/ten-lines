@@ -7,6 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { memo } from "react";
 
 dayjs.extend(duration);
 
@@ -15,7 +16,11 @@ interface TenLinesDatum {
     advances: number;
 }
 
-export default function TenLinesTable({ rows }: { rows: TenLinesDatum[] }) {
+const TenLinesTable = memo(function TenLinesTable({
+    rows,
+}: {
+    rows: TenLinesDatum[];
+}) {
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -66,6 +71,7 @@ export default function TenLinesTable({ rows }: { rows: TenLinesDatum[] }) {
             </Table>
         </TableContainer>
     );
-}
+});
 
+export default TenLinesTable;
 export type { TenLinesDatum };

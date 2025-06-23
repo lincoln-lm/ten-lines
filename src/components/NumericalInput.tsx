@@ -17,7 +17,7 @@ function NumericalInput({
     maximumValue: number;
     changeSignal: (
         event: React.ChangeEvent<HTMLInputElement>,
-        value: number
+        value: number | null
     ) => void;
     startingValue?: string;
     isHex?: boolean;
@@ -52,6 +52,7 @@ function NumericalInput({
                     prefix + (isHex ? maximumValue.toString(16) : maximumValue)
                 }`
             );
+            changeSignal(event, null);
         } else {
             changeSignal(event, intValue);
         }
