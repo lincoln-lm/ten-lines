@@ -1,0 +1,3 @@
+[submodule "src/wasm/lib/PokeFinder"]
+	path = src/wasm/lib/PokeFinder
+	url = https://github.com/Admiral-Fish/PokeFinder.git

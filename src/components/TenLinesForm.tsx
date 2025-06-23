@@ -48,7 +48,7 @@ export default function TenLinesForm() {
                 name="resultCount"
                 minimumValue={0}
                 maximumValue={65535}
-                startingValue={formData.count}
+                startingValue={formData.count.toString()}
                 changeSignal={(_, value) =>
                     setFormData((data) => ({ ...data, count: value }))
                 }
