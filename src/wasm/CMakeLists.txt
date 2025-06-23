@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-add_executable(test_library src/test_library.cpp)
+add_executable(ten_lines src/ten_lines.cpp)
 
 set(WASM_LIB_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../$<TARGET_PROPERTY:LIBRARY_NAME>/generated
@@ -29,13 +29,13 @@ set(WASM_FLAGS
     --emit-tsd ${WASM_LIB_DIR}/index.d.ts
 )
 
-set_target_properties(test_library PROPERTIES
-    LIBRARY_NAME "testLibrary"
+set_target_properties(ten_lines PROPERTIES
+    LIBRARY_NAME "tenLines"
     OUTPUT_NAME "index"
     EXECUTABLE_OUTPUT_PATH ${WASM_LIB_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${WASM_LIB_DIR}
 )
 
-target_link_libraries(test_library PRIVATE embind)
+target_link_libraries(ten_lines PRIVATE embind)
 
-target_link_options(test_library PRIVATE ${WASM_FLAGS})
+target_link_options(ten_lines PRIVATE ${WASM_FLAGS})
