@@ -8,6 +8,7 @@ const fetchTenLines: () => Promise<Remote<MainModule>> = async () => {
     return await new Promise((resolve) => {
         if (TenLines) {
             resolve(TenLines);
+            return;
         }
         const worker = new Worker();
         worker.addEventListener("message", (message) => {
