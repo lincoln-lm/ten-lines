@@ -18,23 +18,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
-add_custom_command(
-    OUTPUT src/generated/ten_lines_precalc.h
+execute_process(
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_ten_lines_precalc.py ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Generating ten lines precalc header file"
-    VERBATIM
 )
 
 add_executable(ten_lines
     src/ten_lines.cpp
+    src/generated/ten_lines_precalc.cpp
 )
-
-add_custom_target(
-    generate_ten_lines_precalc
-    DEPENDS src/generated/ten_lines_precalc.h
-)
-
-add_dependencies(ten_lines generate_ten_lines_precalc)
 
 set(WASM_LIB_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../$<TARGET_PROPERTY:LIBRARY_NAME>/generated

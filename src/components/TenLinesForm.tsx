@@ -1,38 +1,78 @@
 import { proxy } from "comlink";
 import { useState } from "react";
 
-import { Box, Button } from "@mui/material";
+import { Box, Button, MenuItem, TextField } from "@mui/material";
 
 import fetchTenLines from "../tenLines";
+import FrEngSeedsUrl from "../wasm/src/generated/fr_eng.bin?url";
+import LgEngSeedsUrl from "../wasm/src/generated/lg_eng.bin?url";
 import NumericalInput from "./NumericalInput";
 import TenLinesTable, { type TenLinesDatum } from "./TenLinesTable";
+
+const SEED_URLS: Record<string, string> = {
+    fr: FrEngSeedsUrl,
+    fr_eu: FrEngSeedsUrl,
+    lg: LgEngSeedsUrl,
+    lg_eu: LgEngSeedsUrl,
+};
 
 export default function TenLinesForm() {
     const [data, setData] = useState<TenLinesDatum[]>([]);
     const [formData, setFormData] = useState<{
         targetSeed: number | null;
         count: number | null;
+        game: string;
     }>({
         targetSeed: 0xdeadbeef,
         count: 10,
+        game: "painting",
     });
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (formData.targetSeed == null || formData.count == null) return;
         fetchTenLines().then((lib) => {
             setData([]);
-            lib.ten_lines(
-                formData.targetSeed as number,
-                formData.count as number,
-                proxy((result: []) => {
-                    setData(
-                        result.map((item) => ({
-                            advances: item[0],
-                            seed: item[1],
-                        }))
-                    );
-                })
-            );
+            if (formData.game === "painting") {
+                lib.ten_lines_painting(
+                    formData.targetSeed as number,
+                    formData.count as number,
+                    proxy((result: []) => {
+                        setData(
+                            result.map((item) => ({
+                                advances: item[0],
+                                seed: item[1],
+                                seedFrames: item[1],
+                            }))
+                        );
+                    })
+                );
+            } else {
+                fetch(SEED_URLS[formData.game])
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch seeds file");
+                        }
+                        return response.arrayBuffer();
+                    })
+                    .then((buffer) => {
+                        lib.ten_lines_frlg(
+                            formData.targetSeed as number,
+                            formData.count as number,
+                            formData.game,
+                            new Uint8Array(buffer),
+                            proxy((result: []) => {
+                                setData(
+                                    result.map((item) => ({
+                                        advances: item[0],
+                                        seed: item[1],
+                                        seedFrames: item[2],
+                                        settings: item[3],
+                                    }))
+                                );
+                            })
+                        );
+                    });
+            }
         });
     };
 
@@ -59,10 +99,34 @@ export default function TenLinesForm() {
                     setFormData((data) => ({ ...data, count: value }))
                 }
             ></NumericalInput>
+            <TextField
+                label="Game"
+                margin="normal"
+                defaultValue="painting"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setFormData((data) => ({
+                        ...data,
+                        game: event.target.value,
+                    }));
+                    setData([]);
+                }}
+                select
+                fullWidth
+            >
+                <MenuItem value="painting">Painting Seed</MenuItem>
+                <MenuItem value="fr">FireRed (ENG)</MenuItem>
+                <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
+                <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
+                <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
+                <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
+                <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
+                <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
+            </TextField>
             <Button variant="contained" color="primary" type="submit" fullWidth>
                 Submit
             </Button>
-            <TenLinesTable rows={data} />
+            <TenLinesTable rows={data} isFRLG={formData.game !== "painting"} />
         </Box>
     );
 }

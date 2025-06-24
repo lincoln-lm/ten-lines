@@ -14,31 +14,61 @@ dayjs.extend(duration);
 interface TenLinesDatum {
     seed: number;
     advances: number;
+    seedFrames: number;
+    settings?: string;
 }
 
 const TenLinesTable = memo(function TenLinesTable({
     rows,
+    isFRLG,
 }: {
     rows: TenLinesDatum[];
+    isFRLG: boolean;
 }) {
+    function humanizeSettings(settings: string | undefined) {
+        if (!settings) return "";
+        const [sound, l, active_button, held_button_modifier, held_button] =
+            settings.split("_");
+        const humanizedTerms: Record<string, string> = {
+            stereo: "Stereo",
+            mono: "Mono",
+            start: "Start",
+            select: "Select",
+            a: "A",
+            l: "L",
+            r: "R",
+            startup: "Startup",
+            blackout: "Blackout",
+            al: "L+A",
+            none: "None",
+            undefined: "",
+        };
+        const humanizedLSettings: Record<string, string> = {
+            a: "L=A",
+            h: "Help",
+            r: "LR",
+        };
+        return `${humanizedTerms[sound]} | ${humanizedLSettings[l]} Button: ${humanizedTerms[active_button]} |  Held: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
+    }
     return (
         <TableContainer component={Paper}>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Seed (dec)</TableCell>
+                        {!isFRLG && <TableCell>Seed (dec)</TableCell>}
                         <TableCell>Seed (hex)</TableCell>
                         <TableCell>Advances</TableCell>
-                        <TableCell>Est. Total Frames</TableCell>
-                        <TableCell>Est. Total Time</TableCell>
+                        <TableCell>Estimated Total Frames</TableCell>
+                        <TableCell>Estimated Total Time</TableCell>
                         <TableCell>Seed Time</TableCell>
+                        {isFRLG && <TableCell>Settings</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map((row, index) => {
                         return (
                             <TableRow key={index}>
-                                <TableCell>{row.seed}</TableCell>
+                                {!isFRLG && <TableCell>{row.seed}</TableCell>}
                                 <TableCell>
                                     {row.seed
                                         .toString(16)
@@ -46,12 +76,15 @@ const TenLinesTable = memo(function TenLinesTable({
                                         .toUpperCase()}
                                 </TableCell>
                                 <TableCell>{row.advances}</TableCell>
-                                <TableCell>{row.seed + row.advances}</TableCell>
+                                <TableCell>
+                                    {row.seedFrames + row.advances}
+                                </TableCell>
                                 <TableCell>
                                     {dayjs
                                         .duration(
                                             Math.floor(
-                                                ((row.seed + row.advances) /
+                                                ((row.seedFrames +
+                                                    row.advances) /
                                                     (16777216 / 280896)) *
                                                     1000
                                             )
@@ -60,10 +93,16 @@ const TenLinesTable = memo(function TenLinesTable({
                                 </TableCell>
                                 <TableCell>
                                     {Math.floor(
-                                        (row.seed / (16777216 / 280896)) * 1000
+                                        (row.seedFrames / (16777216 / 280896)) *
+                                            1000
                                     )}
                                     ms
                                 </TableCell>
+                                {isFRLG && (
+                                    <TableCell>
+                                        {humanizeSettings(row.settings)}
+                                    </TableCell>
+                                )}
                             </TableRow>
                         );
                     })}

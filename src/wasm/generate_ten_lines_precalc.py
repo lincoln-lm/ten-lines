@@ -1,360 +1,130 @@
 """Build file to generate ten lines precalc data"""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# import csv
-# import json
-# import gzip
-# import requests
+import csv
+import requests
 import numpy as np
 import sys
 import os
 
 BASE_SEED = 0
 
-# FR_ENG_SHEET = "https://docs.google.com/spreadsheets/d/1Mf3F4kTvNEYyDGWKVmMSiar3Fwh1PLzWVXUvGx9YxfA/gviz/tq?tqx=out:csv&sheet=Fire%20Red%20Raw%20Seed%20Data"
-# LG_ENG_SHEET = "https://docs.google.com/spreadsheets/d/12TUcXGbLY_bBDfVsgWZKvqrX13U6XAATQZrYnzBKP6Y/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
+FR_ENG_SHEET = "https://docs.google.com/spreadsheets/d/1Mf3F4kTvNEYyDGWKVmMSiar3Fwh1PLzWVXUvGx9YxfA/gviz/tq?tqx=out:csv&sheet=Fire%20Red%20Raw%20Seed%20Data"
+LG_ENG_SHEET = "https://docs.google.com/spreadsheets/d/12TUcXGbLY_bBDfVsgWZKvqrX13U6XAATQZrYnzBKP6Y/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
 
-# FR_JPN_1_0_SHEET = "https://docs.google.com/spreadsheets/d/1xSYuAuGSZQ4JbgQN262cfo80_A2CYko74bYGzl5ABTA/gviz/tq?tqx=out:csv&sheet=JPN%20Fire%20Red%201.0%20Seeds"
-# FR_JPN_1_1_SHEET = "https://docs.google.com/spreadsheets/d/1aQeWaZSi1ycSytrNEOwxJNoEg-K4eItYagU_dh9VIeU/gviz/tq?tqx=out:csv&sheet=JPN%20Fire%20Red%201.0%20Seeds"
+FR_JPN_1_0_SHEET = "https://docs.google.com/spreadsheets/d/1xSYuAuGSZQ4JbgQN262cfo80_A2CYko74bYGzl5ABTA/gviz/tq?tqx=out:csv&sheet=JPN%20Fire%20Red%201.0%20Seeds"
+FR_JPN_1_1_SHEET = "https://docs.google.com/spreadsheets/d/1aQeWaZSi1ycSytrNEOwxJNoEg-K4eItYagU_dh9VIeU/gviz/tq?tqx=out:csv&sheet=JPN%20Fire%20Red%201.0%20Seeds"
 
-# LG_JPN_SHEET = "https://docs.google.com/spreadsheets/d/1LSRVD0_zK6vyd6ettUDfaCFJbm00g451d8s96dqAbA4/gviz/tq?tqx=out:csv&sheet=JPN%20Leaf%20Green%20Seeds"
-
-# EU_OFFSETS = {
-#     "lr": {"startup_select": -9, "none": -8},
-#     "la": {"startup_select": 8, "none": -1},
-#     "help": {"startup_select": 7, "none": 0},
-# }
-
-# ENG_OFFSETS = {
-#     "la": {
-#         "startup_select": -1,
-#         "startup_a": -8,
-#         "blackout_r": -23,
-#         "blackout_a": -31,
-#         "blackout_l": 2,
-#         "blackout_al": -33,
-#         "none": 0,
-#     },
-#     "help": {
-#         "startup_select": 7,
-#         "startup_a": 3,
-#         "blackout_r": -23,
-#         "blackout_a": -23,
-#         "none": 0,
-#     },
-#     "lr": {
-#         "startup_select": -1,
-#         "startup_a": -18,
-#         "blackout_r": -23,
-#         "blackout_a": -39,
-#         "none": 0,
-#     },
-# }
-
-# FR_JPN_1_0_OFFSETS = {
-#     "la": {
-#         "startup_select": -1,
-#         "startup_a": 1,
-#         "blackout_r": -10,
-#         "blackout_a": -18,
-#         "blackout_l": -3,
-#         "none": 0,
-#     },
-#     "help": {
-#         "startup_select": 7,
-#         "startup_a": 3,
-#         "blackout_r": -27,
-#         "blackout_a": -24,
-#         "none": 0,
-#     },
-#     "lr": {
-#         "startup_select": 0,
-#         "startup_a": -18,
-#         "blackout_r": -23,
-#         "blackout_a": -40,
-#         "none": 0,
-#     },
-# }
-
-# FR_JPN_1_1_OFFSETS = {
-#     "la": {
-#         "startup_select": 10,
-#         "startup_a": -9,
-#         "blackout_r": -23,
-#         "blackout_a": -31,
-#         "blackout_l": 6,
-#         "none": 0,
-#     },
-#     "help": {
-#         "startup_select": -7,
-#         "startup_a": -19,
-#         "blackout_r": -21,
-#         "blackout_a": -29,
-#         "none": 0,
-#     },
-#     "lr": {
-#         "startup_select": -7,
-#         "startup_a": -4,
-#         "blackout_r": -29,
-#         "blackout_a": -38,
-#         "none": 0,
-#     },
-# }
-
-# LG_JPN_OFFSETS = {
-#     "la": {
-#         "startup_select": -1,
-#         "startup_a": -9,
-#         "blackout_r": -22,
-#         "blackout_a": -40,
-#         "blackout_l": -7,
-#         "none": 0,
-#     },
-#     "help": {
-#         "startup_select": -1,
-#         "startup_a": -18,
-#         "blackout_r": -23,
-#         "blackout_a": -31,
-#         "none": 0,
-#     },
-#     "lr": {
-#         "startup_select": -1,
-#         "startup_a": -23,
-#         "blackout_r": -23,
-#         "blackout_a": -39,
-#         "none": 0,
-#     },
-# }
+LG_JPN_SHEET = "https://docs.google.com/spreadsheets/d/1LSRVD0_zK6vyd6ettUDfaCFJbm00g451d8s96dqAbA4/gviz/tq?tqx=out:csv&sheet=JPN%20Leaf%20Green%20Seeds"
 
 
-# def pull_frlg_seeds():
-#     """Pull FRLG seed from spreadsheet"""
-#     time_stamp = datetime.now()
-#     frlg_seeds = {
-#         "time_stamp": str(time_stamp),
-#     } | {
-#         game: {
-#             sound: {
-#                 l: {
-#                     button: {
-#                         held: {}
-#                         for held in (
-#                             ("none", "startup_select")
-#                             if game in ("fr_eu", "lg_eu")
-#                             else (
-#                                 (
-#                                     "none",
-#                                     "startup_select",
-#                                     "startup_a",
-#                                     "blackout_r",
-#                                     "blackout_a",
-#                                 )
-#                                 + (
-#                                     ("blackout_l",)
-#                                     + (("blackout_al",) if game in ("fr", "lg") else ())
-#                                     if l == "la"
-#                                     else ()
-#                                 )
-#                             )
-#                         )
-#                     }
-#                     for button in ("a", "start") + (("l",) if l == "la" else ())
-#                 }
-#                 for l in ("la", "help", "lr")
-#             }
-#             for sound in ("stereo", "mono")
-#         }
-#         for game in ("fr", "fr_eu", "fr_jpn_1_0", "fr_jpn_1_1", "lg", "lg_eu", "lg_jpn")
-#     }
+class SeedDataStore:
+    """Binary format for list of seeds for a particular game"""
 
-#     sheet_txt = requests.get(
-#         FR_ENG_SHEET,
-#         timeout=15,
-#     ).text
-#     sheet_csv = csv.reader(sheet_txt.split("\n"))
-#     for i, row in enumerate(sheet_csv):
-#         if i == 0:
-#             continue
-#         if row[0]:
-#             program_frame_str = row[0]
-#             program_frame = int(program_frame_str)
-#             frame = program_frame / 2 - 15
+    def __init__(self, starting_frame: int, frame_size: int):
+        self.data = {}
+        self.starting_frame = starting_frame
+        self.frame_size = frame_size
 
-#             def add_seed(col, sound, l, button):
-#                 seed_str = row[col]
-#                 if seed_str and seed_str != "-":
-#                     seed = int(seed_str, 16)
-#                     if seed < 0x10000:
-#                         eng_fr = frlg_seeds["fr"][sound][l][button]
-#                         for held in eng_fr.keys():
-#                             offset_seed = (seed + ENG_OFFSETS[l][held]) & 0xFFFF
-#                             if offset_seed not in eng_fr[held]:
-#                                 eng_fr[held][offset_seed] = frame
-#                         eu_fr = frlg_seeds["fr_eu"][sound][l][button]
-#                         for held in eu_fr.keys():
-#                             offset_seed = (seed + EU_OFFSETS[l][held]) & 0xFFFF
-#                             if offset_seed not in eu_fr[held]:
-#                                 eu_fr[held][offset_seed] = frame
+    def add_seed(self, sound, l, button, seed):
+        """Add a seed to the store"""
+        key = f"{sound}_{l}_{button}"
+        if key not in self.data:
+            self.data[key] = []
+        self.data[key].append(seed)
+
+    def serialize(self):
+        """Serialize the store to bytes"""
+        data = bytes()
+        for key, seeds in self.data.items():
+            data += key.encode("utf-8") + b"\0"
+            data += self.starting_frame.to_bytes(2, "little")
+            data += self.frame_size.to_bytes(1, "little")
+            data += len(seeds).to_bytes(4, "little")
+            for seed in seeds:
+                data += seed.to_bytes(3, "little")
+        return data
 
 
-#             add_seed(3, "stereo", "la", "a")
-#             add_seed(7, "stereo", "help", "a")
-#             add_seed(11, "stereo", "lr", "a")
-#             add_seed(15, "mono", "la", "a")
-#             add_seed(19, "mono", "help", "a")
-#             add_seed(23, "mono", "lr", "a")
-#             add_seed(27, "mono", "lr", "start")
-#             add_seed(31, "mono", "la", "start")
-#             add_seed(35, "mono", "help", "start")
-#             add_seed(39, "stereo", "help", "start")
-#             add_seed(43, "stereo", "lr", "start")
-#             add_seed(47, "stereo", "la", "start")
-#             add_seed(51, "stereo", "la", "l")
-#             add_seed(55, "mono", "la", "l")
+def pull_frlg_seeds():
+    """Pull FRLG seeds from spreadsheet"""
+    time_stamp = datetime.now()
+    sheet_txt = requests.get(
+        FR_ENG_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    fr_eng_seeds = SeedDataStore(starting_frame=4100 // 2 - 15, frame_size=2)
+    for i, row in enumerate(sheet_csv):
+        if i == 0:
+            continue
+        if row[0]:
 
-#     sheet_txt = requests.get(
-#         LG_ENG_SHEET,
-#         timeout=15,
-#     ).text
-#     sheet_csv = csv.reader(sheet_txt.split("\n"))
-#     for i, row in enumerate(sheet_csv):
-#         if i < 3:
-#             continue
-#         if row[0]:
-#             frame = int(row[0]) + 4062 / 2
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                fr_eng_seeds.add_seed(sound, l, button, seed)
 
-#             def add_seed(col, sound, l, button):
-#                 seed_str = row[col]
-#                 if seed_str:
-#                     seed = int(seed_str, 16)
-#                     eng_lg = frlg_seeds["lg"][sound][l][button]
-#                     for held in eng_lg.keys():
-#                         offset_seed = (seed + ENG_OFFSETS[l][held]) & 0xFFFF
-#                         if offset_seed not in eng_lg[held]:
-#                                eng_lg[held][offset_seed] = frame
-#                     eu_lg = frlg_seeds["lg_eu"][sound][l][button]
-#                     for held in eu_lg.keys():
-#                         offset_seed = (seed + EU_OFFSETS[l][held]) & 0xFFFF
-#                         if offset_seed not in eu_lg[held]:
-#                                 eu_lg[held][offset_seed] = frame
+            add_seed(3, "stereo", "a", "a")
+            add_seed(7, "stereo", "h", "a")
+            add_seed(11, "stereo", "r", "a")
+            add_seed(15, "mono", "a", "a")
+            add_seed(19, "mono", "h", "a")
+            add_seed(23, "mono", "r", "a")
+            add_seed(27, "mono", "r", "start")
+            add_seed(31, "mono", "a", "start")
+            add_seed(35, "mono", "h", "start")
+            add_seed(39, "stereo", "h", "start")
+            add_seed(43, "stereo", "r", "start")
+            add_seed(47, "stereo", "a", "start")
+            add_seed(51, "stereo", "a", "l")
+            add_seed(55, "mono", "a", "l")
 
-#             add_seed(3, "mono", "lr", "a")
-#             add_seed(4, "mono", "la", "a")
-#             add_seed(5, "mono", "help", "a")
-#             add_seed(6, "stereo", "lr", "a")
-#             add_seed(7, "stereo", "la", "a")
-#             add_seed(8, "stereo", "help", "a")
-#             add_seed(9, "mono", "lr", "start")
-#             add_seed(10, "mono", "la", "start")
-#             add_seed(11, "mono", "help", "start")
-#             add_seed(12, "stereo", "lr", "start")
-#             add_seed(13, "stereo", "la", "start")
-#             add_seed(14, "stereo", "help", "start")
-#             add_seed(15, "mono", "la", "l")
-#             add_seed(16, "stereo", "la", "l")
+    sheet_txt = requests.get(
+        LG_ENG_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    lg_eng_seeds = SeedDataStore(starting_frame=4062 // 2 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 3:
+            continue
+        if row[0]:
 
-#     sheet_txt = requests.get(
-#         FR_JPN_1_0_SHEET,
-#         timeout=15,
-#     ).text
-#     sheet_csv = csv.reader(sheet_txt.split("\n"))
-#     for i, row in enumerate(sheet_csv):
-#         if i < 3:
-#             continue
-#         if row[0]:
-#             frame = int(row[0]) - 45
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                seed = int(seed_str, 16)
+                lg_eng_seeds.add_seed(sound, l, button, seed)
 
-#             def add_seed(col, sound, l, button):
-#                 if row[col]:
-#                     seed = int(row[col], 16)
-#                     jpn_fr_1_0 = frlg_seeds["fr_jpn_1_0"][sound][l][button]
-#                     for held in jpn_fr_1_0.keys():
-#                         offset_seed = (seed + FR_JPN_1_0_OFFSETS[l][held]) & 0xFFFF
-#                         if offset_seed not in jpn_fr_1_0[held]:
-#                             jpn_fr_1_0[held][offset_seed] = frame
+            add_seed(3, "mono", "r", "a")
+            add_seed(4, "mono", "a", "a")
+            add_seed(5, "mono", "h", "a")
+            add_seed(6, "stereo", "r", "a")
+            add_seed(7, "stereo", "a", "a")
+            add_seed(8, "stereo", "h", "a")
+            add_seed(9, "mono", "r", "start")
+            add_seed(10, "mono", "a", "start")
+            add_seed(11, "mono", "h", "start")
+            add_seed(12, "stereo", "r", "start")
+            add_seed(13, "stereo", "a", "start")
+            add_seed(14, "stereo", "h", "start")
+            add_seed(15, "mono", "a", "l")
+            add_seed(16, "stereo", "a", "l")
 
-#             add_seed(1, "mono", "lr", "a")
-#             add_seed(2, "mono", "la", "a")
-#             add_seed(3, "mono", "help", "a")
-#             add_seed(4, "stereo", "lr", "a")
-#             add_seed(5, "stereo", "la", "a")
-#             add_seed(6, "stereo", "help", "a")
-
-#     sheet_txt = requests.get(
-#         FR_JPN_1_1_SHEET,
-#         timeout=15,
-#     ).text
-#     sheet_csv = csv.reader(sheet_txt.split("\n"))
-#     for i, row in enumerate(sheet_csv):
-#         if i < 3:
-#             continue
-#         if row[0]:
-#             frame = int(row[0]) - 45
-
-#             def add_seed(col, sound, l, button):
-#                 if row[col]:
-#                     seed = int(row[col], 16)
-#                     jpn_fr_1_1 = frlg_seeds["fr_jpn_1_1"][sound][l][button]
-#                     for held in jpn_fr_1_1.keys():
-#                         offset_seed = (seed + FR_JPN_1_1_OFFSETS[l][held]) & 0xFFFF
-#                         if offset_seed not in jpn_fr_1_1[held]:
-#                             jpn_fr_1_1[held][offset_seed] = frame
-
-#             add_seed(1, "mono", "lr", "a")
-#             add_seed(2, "mono", "la", "a")
-#             add_seed(3, "mono", "help", "a")
-#             add_seed(4, "stereo", "lr", "a")
-#             add_seed(5, "stereo", "la", "a")
-#             add_seed(6, "stereo", "help", "a")
-
-#     sheet_txt = requests.get(
-#         LG_JPN_SHEET,
-#         timeout=15,
-#     ).text
-#     sheet_csv = csv.reader(sheet_txt.split("\n"))
-#     for i, row in enumerate(sheet_csv):
-#         if i < 3:
-#             continue
-#         if row[0]:
-#             frame = int(row[0]) - 41
-
-#             def add_seed(col, sound, l, button):
-#                 if row[col]:
-#                     seed = int(row[col], 16)
-#                     jpn_lg = frlg_seeds["lg_jpn"][sound][l][button]
-#                     for held in jpn_lg.keys():
-#                         offset_seed = (seed + LG_JPN_OFFSETS[l][held]) & 0xFFFF
-#                         if offset_seed not in jpn_lg[held]:
-#                             jpn_lg[held][offset_seed] = frame
-
-#             add_seed(1, "mono", "lr", "a")
-#             add_seed(2, "mono", "la", "a")
-#             add_seed(3, "mono", "help", "a")
-#             add_seed(4, "stereo", "lr", "a")
-#             add_seed(5, "stereo", "la", "a")
-#             add_seed(6, "stereo", "help", "a")
-
-#     for game, data in frlg_seeds.items():
-#         if game == "time_stamp":
-#             continue
-#         for _sound, data in data.items():
-#             for _l, data in data.items():
-#                 for _button, data in data.items():
-#                     for held in data.keys():
-#                         data[held] = {
-#                             seed: (frame, i)
-#                             for i, (seed, frame) in enumerate(
-#                                 sorted(data[held].items(), key=lambda x: x[1])
-#                             )
-#                         }
-
-#     with gzip.open(
-#         "./js_finder/js_finder/resources/generated/frlg_seeds.json.gz",
-#         "wt+",
-#         encoding="utf-8",
-#     ) as f:
-#         json.dump(frlg_seeds, f)
+    with open(sys.argv[1] + "/src/generated/fr_eng.bin", "wb") as f:
+        f.write(fr_eng_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/lg_eng.bin", "wb") as f:
+        f.write(lg_eng_seeds.serialize())
 
 
 # mults/adds for jumping 2^i LCRNG advances
@@ -452,21 +222,34 @@ def build_ten_lines_precalc():
     # sort by distance
     data = data[data[:, 0].argsort()]
     os.makedirs(sys.argv[1] + "/src/generated/", exist_ok=True)
-    with open(
-        sys.argv[1] + "/src/generated/ten_lines_precalc.h", "w+", encoding="utf-8"
-    ) as f:
-        f.write("// This file is auto-generated by generate_ten_lines_precalc.py\n")
-        f.write("#pragma once\n\n")
-        f.write("#include <Core/Global.hpp>\n\n")
-        f.write(
-            "static const std::array<std::tuple<u32, u16>, 0x10000> sorted_initial_seeds = {\n"
-        )
-        for seed, (dist, seed_value) in enumerate(data):
-            f.write(f"    std::make_tuple({dist}, {seed_value}),\n")
-        f.write("};\n")
+    # the standard precalc shouldn't really actually change
+    if not os.path.exists(sys.argv[1] + "/src/generated/ten_lines_precalc.cpp"):
+        with open(
+            sys.argv[1] + "/src/generated/ten_lines_precalc.cpp", "w+", encoding="utf-8"
+        ) as f:
+            f.write("// This file is auto-generated by generate_ten_lines_precalc.py\n")
+            f.write("#include <array>\n")
+            f.write("#include <Core/Global.hpp>\n\n")
+            f.write(
+                "std::array<std::tuple<u32, u16>, 0x10000> sorted_initial_seeds = {\n"
+            )
+            for seed, (dist, seed_value) in enumerate(data):
+                f.write(f"    std::make_tuple({dist}, {seed_value}),\n")
+            f.write("};\n")
+    if not os.path.exists(sys.argv[1] + "/src/generated/ten_lines_precalc.hpp"):
+        with open(
+            sys.argv[1] + "/src/generated/ten_lines_precalc.hpp", "w+", encoding="utf-8"
+        ) as f:
+            f.write("// This file is auto-generated by generate_ten_lines_precalc.py\n")
+            f.write("#pragma once\n\n")
+            f.write("#include <array>\n")
+            f.write("#include <Core/Global.hpp>\n\n")
+            f.write(
+                "extern std::array<std::tuple<u32, u16>, 0x10000> sorted_initial_seeds;"
+            )
 
 
 if __name__ == "__main__":
-    # pull_frlg_seeds()
+    pull_frlg_seeds()
     build_ten_lines_precalc()
     # build_rtc_seeds()
