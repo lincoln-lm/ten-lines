@@ -50,11 +50,19 @@ struct FRLGSeedEntry
     const char *key;
     const char l_setting;
     u32 frame;
+    u16 seed;
 };
 
-std::map<u16, std::vector<FRLGSeedEntry>> parse_seed_data(const std::vector<u8> &seed_data_vector)
+struct FRLGSeedDataStore
 {
-    std::map<u16, std::vector<FRLGSeedEntry>> results;
+    std::map<u16, std::vector<FRLGSeedEntry>> seed_map;
+    std::map<const char *, std::vector<FRLGSeedEntry>> contigious_seeds;
+};
+
+FRLGSeedDataStore
+parse_seed_data(const std::vector<u8> &seed_data_vector)
+{
+    FRLGSeedDataStore resultant_store;
     u32 ptr = 0;
     while (ptr < seed_data_vector.size())
     {
@@ -66,6 +74,7 @@ std::map<u16, std::vector<FRLGSeedEntry>> parse_seed_data(const std::vector<u8> 
         ptr += sizeof(u8);
         u32 entries_count = *reinterpret_cast<const u32 *>(&seed_data_vector[ptr]);
         ptr += sizeof(u32);
+        std::vector<FRLGSeedEntry> contigious_entries;
         for (u32 i = 0; i < entries_count; i++)
         {
             u16 seed = *reinterpret_cast<const u16 *>(&seed_data_vector[ptr]);
@@ -76,19 +85,27 @@ std::map<u16, std::vector<FRLGSeedEntry>> parse_seed_data(const std::vector<u8> 
             {
                 continue;
             }
-            const char l_setting = *(strchr(key, '_') + 1);
-            auto it = results.find(seed);
-            if (it == results.end())
+            // seeds appearing consecutively can reasonably be condensed into their first entry
+            if (!contigious_entries.empty() && contigious_entries.back().seed == seed)
             {
-                results.emplace(seed, std::vector<FRLGSeedEntry>{FRLGSeedEntry{key, l_setting, starting_frame + i / frame_size}});
+                continue;
+            }
+            const char l_setting = *(strchr(key, '_') + 1);
+            FRLGSeedEntry entry{key, l_setting, starting_frame + i / frame_size, seed};
+            contigious_entries.emplace_back(entry);
+            auto it = resultant_store.seed_map.find(seed);
+            if (it == resultant_store.seed_map.end())
+            {
+                resultant_store.seed_map.emplace(seed, std::vector<FRLGSeedEntry>{entry});
             }
             else
             {
-                it->second.emplace_back(key, l_setting, starting_frame + i / frame_size);
+                it->second.emplace_back(entry);
             }
         }
+        resultant_store.contigious_seeds.emplace(key, contigious_entries);
     }
-    return results;
+    return resultant_store;
 }
 
 struct HeldButtonOffset
@@ -173,7 +190,7 @@ static const std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_OF
 void ten_lines_frlg(u32 target_seed, u16 result_count, std::string game_version, emscripten::val seed_data, emscripten::val callback)
 {
     std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);
-    auto frlg_seed_map = parse_seed_data(seed_data_vector);
+    auto frlg_seed_map = parse_seed_data(seed_data_vector).seed_map;
     auto held_button_offsets = HELD_BUTTON_OFFSETS.at(game_version);
 
     u32 distance_from_base = PokeRNG::distance(0, target_seed);
