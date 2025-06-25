@@ -16,6 +16,12 @@ export default defineConfig(() => ({
                 enabled: true,
             },
             includeAssets: ["**/*.bin"],
+            manifest: {
+                name: "Ten Lines",
+                short_name: "Ten Lines",
+                description: "Initial Seed RNG Calculator for Gen 3",
+                theme_color: "#79D4F5",
+            },
         }),
     ],
     build: {
