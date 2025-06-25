@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 
 import fetchTenLines from "../tenLines";
+import FrLgSeedsTimestamp from "../wasm/src/generated/frlg_seeds_timestamp.txt?raw";
 import FrEngSeedsUrl from "../wasm/src/generated/fr_eng.bin?url";
 import LgEngSeedsUrl from "../wasm/src/generated/lg_eng.bin?url";
 import FrJpn10SeedsUrl from "../wasm/src/generated/fr_jpn_1_0.bin?url";
@@ -159,6 +160,17 @@ export default function TenLinesForm() {
                 isFRLG={formData.game !== "painting"}
                 gameConsole={formData.gameConsole}
             />
+            <footer>
+                Original "10 lines" was created by Shao, FRLG seeds farmed by
+                blisy, po, and トノ
+                <br />
+                Powered by{" "}
+                <a href="https://github.com/Admiral-Fish/PokeFinder">
+                    PokeFinderCore
+                </a>
+                <br />
+                FRLG seed data as of {FrLgSeedsTimestamp}
+            </footer>
         </Box>
     );
 }

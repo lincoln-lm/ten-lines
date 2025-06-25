@@ -2,11 +2,11 @@
 
 from datetime import datetime
 
+import sys
+import os
 import csv
 import requests
 import numpy as np
-import sys
-import os
 
 BASE_SEED = 0
 
@@ -50,6 +50,10 @@ class SeedDataStore:
 def pull_frlg_seeds():
     """Pull FRLG seeds from spreadsheet"""
     time_stamp = datetime.now()
+    with open(
+        sys.argv[1] + "/src/generated/frlg_seeds_timestamp.txt", "w+", encoding="utf-8"
+    ) as f:
+        f.write(str(time_stamp))
     sheet_txt = requests.get(
         FR_ENG_SHEET,
         timeout=15,
@@ -131,7 +135,6 @@ def pull_frlg_seeds():
         if i < 3:
             continue
         if row[0]:
-            frame = int(row[0]) - 45
 
             def add_seed(col, sound, l, button):
                 seed_str = row[col]
@@ -160,7 +163,6 @@ def pull_frlg_seeds():
         if i < 3:
             continue
         if row[0]:
-            frame = int(row[0]) - 45
 
             def add_seed(col, sound, l, button):
                 seed_str = row[col]
@@ -184,12 +186,11 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    lg_jpn_seeds = SeedDataStore(starting_frame=2090 - 45, frame_size=1)
+    lg_jpn_seeds = SeedDataStore(starting_frame=2090 - 41, frame_size=1)
     for i, row in enumerate(sheet_csv):
         if i < 3:
             continue
         if row[0]:
-            frame = int(row[0]) - 41
 
             def add_seed(col, sound, l, button):
                 seed_str = row[col]
