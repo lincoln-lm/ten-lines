@@ -28,3 +28,5 @@ jobs:
             - name: Vite Github Pages Deployer
               uses: skywarth/vite-github-pages-deployer@v1.5.0
               id: deploy_to_pages
+            - name: Debug
+              run: ls ./dist/
