@@ -21,5 +21,5 @@ export default defineConfig(({ mode }) => ({
     build: {
         minify: true,
     },
-    base: mode === "production" ? "/ten-lines/" : "/",
+    base: "/ten-lines/",
 }));
