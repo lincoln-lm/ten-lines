@@ -23,6 +23,8 @@ jobs:
             - uses: mymindstorm/setup-emsdk@v14
             - name: Verify
               run: emcc -v
+            - name: Install Dependencies
+              run: pip install -r src/wasm/requirements.txt
             - name: Vite Github Pages Deployer
               uses: skywarth/vite-github-pages-deployer@v1.5.0
               id: deploy_to_pages
