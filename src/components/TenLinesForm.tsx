@@ -86,7 +86,7 @@ export default function TenLinesForm() {
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit} p={2}>
+        <Box component="form" onSubmit={handleSubmit}>
             <NumericalInput
                 label="Target Seed"
                 name="targetSeed"
