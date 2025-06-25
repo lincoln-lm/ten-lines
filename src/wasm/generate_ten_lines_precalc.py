@@ -225,6 +225,8 @@ def pull_frlg_seeds():
         os.makedirs(sys.argv[1] + "../../../public/generated", exist_ok=True)
         for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
             shutil.copy(file, sys.argv[1] + "../../../public/generated")
+    else:
+        print("Can't find public dir, assuming building standalone")
 
 
 # mults/adds for jumping 2^i LCRNG advances
