@@ -185,6 +185,72 @@ static const std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_OF
          {'r', "startup_select", -9},
          {'r', "none", -8},
      }},
+
+    {"fr_jpn_1_0",
+     {
+         {'a', "startup_select", -1},
+         {'a', "startup_a", 1},
+         {'a', "blackout_r", -10},
+         {'a', "blackout_a", -18},
+         {'a', "blackout_l", -3},
+         {'a', "none", 0},
+
+         {'h', "startup_select", 7},
+         {'h', "startup_a", 3},
+         {'h', "blackout_r", -27},
+         {'h', "blackout_a", -24},
+         {'h', "none", 0},
+
+         {'r', "startup_select", 0},
+         {'r', "startup_a", -18},
+         {'r', "blackout_r", -23},
+         {'r', "blackout_a", -40},
+         {'r', "none", 0},
+     }},
+
+    {"fr_jpn_1_1",
+     {
+         {'a', "startup_select", 10},
+         {'a', "startup_a", -9},
+         {'a', "blackout_r", -23},
+         {'a', "blackout_a", -31},
+         {'a', "blackout_l", -6},
+         {'a', "none", 0},
+
+         {'h', "startup_select", -7},
+         {'h', "startup_a", -19},
+         {'h', "blackout_r", -21},
+         {'h', "blackout_a", -29},
+         {'h', "none", 0},
+
+         {'r', "startup_select", -7},
+         {'r', "startup_a", -4},
+         {'r', "blackout_r", -29},
+         {'r', "blackout_a", -38},
+         {'r', "none", 0},
+     }},
+
+    {"lg_jpn",
+     {
+         {'a', "startup_select", -1},
+         {'a', "startup_a", -9},
+         {'a', "blackout_r", -22},
+         {'a', "blackout_a", -40},
+         {'a', "blackout_l", -7},
+         {'a', "none", 0},
+
+         {'h', "startup_select", -1},
+         {'h', "startup_a", -18},
+         {'h', "blackout_r", -23},
+         {'h', "blackout_a", -31},
+         {'h', "none", 0},
+
+         {'r', "startup_select", -1},
+         {'r', "startup_a", -23},
+         {'r', "blackout_r", -23},
+         {'r', "blackout_a", -39},
+         {'r', "none", 0},
+     }},
 };
 
 void ten_lines_frlg(u32 target_seed, u16 result_count, std::string game_version, emscripten::val seed_data, emscripten::val callback)

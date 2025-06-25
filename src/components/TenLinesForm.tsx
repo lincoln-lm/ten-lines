@@ -6,6 +6,9 @@ import { Box, Button, MenuItem, TextField } from "@mui/material";
 import fetchTenLines from "../tenLines";
 import FrEngSeedsUrl from "../wasm/src/generated/fr_eng.bin?url";
 import LgEngSeedsUrl from "../wasm/src/generated/lg_eng.bin?url";
+import FrJpn10SeedsUrl from "../wasm/src/generated/fr_jpn_1_0.bin?url";
+import FrJpn11SeedsUrl from "../wasm/src/generated/fr_jpn_1_1.bin?url";
+import LgJpnSeedsUrl from "../wasm/src/generated/lg_jpn.bin?url";
 import NumericalInput from "./NumericalInput";
 import TenLinesTable, { type TenLinesDatum } from "./TenLinesTable";
 
@@ -14,6 +17,9 @@ const SEED_URLS: Record<string, string> = {
     fr_eu: FrEngSeedsUrl,
     lg: LgEngSeedsUrl,
     lg_eu: LgEngSeedsUrl,
+    fr_jpn_1_0: FrJpn10SeedsUrl,
+    fr_jpn_1_1: FrJpn11SeedsUrl,
+    lg_jpn: LgJpnSeedsUrl,
 };
 
 export default function TenLinesForm() {

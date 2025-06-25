@@ -121,10 +121,103 @@ def pull_frlg_seeds():
             add_seed(15, "mono", "a", "l")
             add_seed(16, "stereo", "a", "l")
 
+    sheet_txt = requests.get(
+        FR_JPN_1_0_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    fr_jpn_1_0_seeds = SeedDataStore(starting_frame=2090 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 3:
+            continue
+        if row[0]:
+            frame = int(row[0]) - 45
+
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                seed = int(seed_str, 16)
+                fr_jpn_1_0_seeds.add_seed(sound, l, button, seed)
+
+            add_seed(1, "mono", "r", "a")
+            add_seed(2, "mono", "a", "a")
+            add_seed(3, "mono", "h", "a")
+            add_seed(4, "stereo", "r", "a")
+            add_seed(5, "stereo", "a", "a")
+            add_seed(6, "stereo", "h", "a")
+
+    sheet_txt = requests.get(
+        FR_JPN_1_1_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    fr_jpn_1_1_seeds = SeedDataStore(starting_frame=2090 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 3:
+            continue
+        if row[0]:
+            frame = int(row[0]) - 45
+
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                seed = int(seed_str, 16)
+                fr_jpn_1_1_seeds.add_seed(sound, l, button, seed)
+
+            add_seed(1, "mono", "r", "a")
+            add_seed(2, "mono", "a", "a")
+            add_seed(3, "mono", "h", "a")
+            add_seed(4, "stereo", "r", "a")
+            add_seed(5, "stereo", "a", "a")
+            add_seed(6, "stereo", "h", "a")
+
+    sheet_txt = requests.get(
+        LG_JPN_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    lg_jpn_seeds = SeedDataStore(starting_frame=2090 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 3:
+            continue
+        if row[0]:
+            frame = int(row[0]) - 41
+
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                seed = int(seed_str, 16)
+                lg_jpn_seeds.add_seed(sound, l, button, seed)
+
+            add_seed(1, "mono", "r", "a")
+            add_seed(2, "mono", "a", "a")
+            add_seed(3, "mono", "h", "a")
+            add_seed(4, "stereo", "r", "a")
+            add_seed(5, "stereo", "a", "a")
+            add_seed(6, "stereo", "h", "a")
+
     with open(sys.argv[1] + "/src/generated/fr_eng.bin", "wb") as f:
         f.write(fr_eng_seeds.serialize())
     with open(sys.argv[1] + "/src/generated/lg_eng.bin", "wb") as f:
         f.write(lg_eng_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/fr_jpn_1_0.bin", "wb") as f:
+        f.write(fr_jpn_1_0_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/fr_jpn_1_1.bin", "wb") as f:
+        f.write(fr_jpn_1_1_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/lg_jpn.bin", "wb") as f:
+        f.write(lg_jpn_seeds.serialize())
 
 
 # mults/adds for jumping 2^i LCRNG advances
