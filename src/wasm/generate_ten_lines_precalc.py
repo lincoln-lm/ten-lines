@@ -314,7 +314,6 @@ def build_ten_lines_precalc():
         data[seed] = distance(seed, BASE_SEED), seed
     # sort by distance
     data = data[data[:, 0].argsort()]
-    os.makedirs(sys.argv[1] + "/src/generated/", exist_ok=True)
     # the standard precalc shouldn't really actually change
     if not os.path.exists(sys.argv[1] + "/src/generated/ten_lines_precalc.cpp"):
         with open(
@@ -343,6 +342,7 @@ def build_ten_lines_precalc():
 
 
 if __name__ == "__main__":
+    os.makedirs(sys.argv[1] + "/src/generated/", exist_ok=True)
     pull_frlg_seeds()
     build_ten_lines_precalc()
     # build_rtc_seeds()
