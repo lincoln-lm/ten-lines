@@ -225,6 +225,10 @@ def pull_frlg_seeds():
         os.makedirs(sys.argv[1] + "../../../public/generated", exist_ok=True)
         for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
             shutil.copy(file, sys.argv[1] + "../../../public/generated")
+    elif os.path.exists(sys.argv[1] + "../../public/"):
+        os.makedirs(sys.argv[1] + "../../public/generated", exist_ok=True)
+        for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
+            shutil.copy(file, sys.argv[1] + "../../public/generated")
     else:
         print("Can't find public dir, assuming building standalone")
 
