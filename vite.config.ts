@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
     assetsInclude: ["**/*.bin"],
     plugins: [
         react(),
@@ -21,5 +21,5 @@ export default defineConfig({
     build: {
         minify: true,
     },
-    base: "/ten-lines/",
-});
+    base: mode === "production" ? "/ten-lines/" : "/",
+}));
