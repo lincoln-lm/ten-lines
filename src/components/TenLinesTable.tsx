@@ -18,13 +18,34 @@ interface TenLinesDatum {
     settings?: string;
 }
 
+const SYSTEM_TIMING_DATA: Record<
+    string,
+    { frame_rate: number; offset_ms: number }
+> = {
+    Generic: { frame_rate: 16777216 / 280896, offset_ms: 0 },
+    GBA: { frame_rate: 16777216 / 280896, offset_ms: -260 },
+    GBP: { frame_rate: 16777216 / 280896, offset_ms: 200 },
+    NDS: { frame_rate: 16756991 / 280896, offset_ms: 788 },
+    "3DS": { frame_rate: 16756991 / 280896, offset_ms: 1558 },
+};
+
+function frameToMS(frame: number, system: string) {
+    return (
+        Math.floor((frame / SYSTEM_TIMING_DATA[system].frame_rate) * 1000) +
+        SYSTEM_TIMING_DATA[system].offset_ms
+    );
+}
+
 const TenLinesTable = memo(function TenLinesTable({
     rows,
     isFRLG,
+    gameConsole,
 }: {
     rows: TenLinesDatum[];
     isFRLG: boolean;
+    gameConsole: string;
 }) {
+    if (!isFRLG) gameConsole = "Generic";
     function humanizeSettings(settings: string | undefined) {
         if (!settings) return "";
         const [sound, l, active_button, held_button_modifier, held_button] =
@@ -82,20 +103,15 @@ const TenLinesTable = memo(function TenLinesTable({
                                 <TableCell>
                                     {dayjs
                                         .duration(
-                                            Math.floor(
-                                                ((row.seedFrames +
-                                                    row.advances) /
-                                                    (16777216 / 280896)) *
-                                                    1000
+                                            frameToMS(
+                                                row.seedFrames + row.advances,
+                                                gameConsole
                                             )
                                         )
                                         .format("HH:mm:ss.SSS")}
                                 </TableCell>
                                 <TableCell>
-                                    {Math.floor(
-                                        (row.seedFrames / (16777216 / 280896)) *
-                                            1000
-                                    )}
+                                    {frameToMS(row.seedFrames, gameConsole)}
                                     ms
                                 </TableCell>
                                 {isFRLG && (

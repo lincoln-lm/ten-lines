@@ -22,10 +22,12 @@ export default function TenLinesForm() {
         targetSeed: number | null;
         count: number | null;
         game: string;
+        gameConsole: string;
     }>({
         targetSeed: 0xdeadbeef,
         count: 10,
         game: "painting",
+        gameConsole: "GBA",
     });
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -123,10 +125,34 @@ export default function TenLinesForm() {
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
             </TextField>
+            <TextField
+                label="Console"
+                margin="normal"
+                defaultValue="GBA"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setFormData((data) => ({
+                        ...data,
+                        gameConsole: event.target.value,
+                    }));
+                }}
+                select
+                fullWidth
+                sx={formData.game === "painting" ? { display: "none" } : {}}
+            >
+                <MenuItem value="GBA">Game Boy Advance</MenuItem>
+                <MenuItem value="GBP">Game Boy Player</MenuItem>
+                <MenuItem value="NDS">Nintendo DS</MenuItem>
+                <MenuItem value="3DS">Nintendo 3DS (open_agb_firm)</MenuItem>
+            </TextField>
             <Button variant="contained" color="primary" type="submit" fullWidth>
                 Submit
             </Button>
-            <TenLinesTable rows={data} isFRLG={formData.game !== "painting"} />
+            <TenLinesTable
+                rows={data}
+                isFRLG={formData.game !== "painting"}
+                gameConsole={formData.gameConsole}
+            />
         </Box>
     );
 }
