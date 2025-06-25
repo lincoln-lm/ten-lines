@@ -221,14 +221,14 @@ def pull_frlg_seeds():
         f.write(fr_jpn_1_1_seeds.serialize())
     with open(sys.argv[1] + "/src/generated/lg_jpn.bin", "wb") as f:
         f.write(lg_jpn_seeds.serialize())
+    print(os.listdir(sys.argv[1]), sys.argv[1])
+    print(os.listdir(sys.argv[1] + "../"), sys.argv[1] + "../")
+    print(os.listdir(sys.argv[1] + "../../"), sys.argv[1] + "../../")
+    print(os.listdir(sys.argv[1] + "../../../"), sys.argv[1] + "../../../")
     if os.path.exists(sys.argv[1] + "../../../public/"):
         os.makedirs(sys.argv[1] + "../../../public/generated", exist_ok=True)
         for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
             shutil.copy(file, sys.argv[1] + "../../../public/generated")
-    elif os.path.exists(sys.argv[1] + "../../public/"):
-        os.makedirs(sys.argv[1] + "../../public/generated", exist_ok=True)
-        for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
-            shutil.copy(file, sys.argv[1] + "../../public/generated")
     else:
         print("Can't find public dir, assuming building standalone")
 
