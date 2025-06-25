@@ -15,6 +15,7 @@ export default defineConfig({
             devOptions: {
                 enabled: true,
             },
+            includeAssets: ["**/*.bin"],
         }),
     ],
     build: {
