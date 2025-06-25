@@ -5,11 +5,11 @@ import { Box, Button, MenuItem, TextField } from "@mui/material";
 
 import fetchTenLines from "../tenLines";
 import FrLgSeedsTimestamp from "../wasm/src/generated/frlg_seeds_timestamp.txt?raw";
-import FrEngSeedsUrl from "../wasm/src/generated/fr_eng.bin?url";
-import LgEngSeedsUrl from "../wasm/src/generated/lg_eng.bin?url";
-import FrJpn10SeedsUrl from "../wasm/src/generated/fr_jpn_1_0.bin?url";
-import FrJpn11SeedsUrl from "../wasm/src/generated/fr_jpn_1_1.bin?url";
-import LgJpnSeedsUrl from "../wasm/src/generated/lg_jpn.bin?url";
+import FrEngSeedsUrl from "/generated/fr_eng.bin?url";
+import LgEngSeedsUrl from "/generated/lg_eng.bin?url";
+import FrJpn10SeedsUrl from "/generated/fr_jpn_1_0.bin?url";
+import FrJpn11SeedsUrl from "/generated/fr_jpn_1_1.bin?url";
+import LgJpnSeedsUrl from "/generated/lg_jpn.bin?url";
 import NumericalInput from "./NumericalInput";
 import TenLinesTable, { type TenLinesDatum } from "./TenLinesTable";
 
