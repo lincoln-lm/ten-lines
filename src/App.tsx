@@ -30,7 +30,11 @@ function App() {
                     {/* <Tab label="Calibration" value={1} /> */}
                 </Tabs>
                 <TenLinesForm
-                    sx={currentPage !== 0 ? { display: "none" } : {}}
+                    sx={
+                        currentPage !== 0
+                            ? { display: "none" }
+                            : { maxWidth: 1000 }
+                    }
                 />
                 {/* <CalibrationForm
                     sx={currentPage !== 1 ? { display: "none" } : {}}
