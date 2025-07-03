@@ -39,7 +39,7 @@ function App() {
 
             <footer>
                 Original "10 lines" was created by Shao, FRLG seeds farmed by
-                blisy, po, and トノ
+                blisy, po, HunarPG, and トノ
                 <br />
                 Powered by{" "}
                 <a href="https://github.com/Admiral-Fish/PokeFinder">

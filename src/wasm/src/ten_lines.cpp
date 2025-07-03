@@ -251,6 +251,24 @@ static const std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_OF
          {'r', "blackout_a", -39},
          {'r', "none", 0},
      }},
+
+    {"fr_mgba",
+     {
+         {'a', "none", 0},
+
+         {'h', "none", 0},
+
+         {'r', "none", 0},
+     }},
+
+    {"lg_mgba",
+     {
+         {'a', "none", 0},
+
+         {'h', "none", 0},
+
+         {'r', "none", 0},
+     }},
 };
 
 void ten_lines_frlg(u32 target_seed, u16 result_count, std::string game_version, emscripten::val seed_data, emscripten::val callback)

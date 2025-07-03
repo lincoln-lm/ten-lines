@@ -20,6 +20,9 @@ FR_JPN_1_1_SHEET = "https://docs.google.com/spreadsheets/d/1aQeWaZSi1ycSytrNEOwx
 
 LG_JPN_SHEET = "https://docs.google.com/spreadsheets/d/1LSRVD0_zK6vyd6ettUDfaCFJbm00g451d8s96dqAbA4/gviz/tq?tqx=out:csv&sheet=JPN%20Leaf%20Green%20Seeds"
 
+FR_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1aWo6FAjkLIut5TIKior4_04PlGessxUJhE8YWz_nQwc/gviz/tq?tqx=out:csv&sheet=Fire%20Red%20Seeds"
+LG_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1YiQiII2v3AJK6RANMsQcBzVLk9dO6L99Zxt9FsCyKrI/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
+
 
 class SeedDataStore:
     """Binary format for list of seeds for a particular game"""
@@ -98,7 +101,7 @@ def pull_frlg_seeds():
     sheet_csv = csv.reader(sheet_txt.split("\n"))
     lg_eng_seeds = SeedDataStore(starting_frame=4062 // 2 - 45, frame_size=1)
     for i, row in enumerate(sheet_csv):
-        if i < 3:
+        if i == 0:
             continue
         if row[0]:
 
@@ -211,6 +214,77 @@ def pull_frlg_seeds():
             add_seed(5, "stereo", "a", "a")
             add_seed(6, "stereo", "h", "a")
 
+    sheet_txt = requests.get(
+        FR_ENG_MGBA_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    fr_eng_mgba_seeds = SeedDataStore(starting_frame=4062 // 2 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 2:
+            continue
+        if row[0]:
+
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                fr_eng_mgba_seeds.add_seed(sound, l, button, seed)
+
+            add_seed(2, "mono", "r", "a")
+            add_seed(3, "mono", "a", "a")
+            add_seed(4, "mono", "h", "a")
+            add_seed(5, "stereo", "r", "a")
+            add_seed(6, "stereo", "a", "a")
+            add_seed(7, "stereo", "h", "a")
+            add_seed(8, "mono", "r", "start")
+            add_seed(9, "mono", "a", "start")
+            add_seed(10, "mono", "h", "start")
+            add_seed(11, "stereo", "r", "start")
+            add_seed(12, "stereo", "a", "start")
+            add_seed(13, "stereo", "h", "start")
+            add_seed(14, "mono", "a", "l")
+            add_seed(15, "stereo", "a", "l")
+
+    sheet_txt = requests.get(
+        LG_ENG_MGBA_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    lg_eng_mgba_seeds = SeedDataStore(starting_frame=4062 // 2 - 45, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 2:
+            continue
+        if row[0]:
+
+            def add_seed(col, sound, l, button):
+                seed_str = row[col]
+                if seed_str in ("", "-", "0"):
+                    seed_str = "10000"
+                seed = int(seed_str, 16)
+                if seed > 0xFFFF:
+                    seed = 0x10000
+                seed = int(seed_str, 16)
+                lg_eng_mgba_seeds.add_seed(sound, l, button, seed)
+
+            add_seed(2, "mono", "r", "a")
+            add_seed(3, "mono", "a", "a")
+            add_seed(4, "mono", "h", "a")
+            add_seed(5, "stereo", "r", "a")
+            add_seed(6, "stereo", "a", "a")
+            add_seed(7, "stereo", "h", "a")
+            add_seed(8, "mono", "r", "start")
+            add_seed(9, "mono", "a", "start")
+            add_seed(10, "mono", "h", "start")
+            add_seed(11, "stereo", "r", "start")
+            add_seed(12, "stereo", "a", "start")
+            add_seed(13, "stereo", "h", "start")
+            add_seed(14, "mono", "a", "l")
+            add_seed(15, "stereo", "a", "l")
+
     with open(sys.argv[1] + "/src/generated/fr_eng.bin", "wb") as f:
         f.write(fr_eng_seeds.serialize())
     with open(sys.argv[1] + "/src/generated/lg_eng.bin", "wb") as f:
@@ -221,6 +295,10 @@ def pull_frlg_seeds():
         f.write(fr_jpn_1_1_seeds.serialize())
     with open(sys.argv[1] + "/src/generated/lg_jpn.bin", "wb") as f:
         f.write(lg_jpn_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/fr_eng_mgba.bin", "wb") as f:
+        f.write(fr_eng_mgba_seeds.serialize())
+    with open(sys.argv[1] + "/src/generated/lg_eng_mgba.bin", "wb") as f:
+        f.write(lg_eng_mgba_seeds.serialize())
     if os.path.exists(sys.argv[1] + "/../../public/"):
         os.makedirs(sys.argv[1] + "/../../public/generated", exist_ok=True)
         for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):

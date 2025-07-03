@@ -15,6 +15,8 @@ const SEED_URLS: Record<string, string> = {
     fr_jpn_1_0: "generated/fr_jpn_1_0.bin",
     fr_jpn_1_1: "generated/fr_jpn_1_1.bin",
     lg_jpn: "generated/lg_jpn.bin",
+    fr_mgba: "generated/fr_eng_mgba.bin",
+    lg_mgba: "generated/lg_eng_mgba.bin",
 };
 
 export default function TenLinesForm({ sx }: { sx?: any }) {
@@ -122,9 +124,11 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
+                <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
+                <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             <TextField
                 label="Console"
