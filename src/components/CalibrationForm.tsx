@@ -17,12 +17,13 @@ import NumericalInput from "./NumericalInput";
 import RangeInput from "./RangeInput";
 import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
-import type {
-    CalibrationState,
-    FRLGContiguousSeedEntry,
+import {
+    type StaticTemplateDisplayInfo,
+    type CalibrationState,
+    type FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import React from "react";
-import { NATURES_EN } from "../tenLines/resources";
+import { getNameEn, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
 
 export default function CalibrationForm({ sx }: { sx?: any }) {
@@ -41,6 +42,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         advanceMaxString: string;
         nature: number;
         ivRangeStrings: [string, string][];
+        staticCategory: number;
+        staticPokemon: number;
     }>({
         game: "fr",
         sound: "mono",
@@ -61,6 +64,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             ["0", "31"],
             ["0", "31"],
         ],
+        staticCategory: 0,
+        staticPokemon: 0,
     });
 
     const [seedLeewayIsValid, setSeedLeewayIsValid] = useState(true);
@@ -123,6 +128,26 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         formData.heldButton,
     ]);
 
+    const [staticTemplates, setStaticTemplates] = useState<
+        StaticTemplateDisplayInfo[]
+    >([]);
+
+    useEffect(() => {
+        const fetchStaticTemplates = async () => {
+            const tenLines = await fetchTenLines();
+            const staticTemplates = await tenLines.get_static_template_info(
+                formData.staticCategory
+            );
+            setStaticTemplates(staticTemplates);
+            setFormData((data) => ({
+                ...data,
+                staticPokemon:
+                    staticTemplates.length > 0 ? staticTemplates[0].index : 0,
+            }));
+        };
+        fetchStaticTemplates();
+    }, [formData.staticCategory]);
+
     const targetSeedIndex = useMemo(
         () =>
             seedList.findIndex(
@@ -151,6 +176,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             await tenLines.check_seeds(
                 searchSeeds,
                 advanceRange,
+                formData.staticCategory,
+                formData.staticPokemon,
                 formData.nature,
                 ivRanges,
                 proxy((results: CalibrationState[]) => {
@@ -392,7 +419,49 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={999999}
             />
-
+            <TextField
+                label="Category"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setFormData((data) => ({
+                        ...data,
+                        staticCategory: parseInt(event.target.value),
+                    }));
+                }}
+                value={formData.staticCategory}
+                select
+                fullWidth
+            >
+                <MenuItem value="0">Starters</MenuItem>
+                <MenuItem value="1">Fossils</MenuItem>
+                <MenuItem value="2">Gifts</MenuItem>
+                <MenuItem value="3">Game Corner</MenuItem>
+                <MenuItem value="4">Stationary</MenuItem>
+                <MenuItem value="5">Legends</MenuItem>
+                <MenuItem value="6">Events</MenuItem>
+                <MenuItem value="7">Roamers</MenuItem>
+            </TextField>
+            <TextField
+                label="Pokemon"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setFormData((data) => ({
+                        ...data,
+                        staticPokemon: parseInt(event.target.value),
+                    }));
+                }}
+                value={formData.staticPokemon}
+                select
+                fullWidth
+            >
+                {staticTemplates.map((template) => (
+                    <MenuItem key={template.index} value={template.index}>
+                        {getNameEn(template.species, template.form)}
+                    </MenuItem>
+                ))}
+            </TextField>
             <TextField
                 label="Nature"
                 margin="normal"

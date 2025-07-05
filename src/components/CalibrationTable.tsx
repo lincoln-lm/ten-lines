@@ -11,7 +11,7 @@ import type {
     CalibrationState,
     FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
-import { NATURES_EN } from "../tenLines/resources";
+import { ABILITIES_EN, GENDERS_EN, NATURES_EN } from "../tenLines/resources";
 
 const CalibrationTable = memo(function CalibrationTable({
     rows,
@@ -34,6 +34,7 @@ const CalibrationTable = memo(function CalibrationTable({
                         <TableCell>Nature</TableCell>
                         <TableCell>Ability</TableCell>
                         <TableCell>IVs</TableCell>
+                        <TableCell>Gender</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -58,8 +59,12 @@ const CalibrationTable = memo(function CalibrationTable({
                                 <TableCell>{hexSeed(row.pid, 32)}</TableCell>
                                 <TableCell>No</TableCell>
                                 <TableCell>{NATURES_EN[row.nature]}</TableCell>
-                                <TableCell>{row.ability}</TableCell>
+                                <TableCell>
+                                    {row.ability}:{" "}
+                                    {ABILITIES_EN[row.abilityIndex - 1]}
+                                </TableCell>
                                 <TableCell>{row.ivs.join("/")}</TableCell>
+                                <TableCell>{GENDERS_EN[row.gender]}</TableCell>
                             </TableRow>
                         );
                     })}

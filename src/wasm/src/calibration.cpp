@@ -4,6 +4,7 @@
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <Core/Gen3/Generators/StaticGenerator3.hpp>
+#include <Core/Gen3/Encounters3.hpp>
 #include <Core/Gen3/StaticTemplate3.hpp>
 #include <Core/Gen3/Profile3.hpp>
 #include <Core/Enum/Method.hpp>
@@ -13,10 +14,12 @@
 #include "initial_seed.hpp"
 #include "calibration.hpp"
 
-void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int category, int template_index, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+
+    const StaticTemplate3 tmplate = *Encounters3::getStaticEncounter(category, template_index);
 
     std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     if (nature != -1)
@@ -32,7 +35,6 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, in
     std::array<u8, 6> max_ivs = {iv_ranges[0][1].as<u8>(), iv_ranges[1][1].as<u8>(), iv_ranges[2][1].as<u8>(), iv_ranges[3][1].as<u8>(), iv_ranges[4][1].as<u8>(), iv_ranges[5][1].as<u8>()};
     std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
 
-    StaticTemplate3 tmplate(Game::FireRed, 1, 0, Shiny::Random, 1, false);
     Profile3 profile("", Game::FireRed, 0, 0, false);
     StateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers);
 
@@ -56,9 +58,32 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, in
     searching_callback(false);
 }
 
+struct StaticTemplateDisplayInfo
+{
+    int index;
+    u16 species;
+    u8 form;
+};
+
+emscripten::val get_static_template_info(int category)
+{
+    int size;
+    const StaticTemplate3 *templates = Encounters3::getStaticEncounters(category, &size);
+
+    emscripten::val array = emscripten::val::array();
+    for (int i = 0; i < size; i++)
+    {
+        if ((templates[i].getVersion() & Game::FRLG) == Game::None)
+            continue;
+        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm()}));
+    }
+    return array;
+}
+
 EMSCRIPTEN_BINDINGS(calibration)
 {
     emscripten::function("check_seeds", &check_seeds_static);
+    emscripten::function("get_static_template_info", &get_static_template_info);
 
     emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
         .element(emscripten::index<0>())
@@ -75,5 +100,12 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("pid", &CalibrationState::getPID, &CalibrationState::dummySetter<u32>)
         .field("nature", &CalibrationState::getNature, &CalibrationState::dummySetter<u8>)
         .field("ability", &CalibrationState::getAbility, &CalibrationState::dummySetter<u8>)
+        .field("abilityIndex", &CalibrationState::getAbilityIndex, &CalibrationState::dummySetter<u16>)
+        .field("gender", &CalibrationState::getGender, &CalibrationState::dummySetter<u8>)
         .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>);
+
+    emscripten::value_object<StaticTemplateDisplayInfo>("StaticTemplateDisplayInfo")
+        .field("index", &StaticTemplateDisplayInfo::index)
+        .field("species", &StaticTemplateDisplayInfo::species)
+        .field("form", &StaticTemplateDisplayInfo::form);
 }
