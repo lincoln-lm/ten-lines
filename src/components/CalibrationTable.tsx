@@ -42,7 +42,7 @@ const CalibrationTable = memo(function CalibrationTable({
                         }
                         const seedMS = frameToMS(row.seedFrame, gameConsole);
                         const offsetMS =
-                            seedMS - frameToMS(target.frame, gameConsole);
+                            seedMS - frameToMS(target.seedFrame, gameConsole);
                         return (
                             <TableRow key={index}>
                                 <TableCell>

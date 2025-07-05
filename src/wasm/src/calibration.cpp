@@ -1,0 +1,79 @@
+#include <string>
+#include <vector>
+#include <array>
+#include <emscripten.h>
+#include <emscripten/bind.h>
+#include <Core/Gen3/Generators/StaticGenerator3.hpp>
+#include <Core/Gen3/StaticTemplate3.hpp>
+#include <Core/Gen3/Profile3.hpp>
+#include <Core/Enum/Method.hpp>
+#include <Core/Enum/Game.hpp>
+#include <Core/Enum/Shiny.hpp>
+#include <Core/Parents/Filters/StateFilter.hpp>
+#include "initial_seed.hpp"
+#include "calibration.hpp"
+
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+{
+    u32 initial_advances = advance_range[0].as<u32>();
+    u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+
+    std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+    if (nature != -1)
+    {
+        for (int i = 0; i < 25; i++)
+        {
+            natures[i] = false;
+        }
+        natures[nature] = true;
+    }
+
+    std::array<u8, 6> min_ivs = {iv_ranges[0][0].as<u8>(), iv_ranges[1][0].as<u8>(), iv_ranges[2][0].as<u8>(), iv_ranges[3][0].as<u8>(), iv_ranges[4][0].as<u8>(), iv_ranges[5][0].as<u8>()};
+    std::array<u8, 6> max_ivs = {iv_ranges[0][1].as<u8>(), iv_ranges[1][1].as<u8>(), iv_ranges[2][1].as<u8>(), iv_ranges[3][1].as<u8>(), iv_ranges[4][1].as<u8>(), iv_ranges[5][1].as<u8>()};
+    std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+
+    StaticTemplate3 tmplate(Game::FireRed, 1, 0, Shiny::Random, 1, false);
+    Profile3 profile("", Game::FireRed, 0, 0, false);
+    StateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers);
+
+    searching_callback(true);
+
+    for (int i = 0; i < seeds["length"].as<int>(); i++)
+    {
+        FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
+        u16 seed = entry.initialSeed;
+        u16 frame = entry.seedFrame;
+        StaticGenerator3 generator(
+            initial_advances, max_advances, 0, Method::Method1, tmplate, profile, filter);
+        auto generator_results = generator.generate(seed);
+        auto results = emscripten::val::array();
+        for (auto &generator_result : generator_results)
+        {
+            results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
+        }
+        result_callback(results);
+    }
+    searching_callback(false);
+}
+
+EMSCRIPTEN_BINDINGS(calibration)
+{
+    emscripten::function("check_seeds", &check_seeds_static);
+
+    emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
+        .element(emscripten::index<0>())
+        .element(emscripten::index<1>())
+        .element(emscripten::index<2>())
+        .element(emscripten::index<3>())
+        .element(emscripten::index<4>())
+        .element(emscripten::index<5>());
+
+    emscripten::value_object<CalibrationState>("CalibrationState")
+        .field("initialSeed", &CalibrationState::initialSeed)
+        .field("seedFrame", &CalibrationState::seedFrame)
+        .field("advances", &CalibrationState::getAdvances, &CalibrationState::dummySetter<u32>)
+        .field("pid", &CalibrationState::getPID, &CalibrationState::dummySetter<u32>)
+        .field("nature", &CalibrationState::getNature, &CalibrationState::dummySetter<u8>)
+        .field("ability", &CalibrationState::getAbility, &CalibrationState::dummySetter<u8>)
+        .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>);
+}

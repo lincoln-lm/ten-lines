@@ -17,15 +17,13 @@ import NumericalInput from "./NumericalInput";
 import RangeInput from "./RangeInput";
 import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
-import type { CalibrationState } from "../tenLines/generated";
+import type {
+    CalibrationState,
+    FRLGContiguousSeedEntry,
+} from "../tenLines/generated";
 import React from "react";
 import { NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
-
-interface SeedListEntry {
-    seed: number;
-    frame: number;
-}
 
 export default function CalibrationForm({ sx }: { sx?: any }) {
     const [rows, setRows] = useState<CalibrationState[]>([]);
@@ -37,7 +35,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         button: string;
         heldButton: string;
         gameConsole: string;
-        targetSeed: SeedListEntry;
+        targetSeed: FRLGContiguousSeedEntry;
         seedLeewayString: string;
         advanceMinString: string;
         advanceMaxString: string;
@@ -50,7 +48,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         button: "a",
         heldButton: "none",
         gameConsole: "GBA",
-        targetSeed: { seed: 0xdead, frame: 0 },
+        targetSeed: { initialSeed: 0xdead, seedFrame: 0 },
         seedLeewayString: "20",
         advanceMinString: "0",
         advanceMaxString: "100",
@@ -94,7 +92,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
               ])
             : [];
 
-    const [seedList, setSeedList] = useState<SeedListEntry[]>([]);
+    const [seedList, setSeedList] = useState<FRLGContiguousSeedEntry[]>([]);
     const [seedDialogOpen, setSeedDialogOpen] = useState(false);
 
     useEffect(() => {
@@ -128,9 +126,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const targetSeedIndex = useMemo(
         () =>
             seedList.findIndex(
-                (seed) => seed.seed === formData.targetSeed.seed
+                (seed) => seed.initialSeed === formData.targetSeed.initialSeed
             ),
-        [seedList, formData.targetSeed.seed]
+        [seedList, formData.targetSeed.initialSeed]
     );
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -172,7 +170,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const targetSeedFilterOptions = createFilterOptions({
         limit: 100,
         // don't match based on ms
-        stringify: (option: SeedListEntry) => `${hexSeed(option.seed, 16)}`,
+        stringify: (option: FRLGContiguousSeedEntry) =>
+            `${hexSeed(option.initialSeed, 16)}`,
     });
 
     return (
@@ -302,13 +301,13 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 onChange={(_event, newValue) => {
                     setFormData((data) => ({
                         ...data,
-                        targetSeed: newValue as SeedListEntry,
+                        targetSeed: newValue as FRLGContiguousSeedEntry,
                     }));
                 }}
                 getOptionLabel={(item_) => {
-                    const item = item_ as SeedListEntry;
-                    return `${hexSeed(item.seed, 16)} (${frameToMS(
-                        item.frame,
+                    const item = item_ as FRLGContiguousSeedEntry;
+                    return `${hexSeed(item.initialSeed, 16)} (${frameToMS(
+                        item.seedFrame,
                         formData.gameConsole
                     )}ms)`;
                 }}
@@ -370,7 +369,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                                     )
                                 )
                                 .map((seed, i) => (
-                                    <div key={i}>{hexSeed(seed.seed, 16)}</div>
+                                    <div key={i}>
+                                        {hexSeed(seed.initialSeed, 16)}
+                                    </div>
                                 ))}
                         </Box>
                     </DialogContent>
@@ -391,6 +392,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={999999}
             />
+
             <TextField
                 label="Nature"
                 margin="normal"

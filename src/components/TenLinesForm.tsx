@@ -5,10 +5,11 @@ import { Box, Button, MenuItem, TextField } from "@mui/material";
 
 import fetchTenLines, { fetchSeedData, hexSeed } from "../tenLines";
 import NumericalInput from "./NumericalInput";
-import TenLinesTable, { type TenLinesDatum } from "./TenLinesTable";
+import TenLinesTable from "./TenLinesTable";
+import type { InitialSeedResult } from "../tenLines/generated";
 
 export default function TenLinesForm({ sx }: { sx?: any }) {
-    const [data, setData] = useState<TenLinesDatum[]>([]);
+    const [data, setData] = useState<InitialSeedResult[]>([]);
     const [formData, setFormData] = useState<{
         targetSeed: string;
         targetSeedIsValid: boolean;
@@ -33,15 +34,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 lib.ten_lines_painting(
                     parseInt(formData.targetSeed, 16),
                     parseInt(formData.count, 10),
-                    proxy((result: []) => {
-                        setData(
-                            result.map((item) => ({
-                                advances: item[0],
-                                seed: item[1],
-                                seedFrames: item[1],
-                            }))
-                        );
-                    })
+                    proxy(setData)
                 );
             } else {
                 fetchSeedData(formData.game).then((data) => {
@@ -50,16 +43,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                         parseInt(formData.count, 10),
                         formData.game,
                         data,
-                        proxy((result: []) => {
-                            setData(
-                                result.map((item) => ({
-                                    advances: item[0],
-                                    seed: item[1],
-                                    seedFrames: item[2],
-                                    settings: item[3],
-                                }))
-                            );
-                        })
+                        proxy(setData)
                     );
                 });
             }

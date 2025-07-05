@@ -24,6 +24,8 @@ execute_process(
 
 add_executable(ten_lines
     src/ten_lines.cpp
+    src/initial_seed.cpp
+    src/calibration.cpp
     src/generated/ten_lines_precalc.cpp
 )
 

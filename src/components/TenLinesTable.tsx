@@ -9,22 +9,16 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
+import type { InitialSeedResult } from "../tenLines/generated";
 
 dayjs.extend(duration);
-
-interface TenLinesDatum {
-    seed: number;
-    advances: number;
-    seedFrames: number;
-    settings?: string;
-}
 
 const TenLinesTable = memo(function TenLinesTable({
     rows,
     isFRLG,
     gameConsole,
 }: {
-    rows: TenLinesDatum[];
+    rows: InitialSeedResult[];
     isFRLG: boolean;
     gameConsole: string;
 }) {
@@ -77,24 +71,28 @@ const TenLinesTable = memo(function TenLinesTable({
                     {rows.map((row, index) => {
                         return (
                             <TableRow key={index}>
-                                {!isFRLG && <TableCell>{row.seed}</TableCell>}
-                                <TableCell>{hexSeed(row.seed, 16)}</TableCell>
-                                <TableCell>{row.advances}</TableCell>
+                                {!isFRLG && (
+                                    <TableCell>{row.initialSeed}</TableCell>
+                                )}
                                 <TableCell>
-                                    {row.seedFrames + row.advances}
+                                    {hexSeed(row.initialSeed, 16)}
+                                </TableCell>
+                                <TableCell>{row.advance}</TableCell>
+                                <TableCell>
+                                    {row.seedFrame + row.advance}
                                 </TableCell>
                                 <TableCell>
                                     {dayjs
                                         .duration(
                                             frameToMS(
-                                                row.seedFrames + row.advances,
+                                                row.seedFrame + row.advance,
                                                 gameConsole
                                             )
                                         )
                                         .format("HH:mm:ss.SSS")}
                                 </TableCell>
                                 <TableCell>
-                                    {frameToMS(row.seedFrames, gameConsole)}
+                                    {frameToMS(row.seedFrame, gameConsole)}
                                     ms
                                 </TableCell>
                                 {isFRLG && (
@@ -112,4 +110,3 @@ const TenLinesTable = memo(function TenLinesTable({
 });
 
 export default TenLinesTable;
-export type { TenLinesDatum };
