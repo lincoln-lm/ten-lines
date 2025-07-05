@@ -7,7 +7,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
-import type { CalibrationState } from "../tenLines/generated";
+import type {
+    CalibrationState,
+    FRLGContiguousSeedEntry,
+} from "../tenLines/generated";
 import { NATURES_EN } from "../tenLines/resources";
 
 const CalibrationTable = memo(function CalibrationTable({
@@ -16,7 +19,7 @@ const CalibrationTable = memo(function CalibrationTable({
     gameConsole,
 }: {
     rows: CalibrationState[];
-    target: { seed: number; frame: number };
+    target: FRLGContiguousSeedEntry;
     gameConsole: string;
 }) {
     return (

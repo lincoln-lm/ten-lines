@@ -97,7 +97,9 @@ const TenLinesTable = memo(function TenLinesTable({
                                 </TableCell>
                                 {isFRLG && (
                                     <TableCell>
-                                        {humanizeSettings(row.settings)}
+                                        {humanizeSettings(
+                                            row.settings as string
+                                        )}
                                     </TableCell>
                                 )}
                             </TableRow>
