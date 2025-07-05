@@ -112,7 +112,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 ...data,
                 targetSeed:
                     seedList.length > 0
-                        ? seedList[0]
+                        ? seedList[Math.min(51, seedList.length - 1)]
                         : { seed: 0xdead, frame: 0 },
             }));
         };
