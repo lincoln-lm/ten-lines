@@ -19,6 +19,7 @@ import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
 import type { CalibrationState } from "../tenLines/generated";
 import React from "react";
+import { NATURES_EN } from "../tenLines/resources";
 
 interface SeedListEntry {
     seed: number;
@@ -416,31 +417,11 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 fullWidth
             >
                 <MenuItem value="-1">Any</MenuItem>
-                <MenuItem value="0">Hardy</MenuItem>
-                <MenuItem value="1">Lonely</MenuItem>
-                <MenuItem value="2">Brave</MenuItem>
-                <MenuItem value="3">Adamant</MenuItem>
-                <MenuItem value="4">Naughty</MenuItem>
-                <MenuItem value="5">Bold</MenuItem>
-                <MenuItem value="6">Docile</MenuItem>
-                <MenuItem value="7">Relaxed</MenuItem>
-                <MenuItem value="8">Impish</MenuItem>
-                <MenuItem value="9">Lax</MenuItem>
-                <MenuItem value="10">Timid</MenuItem>
-                <MenuItem value="11">Hasty</MenuItem>
-                <MenuItem value="12">Serious</MenuItem>
-                <MenuItem value="13">Jolly</MenuItem>
-                <MenuItem value="14">Naive</MenuItem>
-                <MenuItem value="15">Modest</MenuItem>
-                <MenuItem value="16">Mild</MenuItem>
-                <MenuItem value="17">Quiet</MenuItem>
-                <MenuItem value="18">Bashful</MenuItem>
-                <MenuItem value="19">Rash</MenuItem>
-                <MenuItem value="20">Calm</MenuItem>
-                <MenuItem value="21">Gentle</MenuItem>
-                <MenuItem value="22">Sassy</MenuItem>
-                <MenuItem value="23">Careful</MenuItem>
-                <MenuItem value="24">Quirky</MenuItem>
+                {NATURES_EN.map((nature, index) => (
+                    <MenuItem key={index} value={index}>
+                        {nature}
+                    </MenuItem>
+                ))}
             </TextField>
             {formData.nature !== -1 ? (
                 <React.Fragment>
