@@ -190,7 +190,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="Game"
                 margin="normal"
-                defaultValue="fr"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -198,6 +197,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         game: event.target.value,
                     }));
                 }}
+                value={formData.game}
                 select
                 fullWidth
             >
@@ -215,7 +215,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="Sound"
                 margin="normal"
-                defaultValue="mono"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -223,6 +222,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         sound: event.target.value,
                     }));
                 }}
+                value={formData.sound}
                 select
                 fullWidth
             >
@@ -232,7 +232,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="Button Mode"
                 margin="normal"
-                defaultValue="a"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -240,6 +239,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         buttonMode: event.target.value,
                     }));
                 }}
+                value={formData.buttonMode}
                 select
                 fullWidth
             >
@@ -250,7 +250,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="A Button"
                 margin="normal"
-                defaultValue="a"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -258,6 +257,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         button: event.target.value,
                     }));
                 }}
+                value={formData.button}
                 select
                 fullWidth
             >
@@ -268,7 +268,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="Held Button"
                 margin="normal"
-                defaultValue="none"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -276,6 +275,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         heldButton: event.target.value,
                     }));
                 }}
+                value={formData.heldButton}
                 select
                 fullWidth
             >
@@ -290,7 +290,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             <TextField
                 label="Console"
                 margin="normal"
-                defaultValue="GBA"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -298,6 +297,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         gameConsole: event.target.value,
                     }));
                 }}
+                value={formData.gameConsole}
                 select
                 fullWidth
             >

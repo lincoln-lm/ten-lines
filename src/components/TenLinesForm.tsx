@@ -102,7 +102,6 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             <TextField
                 label="Game"
                 margin="normal"
-                defaultValue="painting"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -111,6 +110,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                     }));
                     setData([]);
                 }}
+                value={formData.game}
                 select
                 fullWidth
             >
@@ -128,7 +128,6 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             <TextField
                 label="Console"
                 margin="normal"
-                defaultValue="GBA"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
@@ -136,6 +135,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                         gameConsole: event.target.value,
                     }));
                 }}
+                value={formData.gameConsole}
                 select
                 fullWidth
                 sx={formData.game === "painting" ? { display: "none" } : {}}
