@@ -58,7 +58,7 @@ void ten_lines_painting(u32 target_seed, u16 result_count, emscripten::val callb
 struct FRLGSeedEntry
 {
     const char *key;
-    const char l_setting;
+    const char button_mode;
     u32 frame;
     u16 seed;
 };
@@ -100,8 +100,8 @@ parse_seed_data(const std::vector<u8> &seed_data_vector)
             {
                 continue;
             }
-            const char l_setting = *(strchr(key, '_') + 1);
-            FRLGSeedEntry entry{key, l_setting, starting_frame + i / frame_size, seed};
+            const char button_mode = *(strchr(key, '_') + 1);
+            FRLGSeedEntry entry{key, button_mode, starting_frame + i / frame_size, seed};
             contiguous_entries.emplace_back(entry);
             auto it = resultant_store.seed_map.find(seed);
             if (it == resultant_store.seed_map.end())
@@ -120,7 +120,7 @@ parse_seed_data(const std::vector<u8> &seed_data_vector)
 
 struct HeldButtonOffset
 {
-    char l_setting;
+    char button_mode;
     std::string held_button;
     s16 offset;
 };
@@ -304,8 +304,8 @@ void ten_lines_frlg(u32 target_seed, u16 result_count, std::string game_version,
             }
             for (auto &entry : it->second)
             {
-                // the offset needed to achieve this seed only happens with a different L setting
-                if (entry.l_setting != held_button_offset.l_setting)
+                // the offset needed to achieve this seed only happens with a different button mode
+                if (entry.button_mode != held_button_offset.button_mode)
                 {
                     continue;
                 }

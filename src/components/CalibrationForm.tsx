@@ -31,7 +31,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const [formData, setFormData] = useState<{
         game: string;
         sound: string;
-        lSetting: string;
+        buttonMode: string;
         button: string;
         heldButton: string;
         gameConsole: string;
@@ -44,7 +44,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     }>({
         game: "fr",
         sound: "mono",
-        lSetting: "a",
+        buttonMode: "a",
         button: "a",
         heldButton: "none",
         gameConsole: "GBA",
@@ -113,7 +113,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             const tenLines = await fetchTenLines();
             const seedList = await tenLines.get_contiguous_seed_list(
                 seedData,
-                `${formData.sound}_${formData.lSetting}_${formData.button}`,
+                `${formData.sound}_${formData.buttonMode}_${formData.button}`,
                 formData.game,
                 formData.heldButton
             );
@@ -130,7 +130,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     }, [
         formData.game,
         formData.sound,
-        formData.lSetting,
+        formData.buttonMode,
         formData.button,
         formData.heldButton,
     ]);
@@ -230,14 +230,14 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 <MenuItem value="stereo">Stereo</MenuItem>
             </TextField>
             <TextField
-                label="L Setting"
+                label="Button Mode"
                 margin="normal"
                 defaultValue="a"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
                     setFormData((data) => ({
                         ...data,
-                        lSetting: event.target.value,
+                        buttonMode: event.target.value,
                     }));
                 }}
                 select

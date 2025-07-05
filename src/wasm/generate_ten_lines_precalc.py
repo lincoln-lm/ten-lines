@@ -32,9 +32,9 @@ class SeedDataStore:
         self.starting_frame = starting_frame
         self.frame_size = frame_size
 
-    def add_seed(self, sound, l, button, seed):
+    def add_seed(self, sound, button_mode, button, seed):
         """Add a seed to the store"""
-        key = f"{sound}_{l}_{button}"
+        key = f"{sound}_{button_mode}_{button}"
         if key not in self.data:
             self.data[key] = []
         self.data[key].append(seed)
@@ -70,14 +70,14 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                fr_eng_seeds.add_seed(sound, l, button, seed)
+                fr_eng_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(3, "stereo", "a", "a")
             add_seed(7, "stereo", "h", "a")
@@ -105,7 +105,7 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
@@ -113,7 +113,7 @@ def pull_frlg_seeds():
                 if seed > 0xFFFF:
                     seed = 0x10000
                 seed = int(seed_str, 16)
-                lg_eng_seeds.add_seed(sound, l, button, seed)
+                lg_eng_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(3, "mono", "r", "a")
             add_seed(4, "mono", "a", "a")
@@ -141,7 +141,7 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
@@ -149,7 +149,7 @@ def pull_frlg_seeds():
                 if seed > 0xFFFF:
                     seed = 0x10000
                 seed = int(seed_str, 16)
-                fr_jpn_1_0_seeds.add_seed(sound, l, button, seed)
+                fr_jpn_1_0_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
             add_seed(2, "mono", "a", "a")
@@ -169,7 +169,7 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
@@ -177,7 +177,7 @@ def pull_frlg_seeds():
                 if seed > 0xFFFF:
                     seed = 0x10000
                 seed = int(seed_str, 16)
-                fr_jpn_1_1_seeds.add_seed(sound, l, button, seed)
+                fr_jpn_1_1_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
             add_seed(2, "mono", "a", "a")
@@ -197,7 +197,7 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
@@ -205,7 +205,7 @@ def pull_frlg_seeds():
                 if seed > 0xFFFF:
                     seed = 0x10000
                 seed = int(seed_str, 16)
-                lg_jpn_seeds.add_seed(sound, l, button, seed)
+                lg_jpn_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
             add_seed(2, "mono", "a", "a")
@@ -225,14 +225,14 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                fr_eng_mgba_seeds.add_seed(sound, l, button, seed)
+                fr_eng_mgba_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(2, "mono", "r", "a")
             add_seed(3, "mono", "a", "a")
@@ -260,7 +260,7 @@ def pull_frlg_seeds():
             continue
         if row[0]:
 
-            def add_seed(col, sound, l, button):
+            def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
                 if seed_str in ("", "-", "0"):
                     seed_str = "10000"
@@ -268,7 +268,7 @@ def pull_frlg_seeds():
                 if seed > 0xFFFF:
                     seed = 0x10000
                 seed = int(seed_str, 16)
-                lg_eng_mgba_seeds.add_seed(sound, l, button, seed)
+                lg_eng_mgba_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(2, "mono", "r", "a")
             add_seed(3, "mono", "a", "a")

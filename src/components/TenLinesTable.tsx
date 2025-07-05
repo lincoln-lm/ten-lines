@@ -31,8 +31,13 @@ const TenLinesTable = memo(function TenLinesTable({
     if (!isFRLG) gameConsole = "Generic";
     function humanizeSettings(settings: string | undefined) {
         if (!settings) return "";
-        const [sound, l, active_button, held_button_modifier, held_button] =
-            settings.split("_");
+        const [
+            sound,
+            buttonMode,
+            active_button,
+            held_button_modifier,
+            held_button,
+        ] = settings.split("_");
         const humanizedTerms: Record<string, string> = {
             stereo: "Stereo",
             mono: "Mono",
@@ -47,12 +52,12 @@ const TenLinesTable = memo(function TenLinesTable({
             none: "None",
             undefined: "",
         };
-        const humanizedLSettings: Record<string, string> = {
+        const humanizedButtonModes: Record<string, string> = {
             a: "L=A",
             h: "Help",
             r: "LR",
         };
-        return `${humanizedTerms[sound]} | ${humanizedLSettings[l]} Button: ${humanizedTerms[active_button]} |  Held: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
+        return `${humanizedTerms[sound]} | ${humanizedButtonModes[buttonMode]} Button: ${humanizedTerms[active_button]} |  Held: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
     }
     return (
         <TableContainer component={Paper}>
