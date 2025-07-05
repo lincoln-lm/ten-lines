@@ -20,6 +20,7 @@ import CalibrationTable from "./CalibrationTable";
 import type { CalibrationState } from "../tenLines/generated";
 import React from "react";
 import { NATURES_EN } from "../tenLines/resources";
+import IvEntry from "./IvEntry";
 
 interface SeedListEntry {
     seed: number;
@@ -75,19 +76,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
               parseInt(formData.advanceMaxString, 10),
           ]
         : [0, 0];
-    const [hpRangeIsValid, setHpRangeIsValid] = useState(true);
-    const [atkRangeIsValid, setAtkRangeIsValid] = useState(true);
-    const [defRangeIsValid, setDefRangeIsValid] = useState(true);
-    const [spaRangeIsValid, setSpaRangeIsValid] = useState(true);
-    const [spdRangeIsValid, setSpdRangeIsValid] = useState(true);
-    const [speRangeIsValid, setSpeRangeIsValid] = useState(true);
-    const ivRangesAreValid =
-        hpRangeIsValid &&
-        atkRangeIsValid &&
-        defRangeIsValid &&
-        spaRangeIsValid &&
-        spdRangeIsValid &&
-        speRangeIsValid;
+    const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges =
         formData.nature == -1
             ? [
@@ -424,146 +413,16 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 ))}
             </TextField>
             {formData.nature !== -1 ? (
-                <React.Fragment>
-                    <RangeInput
-                        label="HP"
-                        name="hpRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        value.value,
-                                        data.ivRangeStrings[1],
-                                        data.ivRangeStrings[2],
-                                        data.ivRangeStrings[3],
-                                        data.ivRangeStrings[4],
-                                        data.ivRangeStrings[5],
-                                    ],
-                                };
-                            });
-                            setHpRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[0]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                    <RangeInput
-                        label="Attack"
-                        name="atkRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        data.ivRangeStrings[0],
-                                        value.value,
-                                        data.ivRangeStrings[2],
-                                        data.ivRangeStrings[3],
-                                        data.ivRangeStrings[4],
-                                        data.ivRangeStrings[5],
-                                    ],
-                                };
-                            });
-                            setAtkRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[1]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                    <RangeInput
-                        label="Defense"
-                        name="defRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        data.ivRangeStrings[0],
-                                        data.ivRangeStrings[1],
-                                        value.value,
-                                        data.ivRangeStrings[3],
-                                        data.ivRangeStrings[4],
-                                        data.ivRangeStrings[5],
-                                    ],
-                                };
-                            });
-                            setDefRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[2]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                    <RangeInput
-                        label="Special Attack"
-                        name="spaRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        data.ivRangeStrings[0],
-                                        data.ivRangeStrings[1],
-                                        data.ivRangeStrings[2],
-                                        value.value,
-                                        data.ivRangeStrings[4],
-                                        data.ivRangeStrings[5],
-                                    ],
-                                };
-                            });
-                            setSpaRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[3]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                    <RangeInput
-                        label="Special Defense"
-                        name="spdRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        data.ivRangeStrings[0],
-                                        data.ivRangeStrings[1],
-                                        data.ivRangeStrings[2],
-                                        data.ivRangeStrings[3],
-                                        value.value,
-                                        data.ivRangeStrings[5],
-                                    ],
-                                };
-                            });
-                            setSpdRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[4]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                    <RangeInput
-                        label="Speed"
-                        name="speRange"
-                        onChange={(_event, value) => {
-                            setFormData((data) => {
-                                return {
-                                    ...data,
-                                    ivRangeStrings: [
-                                        data.ivRangeStrings[0],
-                                        data.ivRangeStrings[1],
-                                        data.ivRangeStrings[2],
-                                        data.ivRangeStrings[3],
-                                        data.ivRangeStrings[4],
-                                        value.value,
-                                    ],
-                                };
-                            });
-                            setSpeRangeIsValid(value.isValid);
-                        }}
-                        value={formData.ivRangeStrings[5]}
-                        minimumValue={0}
-                        maximumValue={31}
-                    />
-                </React.Fragment>
+                <IvEntry
+                    onChange={(_event, value) => {
+                        setIvRangesAreValid(value.isValid);
+                        setFormData((data) => ({
+                            ...data,
+                            ivRangeStrings: value.value,
+                        }));
+                    }}
+                    value={formData.ivRangeStrings}
+                />
             ) : (
                 <FormLabel>
                     IV Calculation disabled. Searching all Natures.
