@@ -1,5 +1,5 @@
 import { InputAdornment, TextField } from "@mui/material";
-import { useState } from "react";
+import { useMemo } from "react";
 
 function NumericalInput({
     label,
@@ -7,27 +7,48 @@ function NumericalInput({
     minimumValue,
     maximumValue,
     isHex,
-    changeSignal,
-    startingValue = "0",
+    onChange,
+    value,
     ...props
 }: {
     label: string;
     name: string;
     minimumValue: number;
     maximumValue: number;
-    changeSignal: (
+    onChange: (
         event: React.ChangeEvent<HTMLInputElement>,
-        value: number | null
+        value: {
+            isValid: boolean;
+            value: string;
+        }
     ) => void;
-    startingValue?: string;
+    value: string;
     isHex?: boolean;
     [key: string]: any;
 }) {
-    const [value, setValue] = useState(startingValue);
-    const [valid, setValid] = useState(true);
-    const [error, setError] = useState("");
     const prefix = isHex ? "0x" : "";
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const getError = (value: string) => {
+        const reg = new RegExp(isHex ? "[^0-9a-fA-F]+" : "[^0-9]+");
+        const intValue = parseInt(value, isHex ? 16 : 10);
+        if (reg.test(value)) {
+            return "Invalid input";
+        } else if (intValue < minimumValue || intValue > maximumValue) {
+            return `Value must be between ${
+                prefix + (isHex ? minimumValue.toString(16) : minimumValue)
+            } and ${
+                prefix + (isHex ? maximumValue.toString(16) : maximumValue)
+            }`;
+        }
+        return "";
+    };
+
+    const error = useMemo(
+        () => getError(value),
+        [value, isHex, minimumValue, maximumValue]
+    );
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let { value } = event.target;
         while (value.charAt(0) === "0") {
             value = value.substring(1);
@@ -35,37 +56,18 @@ function NumericalInput({
         if (value === "") {
             value = "0";
         }
-        setValue(value);
-        const intValue = parseInt(value, isHex ? 16 : 10);
-        const reg = new RegExp(isHex ? "/[^0-9A-F]/i" : "[^0-9]");
-        setValid(true);
-        setError("");
-        if (reg.test(value)) {
-            setValid(false);
-            setError("Invalid input");
-        } else if (intValue < minimumValue || intValue > maximumValue) {
-            setValid(false);
-            setError(
-                `Value must be between ${
-                    prefix + (isHex ? minimumValue.toString(16) : minimumValue)
-                } and ${
-                    prefix + (isHex ? maximumValue.toString(16) : maximumValue)
-                }`
-            );
-            changeSignal(event, null);
-        } else {
-            changeSignal(event, intValue);
-        }
+        onChange(event, { isValid: getError(value) === "", value });
     };
+
     return (
         <TextField
             label={label}
             name={name}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             fullWidth
             margin="normal"
-            error={!valid}
+            error={error !== ""}
             helperText={error}
             slotProps={{
                 input: {

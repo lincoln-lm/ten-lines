@@ -1,9 +1,19 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
 #include <emscripten/bind.h>
 #include <emscripten.h>
 #include <Core/RNG/LCRNG.hpp>
+#include <Core/Gen3/Generators/StaticGenerator3.hpp>
+#include <Core/Gen3/StaticTemplate3.hpp>
+#include <Core/Gen3/Profile3.hpp>
+#include <Core/Gen3/Profile3.hpp>
+#include <Core/Enum/Method.hpp>
+#include <Core/Enum/Game.hpp>
+#include <Core/Enum/Shiny.hpp>
+#include <Core/Parents/Filters/StateFilter.hpp>
+#include <Core/Parents/States/State.hpp>
 #include <Core/Global.hpp>
 #include "generated/ten_lines_precalc.hpp"
 
@@ -56,7 +66,7 @@ struct FRLGSeedEntry
 struct FRLGSeedDataStore
 {
     std::map<u16, std::vector<FRLGSeedEntry>> seed_map;
-    std::map<const char *, std::vector<FRLGSeedEntry>> contigious_seeds;
+    std::map<std::string, std::vector<FRLGSeedEntry>> contiguous_seeds;
 };
 
 FRLGSeedDataStore
@@ -74,7 +84,7 @@ parse_seed_data(const std::vector<u8> &seed_data_vector)
         ptr += sizeof(u8);
         u32 entries_count = *reinterpret_cast<const u32 *>(&seed_data_vector[ptr]);
         ptr += sizeof(u32);
-        std::vector<FRLGSeedEntry> contigious_entries;
+        std::vector<FRLGSeedEntry> contiguous_entries;
         for (u32 i = 0; i < entries_count; i++)
         {
             u16 seed = *reinterpret_cast<const u16 *>(&seed_data_vector[ptr]);
@@ -86,13 +96,13 @@ parse_seed_data(const std::vector<u8> &seed_data_vector)
                 continue;
             }
             // seeds appearing consecutively can reasonably be condensed into their first entry
-            if (!contigious_entries.empty() && contigious_entries.back().seed == seed)
+            if (!contiguous_entries.empty() && contiguous_entries.back().seed == seed)
             {
                 continue;
             }
             const char l_setting = *(strchr(key, '_') + 1);
             FRLGSeedEntry entry{key, l_setting, starting_frame + i / frame_size, seed};
-            contigious_entries.emplace_back(entry);
+            contiguous_entries.emplace_back(entry);
             auto it = resultant_store.seed_map.find(seed);
             if (it == resultant_store.seed_map.end())
             {
@@ -103,7 +113,7 @@ parse_seed_data(const std::vector<u8> &seed_data_vector)
                 it->second.emplace_back(entry);
             }
         }
-        resultant_store.contigious_seeds.emplace(key, contigious_entries);
+        resultant_store.contiguous_seeds.emplace(std::string(key), contiguous_entries);
     }
     return resultant_store;
 }
@@ -319,8 +329,112 @@ void ten_lines_frlg(u32 target_seed, u16 result_count, std::string game_version,
     callback(results);
 }
 
+emscripten::val get_contiguous_seed_list(emscripten::val seed_data, std::string setting_key, std::string game_version, std::string held_button)
+{
+    std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);
+    auto seed_data_store = parse_seed_data(seed_data_vector);
+    std::vector<FRLGSeedEntry> &contiguous_seeds = seed_data_store.contiguous_seeds.at(setting_key);
+    const auto &offsets = HELD_BUTTON_OFFSETS.at(game_version);
+    auto held_button_offset = std::find_if(offsets.begin(), offsets.end(), [&](const HeldButtonOffset &held_button_offset)
+                                           { return held_button_offset.held_button == held_button; });
+    emscripten::val entries = emscripten::val::array();
+    if (held_button_offset == offsets.end())
+    {
+        return entries;
+    }
+    for (auto &seed : contiguous_seeds)
+    {
+        auto entry = emscripten::val::object();
+        entry.set("seed", seed.seed);
+        entry.set("frame", seed.frame);
+        entries.call<void>("push", entry);
+    }
+    return entries;
+}
+
+struct StaticResult
+{
+    u32 advance;
+    u16 seed;
+    u16 frame;
+    u32 pid;
+    u8 nature;
+    u8 ability;
+    std::array<u8, 6> ivs;
+};
+
+void check_seeds(emscripten::val seeds, emscripten::val advance_range, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+{
+    u32 initial_advances = advance_range[0].as<u32>();
+    u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+
+    std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+    if (nature != -1)
+    {
+        for (int i = 0; i < 25; i++)
+        {
+            natures[i] = false;
+        }
+        natures[nature] = true;
+    }
+
+    std::array<u8, 6> min_ivs = {iv_ranges[0][0].as<u8>(), iv_ranges[1][0].as<u8>(), iv_ranges[2][0].as<u8>(), iv_ranges[3][0].as<u8>(), iv_ranges[4][0].as<u8>(), iv_ranges[5][0].as<u8>()};
+    std::array<u8, 6> max_ivs = {iv_ranges[0][1].as<u8>(), iv_ranges[1][1].as<u8>(), iv_ranges[2][1].as<u8>(), iv_ranges[3][1].as<u8>(), iv_ranges[4][1].as<u8>(), iv_ranges[5][1].as<u8>()};
+    std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+
+    StaticTemplate3 tmplate(Game::FireRed, 1, 0, Shiny::Random, 1, false);
+    Profile3 profile("", Game::FireRed, 0, 0, false);
+    StateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers);
+
+    searching_callback(true);
+
+    for (int i = 0; i < seeds["length"].as<int>(); i++)
+    {
+        u16 seed = seeds[i]["seed"].as<u16>();
+        u16 frame = seeds[i]["frame"].as<u16>();
+        StaticGenerator3 generator(
+            initial_advances, max_advances, 0, Method::Method1, tmplate, profile, filter);
+        auto generator_results = generator.generate(seed);
+        auto results = emscripten::val::array();
+        for (auto &generator_result : generator_results)
+        {
+            StaticResult result = {
+                .advance = generator_result.getAdvances(),
+                .seed = seed,
+                .frame = frame,
+                .pid = generator_result.getPID(),
+                .nature = generator_result.getNature(),
+                .ability = generator_result.getAbility(),
+                .ivs = generator_result.getIVs(),
+            };
+            results.call<void>("push", emscripten::val(result));
+        }
+        result_callback(results);
+    }
+    searching_callback(false);
+}
+
 EMSCRIPTEN_BINDINGS(ten_lines)
 {
     emscripten::function("ten_lines_painting", &ten_lines_painting);
     emscripten::function("ten_lines_frlg", &ten_lines_frlg);
+    emscripten::function("get_contiguous_seed_list", &get_contiguous_seed_list);
+    emscripten::function("check_seeds", &check_seeds);
+
+    emscripten::value_object<StaticResult>("StaticResult")
+        .field("advance", &StaticResult::advance)
+        .field("seed", &StaticResult::seed)
+        .field("frame", &StaticResult::frame)
+        .field("pid", &StaticResult::pid)
+        .field("nature", &StaticResult::nature)
+        .field("ability", &StaticResult::ability)
+        .field("ivs", &StaticResult::ivs);
+
+    emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
+        .element(emscripten::index<0>())
+        .element(emscripten::index<1>())
+        .element(emscripten::index<2>())
+        .element(emscripten::index<3>())
+        .element(emscripten::index<4>())
+        .element(emscripten::index<5>());
 }

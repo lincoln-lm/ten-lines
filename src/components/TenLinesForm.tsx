@@ -3,44 +3,36 @@ import { useState } from "react";
 
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 
-import fetchTenLines from "../tenLines";
+import fetchTenLines, { fetchSeedData, hexSeed } from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import TenLinesTable, { type TenLinesDatum } from "./TenLinesTable";
-
-const SEED_URLS: Record<string, string> = {
-    fr: "generated/fr_eng.bin",
-    fr_eu: "generated/fr_eng.bin",
-    lg: "generated/lg_eng.bin",
-    lg_eu: "generated/lg_eng.bin",
-    fr_jpn_1_0: "generated/fr_jpn_1_0.bin",
-    fr_jpn_1_1: "generated/fr_jpn_1_1.bin",
-    lg_jpn: "generated/lg_jpn.bin",
-    fr_mgba: "generated/fr_eng_mgba.bin",
-    lg_mgba: "generated/lg_eng_mgba.bin",
-};
 
 export default function TenLinesForm({ sx }: { sx?: any }) {
     const [data, setData] = useState<TenLinesDatum[]>([]);
     const [formData, setFormData] = useState<{
-        targetSeed: number | null;
-        count: number | null;
+        targetSeed: string;
+        targetSeedIsValid: boolean;
+        count: string;
+        countIsValid: boolean;
         game: string;
         gameConsole: string;
     }>({
-        targetSeed: 0xdeadbeef,
-        count: 10,
+        targetSeed: "DEADBEEF",
+        targetSeedIsValid: true,
+        count: "10",
+        countIsValid: true,
         game: "painting",
         gameConsole: "GBA",
     });
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (formData.targetSeed == null || formData.count == null) return;
+        if (!formData.targetSeedIsValid || !formData.countIsValid) return;
         fetchTenLines().then((lib) => {
             setData([]);
             if (formData.game === "painting") {
                 lib.ten_lines_painting(
-                    formData.targetSeed as number,
-                    formData.count as number,
+                    parseInt(formData.targetSeed, 16),
+                    parseInt(formData.count, 10),
                     proxy((result: []) => {
                         setData(
                             result.map((item) => ({
@@ -52,31 +44,24 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                     })
                 );
             } else {
-                fetch(SEED_URLS[formData.game])
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error("Failed to fetch seeds file");
-                        }
-                        return response.arrayBuffer();
-                    })
-                    .then((buffer) => {
-                        lib.ten_lines_frlg(
-                            formData.targetSeed as number,
-                            formData.count as number,
-                            formData.game,
-                            new Uint8Array(buffer),
-                            proxy((result: []) => {
-                                setData(
-                                    result.map((item) => ({
-                                        advances: item[0],
-                                        seed: item[1],
-                                        seedFrames: item[2],
-                                        settings: item[3],
-                                    }))
-                                );
-                            })
-                        );
-                    });
+                fetchSeedData(formData.game).then((data) => {
+                    lib.ten_lines_frlg(
+                        parseInt(formData.targetSeed, 16),
+                        parseInt(formData.count, 10),
+                        formData.game,
+                        data,
+                        proxy((result: []) => {
+                            setData(
+                                result.map((item) => ({
+                                    advances: item[0],
+                                    seed: item[1],
+                                    seedFrames: item[2],
+                                    settings: item[3],
+                                }))
+                            );
+                        })
+                    );
+                });
             }
         });
     };
@@ -89,20 +74,30 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={0xffffffff}
                 isHex={true}
-                startingValue={formData.targetSeed?.toString(16)}
-                changeSignal={(_, value) =>
-                    setFormData((data) => ({ ...data, targetSeed: value }))
+                onChange={(_, value) =>
+                    setFormData((data) => ({
+                        ...data,
+                        targetSeed: value.isValid
+                            ? hexSeed(parseInt(value.value, 16), 32)
+                            : value.value,
+                        targetSeedIsValid: value.isValid,
+                    }))
                 }
+                value={formData.targetSeed}
             ></NumericalInput>
             <NumericalInput
                 label="Result Count"
                 name="resultCount"
                 minimumValue={0}
                 maximumValue={5000}
-                startingValue={formData.count?.toString()}
-                changeSignal={(_, value) =>
-                    setFormData((data) => ({ ...data, count: value }))
+                onChange={(_, value) =>
+                    setFormData((data) => ({
+                        ...data,
+                        count: value.value,
+                        countIsValid: value.isValid,
+                    }))
                 }
+                value={formData.count}
             ></NumericalInput>
             <TextField
                 label="Game"

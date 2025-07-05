@@ -6,7 +6,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TenLinesForm from "./components/TenLinesForm";
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
-// import CalibrationForm from "./components/CalibrationForm";
+import CalibrationForm from "./components/CalibrationForm";
 import FrLgSeedsTimestamp from "./wasm/src/generated/frlg_seeds_timestamp.txt?raw";
 
 const darkTheme = createTheme({
@@ -27,7 +27,7 @@ function App() {
                     variant="fullWidth"
                 >
                     <Tab label="Initial Seed" value={0} />
-                    {/* <Tab label="Calibration" value={1} /> */}
+                    <Tab label="Calibration" value={1} />
                 </Tabs>
                 <TenLinesForm
                     sx={
@@ -36,9 +36,13 @@ function App() {
                             : { maxWidth: 1000 }
                     }
                 />
-                {/* <CalibrationForm
-                    sx={currentPage !== 1 ? { display: "none" } : {}}
-                /> */}
+                <CalibrationForm
+                    sx={
+                        currentPage !== 1
+                            ? { display: "none" }
+                            : { maxWidth: 1000 }
+                    }
+                />
             </Box>
 
             <footer>

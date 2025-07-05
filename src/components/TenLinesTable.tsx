@@ -8,6 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { memo } from "react";
+import { frameToMS, hexSeed } from "../tenLines";
 
 dayjs.extend(duration);
 
@@ -16,24 +17,6 @@ interface TenLinesDatum {
     advances: number;
     seedFrames: number;
     settings?: string;
-}
-
-const SYSTEM_TIMING_DATA: Record<
-    string,
-    { frame_rate: number; offset_ms: number }
-> = {
-    Generic: { frame_rate: 16777216 / 280896, offset_ms: 0 },
-    GBA: { frame_rate: 16777216 / 280896, offset_ms: -260 },
-    GBP: { frame_rate: 16777216 / 280896, offset_ms: 200 },
-    NDS: { frame_rate: 16756991 / 280896, offset_ms: 788 },
-    "3DS": { frame_rate: 16756991 / 280896, offset_ms: 1558 },
-};
-
-function frameToMS(frame: number, system: string) {
-    return (
-        Math.floor((frame / SYSTEM_TIMING_DATA[system].frame_rate) * 1000) +
-        SYSTEM_TIMING_DATA[system].offset_ms
-    );
 }
 
 const TenLinesTable = memo(function TenLinesTable({
@@ -90,12 +73,7 @@ const TenLinesTable = memo(function TenLinesTable({
                         return (
                             <TableRow key={index}>
                                 {!isFRLG && <TableCell>{row.seed}</TableCell>}
-                                <TableCell>
-                                    {row.seed
-                                        .toString(16)
-                                        .padStart(4, "0")
-                                        .toUpperCase()}
-                                </TableCell>
+                                <TableCell>{hexSeed(row.seed, 16)}</TableCell>
                                 <TableCell>{row.advances}</TableCell>
                                 <TableCell>
                                     {row.seedFrames + row.advances}
