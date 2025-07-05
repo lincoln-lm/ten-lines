@@ -7,42 +7,15 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
-import type { StaticResult } from "../tenLines/generated";
-
-const NATURES_EN = [
-    "Hardy",
-    "Lonely",
-    "Brave",
-    "Adamant",
-    "Naughty",
-    "Bold",
-    "Docile",
-    "Relaxed",
-    "Impish",
-    "Lax",
-    "Timid",
-    "Hasty",
-    "Serious",
-    "Jolly",
-    "Naive",
-    "Modest",
-    "Mild",
-    "Quiet",
-    "Bashful",
-    "Rash",
-    "Calm",
-    "Gentle",
-    "Sassy",
-    "Careful",
-    "Quirky",
-];
+import type { CalibrationState } from "../tenLines/generated";
+import { NATURES_EN } from "../tenLines/resources";
 
 const CalibrationTable = memo(function CalibrationTable({
     rows,
     target,
     gameConsole,
 }: {
-    rows: StaticResult[];
+    rows: CalibrationState[];
     target: { seed: number; frame: number };
     gameConsole: string;
 }) {
@@ -67,18 +40,18 @@ const CalibrationTable = memo(function CalibrationTable({
                         } else if (index > 1000) {
                             return null;
                         }
-                        const seedMS = frameToMS(row.frame, gameConsole);
+                        const seedMS = frameToMS(row.seedFrame, gameConsole);
                         const offsetMS =
                             seedMS - frameToMS(target.frame, gameConsole);
                         return (
                             <TableRow key={index}>
                                 <TableCell>
-                                    {hexSeed(row.seed, 16)} | {seedMS}ms (
-                                    {offsetMS >= 0 && "+"}
+                                    {hexSeed(row.initialSeed, 16)} | {seedMS}ms
+                                    ({offsetMS >= 0 && "+"}
                                     {offsetMS}
                                     ms)
                                 </TableCell>
-                                <TableCell>{row.advance}</TableCell>
+                                <TableCell>{row.advances}</TableCell>
                                 <TableCell>{hexSeed(row.pid, 32)}</TableCell>
                                 <TableCell>No</TableCell>
                                 <TableCell>{NATURES_EN[row.nature]}</TableCell>

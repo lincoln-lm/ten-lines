@@ -352,15 +352,15 @@ emscripten::val get_contiguous_seed_list(emscripten::val seed_data, std::string 
     return entries;
 }
 
-struct StaticResult
+class CalibrationState : public GeneratorState
 {
-    u32 advance;
-    u16 seed;
-    u16 frame;
-    u32 pid;
-    u8 nature;
-    u8 ability;
-    std::array<u8, 6> ivs;
+public:
+    CalibrationState(u16 initial_seed, u16 seed_fame, const GeneratorState &state) : GeneratorState(state), initialSeed(initial_seed), seedFrame(seed_fame) {}
+    CalibrationState() : GeneratorState(0, 0, {0, 0, 0, 0, 0, 0}, 0, 0, 0, 0, 0, nullptr) {};
+    template <typename T>
+    void dummySetter(T argument) { (void)argument; }
+    u16 initialSeed;
+    u16 seedFrame;
 };
 
 void check_seeds(emscripten::val seeds, emscripten::val advance_range, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
@@ -398,16 +398,7 @@ void check_seeds(emscripten::val seeds, emscripten::val advance_range, int natur
         auto results = emscripten::val::array();
         for (auto &generator_result : generator_results)
         {
-            StaticResult result = {
-                .advance = generator_result.getAdvances(),
-                .seed = seed,
-                .frame = frame,
-                .pid = generator_result.getPID(),
-                .nature = generator_result.getNature(),
-                .ability = generator_result.getAbility(),
-                .ivs = generator_result.getIVs(),
-            };
-            results.call<void>("push", emscripten::val(result));
+            results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
         }
         result_callback(results);
     }
@@ -421,15 +412,6 @@ EMSCRIPTEN_BINDINGS(ten_lines)
     emscripten::function("get_contiguous_seed_list", &get_contiguous_seed_list);
     emscripten::function("check_seeds", &check_seeds);
 
-    emscripten::value_object<StaticResult>("StaticResult")
-        .field("advance", &StaticResult::advance)
-        .field("seed", &StaticResult::seed)
-        .field("frame", &StaticResult::frame)
-        .field("pid", &StaticResult::pid)
-        .field("nature", &StaticResult::nature)
-        .field("ability", &StaticResult::ability)
-        .field("ivs", &StaticResult::ivs);
-
     emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
         .element(emscripten::index<0>())
         .element(emscripten::index<1>())
@@ -437,4 +419,13 @@ EMSCRIPTEN_BINDINGS(ten_lines)
         .element(emscripten::index<3>())
         .element(emscripten::index<4>())
         .element(emscripten::index<5>());
+
+    emscripten::value_object<CalibrationState>("CalibrationState")
+        .field("initialSeed", &CalibrationState::initialSeed)
+        .field("seedFrame", &CalibrationState::seedFrame)
+        .field("advances", &CalibrationState::getAdvances, &CalibrationState::dummySetter<u32>)
+        .field("pid", &CalibrationState::getPID, &CalibrationState::dummySetter<u32>)
+        .field("nature", &CalibrationState::getNature, &CalibrationState::dummySetter<u8>)
+        .field("ability", &CalibrationState::getAbility, &CalibrationState::dummySetter<u8>)
+        .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>);
 }

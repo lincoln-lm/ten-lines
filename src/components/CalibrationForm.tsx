@@ -17,7 +17,7 @@ import NumericalInput from "./NumericalInput";
 import RangeInput from "./RangeInput";
 import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
-import type { StaticResult } from "../tenLines/generated";
+import type { CalibrationState } from "../tenLines/generated";
 import React from "react";
 
 interface SeedListEntry {
@@ -26,7 +26,7 @@ interface SeedListEntry {
 }
 
 export default function CalibrationForm({ sx }: { sx?: any }) {
-    const [rows, setRows] = useState<StaticResult[]>([]);
+    const [rows, setRows] = useState<CalibrationState[]>([]);
     const [searching, setSearching] = useState(false);
     const [formData, setFormData] = useState<{
         game: string;
@@ -165,7 +165,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 advanceRange,
                 formData.nature,
                 ivRanges,
-                proxy((results: StaticResult[]) => {
+                proxy((results: CalibrationState[]) => {
                     if (rows.length > 1000) {
                         return;
                     }
