@@ -15,7 +15,7 @@
 #include "initial_seed.hpp"
 #include "calibration.hpp"
 
-void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int category, int template_index, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int category, int template_index, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
@@ -47,7 +47,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, in
         u16 seed = entry.initialSeed;
         u16 frame = entry.seedFrame;
         StaticGenerator3 generator(
-            initial_advances, max_advances, 0, Method::Method1, tmplate, profile, filter);
+            initial_advances, max_advances, 0, Method(method), tmplate, profile, filter);
         auto generator_results = generator.generate(seed);
         auto results = emscripten::val::array();
         for (auto &generator_result : generator_results)
@@ -126,7 +126,7 @@ std::array<IVRange, 6> calc_ivs_static(int category, int template_index, emscrip
 
 EMSCRIPTEN_BINDINGS(calibration)
 {
-    emscripten::function("check_seeds", &check_seeds_static);
+    emscripten::function("check_seeds_static", &check_seeds_static);
     emscripten::function("get_static_template_info", &get_static_template_info);
     emscripten::function("calc_ivs_static", &calc_ivs_static);
 

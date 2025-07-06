@@ -45,6 +45,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         ivCalculatorText: string;
         staticCategory: number;
         staticPokemon: number;
+        method: number;
     }>({
         game: "fr",
         sound: "mono",
@@ -68,6 +69,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         ivCalculatorText: "",
         staticCategory: 0,
         staticPokemon: 0,
+        method: 1,
     });
 
     const [seedLeewayIsValid, setSeedLeewayIsValid] = useState(true);
@@ -155,11 +157,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             const tenLines = await fetchTenLines();
             setRows([]);
             setSearching(true);
-            await tenLines.check_seeds(
+            await tenLines.check_seeds_static(
                 searchSeeds,
                 advanceRange,
                 formData.staticCategory,
                 formData.staticPokemon,
+                formData.method,
                 formData.nature,
                 ivRanges,
                 proxy((results: CalibrationState[]) => {
@@ -401,6 +404,27 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={999999}
             />
+            <TextField
+                label="Method"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setFormData((data) => ({
+                        ...data,
+                        method: parseInt(event.target.value),
+                    }));
+                }}
+                value={formData.method}
+                select
+                fullWidth
+            >
+                <MenuItem value="1">Static 1</MenuItem>
+                {/* <MenuItem value="3">Static 2</MenuItem> */}
+                <MenuItem value="4">Static 4</MenuItem>
+                {/* <MenuItem value="5">Wild 1</MenuItem>
+                <MenuItem value="7">Wild 2</MenuItem>
+                <MenuItem value="8">Wild 4</MenuItem> */}
+            </TextField>
             <StaticEncounterSelector
                 staticCategory={formData.staticCategory}
                 staticPokemon={formData.staticPokemon}
