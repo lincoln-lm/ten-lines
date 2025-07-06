@@ -105,6 +105,7 @@ function IvCalculator({
     return (
         <TextField
             label="IV Calculator"
+            margin="normal"
             value={value}
             error={error !== ""}
             helperText={error}
