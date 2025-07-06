@@ -530,9 +530,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     />
                 </React.Fragment>
             ) : (
-                <FormLabel>
-                    IV Calculation disabled. Searching all Natures.
-                </FormLabel>
+                <span>IV Calculation disabled. Searching all Natures.</span>
             )}
             <Button
                 variant="contained"
