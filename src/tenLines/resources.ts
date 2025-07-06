@@ -3,6 +3,7 @@ import abilities_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/
 import species_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/species_en.txt?raw";
 import forms_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/forms_en.txt?raw";
 import frlg_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/frlg_en.txt?raw";
+import { Game } from ".";
 
 const parseMap = (text: string) => {
     return Object.fromEntries(parseList(text).map((line) => line.split(",")));
@@ -23,6 +24,18 @@ export const FORMS_EN = Object.fromEntries(
     })
 );
 export const FRLG_LOCATIONS_EN = parseMap(frlg_en_txt);
+export const GAMES_EN: Record<number, string> = {
+    [Game.None]: "None",
+    [Game.Ruby]: "Ruby",
+    [Game.Sapphire]: "Sapphire",
+    [Game.RS]: "Ruby & Sapphire",
+    [Game.Emerald]: "Emerald",
+    [Game.RSE]: "Ruby, Sapphire & Emerald",
+    [Game.FireRed]: "FireRed",
+    [Game.LeafGreen]: "LeafGreen",
+    [Game.FRLG]: "FireRed & LeafGreen",
+    [Game.Gen3]: "Generation 3",
+};
 
 export const getNameEn = (species: number | string, form: number | string) => {
     const speciesName =

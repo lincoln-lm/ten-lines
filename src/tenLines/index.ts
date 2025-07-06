@@ -2,6 +2,19 @@ import { wrap, type Remote } from "comlink";
 import type { MainModule } from "./generated";
 import Worker from "./worker?worker";
 
+export const Game = {
+    None: 0,
+    Ruby: 1 << 0,
+    Sapphire: 1 << 1,
+    RS: (1 << 0) | (1 << 1),
+    Emerald: 1 << 2,
+    RSE: (1 << 0) | (1 << 1) | (1 << 2),
+    FireRed: 1 << 3,
+    LeafGreen: 1 << 4,
+    FRLG: (1 << 3) | (1 << 4),
+    Gen3: (1 << 0) | (1 << 1) | (1 << 2) | ((1 << 3) | (1 << 4)),
+} as const;
+
 let TenLines: Remote<MainModule> | null = null;
 
 const fetchTenLines: () => Promise<Remote<MainModule>> = async () => {

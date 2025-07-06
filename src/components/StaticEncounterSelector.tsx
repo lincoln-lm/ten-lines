@@ -3,7 +3,7 @@ import React from "react";
 import type { StaticTemplateDisplayInfo } from "../tenLines/generated";
 import fetchTenLines from "../tenLines";
 import { MenuItem, TextField } from "@mui/material";
-import { getNameEn } from "../tenLines/resources";
+import { GAMES_EN, getNameEn } from "../tenLines/resources";
 
 function StaticEncounterSelector({
     staticCategory,
@@ -68,7 +68,9 @@ function StaticEncounterSelector({
             >
                 {staticTemplates.map((template) => (
                     <MenuItem key={template.index} value={template.index}>
-                        {getNameEn(template.species, template.form)}
+                        {`${getNameEn(template.species, template.form)} - ${
+                            GAMES_EN[template.version]
+                        }`}
                     </MenuItem>
                 ))}
             </TextField>

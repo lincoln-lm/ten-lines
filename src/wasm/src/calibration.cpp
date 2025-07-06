@@ -64,6 +64,7 @@ struct StaticTemplateDisplayInfo
     int index;
     u16 species;
     u8 form;
+    u32 version;
 };
 
 emscripten::val get_static_template_info(int category)
@@ -76,7 +77,7 @@ emscripten::val get_static_template_info(int category)
     {
         if ((templates[i].getVersion() & Game::FRLG) == Game::None)
             continue;
-        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm()}));
+        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm(), static_cast<u32>(templates[i].getVersion())}));
     }
     return array;
 }
@@ -151,7 +152,8 @@ EMSCRIPTEN_BINDINGS(calibration)
     emscripten::value_object<StaticTemplateDisplayInfo>("StaticTemplateDisplayInfo")
         .field("index", &StaticTemplateDisplayInfo::index)
         .field("species", &StaticTemplateDisplayInfo::species)
-        .field("form", &StaticTemplateDisplayInfo::form);
+        .field("form", &StaticTemplateDisplayInfo::form)
+        .field("version", &StaticTemplateDisplayInfo::version);
 
     emscripten::value_object<IVRange>("IVRange")
         .field("min", &IVRange::min)
