@@ -11,6 +11,7 @@
 #include <Core/Enum/Game.hpp>
 #include <Core/Enum/Shiny.hpp>
 #include <Core/Parents/Filters/StateFilter.hpp>
+#include <Core/Util/IVChecker.hpp>
 #include "initial_seed.hpp"
 #include "calibration.hpp"
 
@@ -80,10 +81,53 @@ emscripten::val get_static_template_info(int category)
     return array;
 }
 
+struct IVRange
+{
+    u8 min;
+    u8 max;
+};
+
+std::array<IVRange, 6> calc_ivs_static(int category, int template_index, emscripten::val stats, u8 nature)
+{
+    const StaticTemplate3 *tmplate = Encounters3::getStaticEncounter(category, template_index);
+    const PersonalInfo *info = tmplate->getInfo();
+    const std::array<u8, 6> baseStats = info->getStats();
+
+    std::vector<u8> levels;
+    std::vector<std::array<u16, 6>> parsed_stats;
+
+    for (int i = 0; i < stats["length"].as<int>(); i++)
+    {
+        emscripten::val entry = stats[i];
+        levels.push_back(entry[0].as<u8>());
+        parsed_stats.push_back(std::array<u16, 6>{entry[1].as<u16>(), entry[2].as<u16>(), entry[3].as<u16>(), entry[4].as<u16>(), entry[5].as<u16>(), entry[6].as<u16>()});
+    }
+
+    std::array<std::vector<u8>, 6> all_possible_ivs = IVChecker::calculateIVRange(baseStats, parsed_stats, levels, nature, 255, 255);
+
+    std::array<IVRange, 6> ranges;
+    for (int i = 0; i < 6; i++)
+    {
+        std::vector<u8> *possible_ivs = &all_possible_ivs[i];
+        auto min_element = std::min_element(possible_ivs->begin(), possible_ivs->end());
+        auto max_element = std::max_element(possible_ivs->begin(), possible_ivs->end());
+        if (min_element == possible_ivs->end() || max_element == possible_ivs->end())
+        {
+            ranges[i] = IVRange{32, 0};
+        }
+        else
+        {
+            ranges[i] = IVRange{*min_element, *max_element};
+        }
+    }
+    return ranges;
+}
+
 EMSCRIPTEN_BINDINGS(calibration)
 {
     emscripten::function("check_seeds", &check_seeds_static);
     emscripten::function("get_static_template_info", &get_static_template_info);
+    emscripten::function("calc_ivs_static", &calc_ivs_static);
 
     emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
         .element(emscripten::index<0>())
@@ -108,4 +152,16 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("index", &StaticTemplateDisplayInfo::index)
         .field("species", &StaticTemplateDisplayInfo::species)
         .field("form", &StaticTemplateDisplayInfo::form);
+
+    emscripten::value_object<IVRange>("IVRange")
+        .field("min", &IVRange::min)
+        .field("max", &IVRange::max);
+
+    emscripten::value_array<std::array<IVRange, 6>>("std_array_IVRange_6")
+        .element(emscripten::index<0>())
+        .element(emscripten::index<1>())
+        .element(emscripten::index<2>())
+        .element(emscripten::index<3>())
+        .element(emscripten::index<4>())
+        .element(emscripten::index<5>());
 }

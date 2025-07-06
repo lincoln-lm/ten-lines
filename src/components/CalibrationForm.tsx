@@ -25,6 +25,7 @@ import {
 import React from "react";
 import { getNameEn, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
+import IvCalculator from "./IvCalculator";
 
 export default function CalibrationForm({ sx }: { sx?: any }) {
     const [rows, setRows] = useState<CalibrationState[]>([]);
@@ -42,6 +43,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         advanceMaxString: string;
         nature: number;
         ivRangeStrings: [string, string][];
+        ivCalculatorText: string;
         staticCategory: number;
         staticPokemon: number;
     }>({
@@ -64,6 +66,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             ["0", "31"],
             ["0", "31"],
         ],
+        ivCalculatorText: "",
         staticCategory: 0,
         staticPokemon: 0,
     });
@@ -484,16 +487,48 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 ))}
             </TextField>
             {formData.nature !== -1 ? (
-                <IvEntry
-                    onChange={(_event, value) => {
-                        setIvRangesAreValid(value.isValid);
-                        setFormData((data) => ({
-                            ...data,
-                            ivRangeStrings: value.value,
-                        }));
-                    }}
-                    value={formData.ivRangeStrings}
-                />
+                <React.Fragment>
+                    <IvCalculator
+                        onChange={(_event, value) => {
+                            setFormData((data) => ({
+                                ...data,
+                                ivCalculatorText: value.value,
+                            }));
+                            if (value.isValid) {
+                                console.log(value.calculatedValue);
+                                setFormData((data) => ({
+                                    ...data,
+                                    ivRangeStrings: value.calculatedValue.map(
+                                        (ivRange) => [
+                                            ivRange.min.toString(),
+                                            ivRange.max.toString(),
+                                        ]
+                                    ),
+                                }));
+                            }
+                        }}
+                        calculateIVs={async (parsedLines) => {
+                            const tenLines = await fetchTenLines();
+                            return await tenLines.calc_ivs_static(
+                                formData.staticCategory,
+                                formData.staticPokemon,
+                                parsedLines,
+                                formData.nature
+                            );
+                        }}
+                        value={formData.ivCalculatorText}
+                    />
+                    <IvEntry
+                        onChange={(_event, value) => {
+                            setIvRangesAreValid(value.isValid);
+                            setFormData((data) => ({
+                                ...data,
+                                ivRangeStrings: value.value,
+                            }));
+                        }}
+                        value={formData.ivRangeStrings}
+                    />
+                </React.Fragment>
             ) : (
                 <FormLabel>
                     IV Calculation disabled. Searching all Natures.
