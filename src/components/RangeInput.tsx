@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 import NumericalInput from "./NumericalInput";
 
@@ -9,6 +9,7 @@ function RangeInput({
     minimumValue,
     maximumValue,
     onChange,
+    resetButton = false,
     ...props
 }: {
     label: string;
@@ -23,6 +24,7 @@ function RangeInput({
             value: [string, string];
         }
     ) => void;
+    resetButton?: boolean;
     [key: string]: any;
 }) {
     const [minValid, setMinValid] = useState(true);
@@ -75,6 +77,29 @@ function RangeInput({
                 value={value[1]}
                 {...props}
             />
+            {resetButton && (
+                <Button
+                    onClick={(e) => {
+                        setMinValid(true);
+                        setMaxValid(true);
+                        // TODO: this is hacky but nothing currently actually cares about the event
+                        onChange(e as any, {
+                            value: [
+                                minimumValue.toString(),
+                                maximumValue.toString(),
+                            ],
+                            isValid: true,
+                        });
+                    }}
+                    size="large"
+                    sx={{
+                        maxWidth: "35px",
+                        minWidth: "35px",
+                    }}
+                >
+                    ↻
+                </Button>
+            )}
         </Box>
     );
 }

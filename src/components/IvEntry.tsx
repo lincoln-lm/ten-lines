@@ -50,6 +50,7 @@ function IvEntry({
                 value={value[0]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
             <RangeInput
                 label="Attack"
@@ -58,6 +59,7 @@ function IvEntry({
                 value={value[1]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
             <RangeInput
                 label="Defense"
@@ -66,6 +68,7 @@ function IvEntry({
                 value={value[2]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
             <RangeInput
                 label="Special Attack"
@@ -74,6 +77,7 @@ function IvEntry({
                 value={value[3]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
             <RangeInput
                 label="Special Defense"
@@ -82,6 +86,7 @@ function IvEntry({
                 value={value[4]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
             <RangeInput
                 label="Speed"
@@ -90,6 +95,7 @@ function IvEntry({
                 value={value[5]}
                 minimumValue={0}
                 maximumValue={31}
+                resetButton
             />
         </React.Fragment>
     );
