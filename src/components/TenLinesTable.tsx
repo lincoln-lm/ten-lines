@@ -42,7 +42,7 @@ const TenLinesTable = memo(function TenLinesTable({
             r: "R",
             startup: "Startup",
             blackout: "Blackout",
-            al: "L+A",
+            al: "A+L",
             none: "None",
             undefined: "",
         };
