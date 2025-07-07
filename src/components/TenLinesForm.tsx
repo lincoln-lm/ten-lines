@@ -8,40 +8,50 @@ import NumericalInput from "./NumericalInput";
 import TenLinesTable from "./TenLinesTable";
 import type { InitialSeedResult } from "../tenLines/generated";
 
-export default function TenLinesForm({ sx }: { sx?: any }) {
+export interface TenLinesFormState {
+    targetSeed: string;
+    targetSeedIsValid: boolean;
+    count: string;
+    countIsValid: boolean;
+    game: string;
+    gameConsole: string;
+}
+
+export default function TenLinesForm({
+    tenLinesFormState,
+    setTenLinesFormState,
+    sx,
+}: {
+    tenLinesFormState: TenLinesFormState;
+    setTenLinesFormState: (
+        state:
+            | TenLinesFormState
+            | ((state: TenLinesFormState) => TenLinesFormState)
+    ) => void;
+    sx?: any;
+}) {
     const [data, setData] = useState<InitialSeedResult[]>([]);
-    const [formData, setFormData] = useState<{
-        targetSeed: string;
-        targetSeedIsValid: boolean;
-        count: string;
-        countIsValid: boolean;
-        game: string;
-        gameConsole: string;
-    }>({
-        targetSeed: "DEADBEEF",
-        targetSeedIsValid: true,
-        count: "10",
-        countIsValid: true,
-        game: "painting",
-        gameConsole: "GBA",
-    });
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!formData.targetSeedIsValid || !formData.countIsValid) return;
+        if (
+            !tenLinesFormState.targetSeedIsValid ||
+            !tenLinesFormState.countIsValid
+        )
+            return;
         fetchTenLines().then((lib) => {
             setData([]);
-            if (formData.game === "painting") {
+            if (tenLinesFormState.game === "painting") {
                 lib.ten_lines_painting(
-                    parseInt(formData.targetSeed, 16),
-                    parseInt(formData.count, 10),
+                    parseInt(tenLinesFormState.targetSeed, 16),
+                    parseInt(tenLinesFormState.count, 10),
                     proxy(setData)
                 );
             } else {
-                fetchSeedData(formData.game).then((data) => {
+                fetchSeedData(tenLinesFormState.game).then((data) => {
                     lib.ten_lines_frlg(
-                        parseInt(formData.targetSeed, 16),
-                        parseInt(formData.count, 10),
-                        formData.game,
+                        parseInt(tenLinesFormState.targetSeed, 16),
+                        parseInt(tenLinesFormState.count, 10),
+                        tenLinesFormState.game,
                         data,
                         proxy(setData)
                     );
@@ -59,7 +69,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 maximumValue={0xffffffff}
                 isHex={true}
                 onChange={(_, value) =>
-                    setFormData((data) => ({
+                    setTenLinesFormState((data) => ({
                         ...data,
                         targetSeed: value.isValid
                             ? hexSeed(parseInt(value.value, 16), 32)
@@ -67,7 +77,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                         targetSeedIsValid: value.isValid,
                     }))
                 }
-                value={formData.targetSeed}
+                value={tenLinesFormState.targetSeed}
             ></NumericalInput>
             <NumericalInput
                 label="Result Count"
@@ -75,26 +85,26 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={5000}
                 onChange={(_, value) =>
-                    setFormData((data) => ({
+                    setTenLinesFormState((data) => ({
                         ...data,
                         count: value.value,
                         countIsValid: value.isValid,
                     }))
                 }
-                value={formData.count}
+                value={tenLinesFormState.count}
             ></NumericalInput>
             <TextField
                 label="Game"
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setTenLinesFormState((data) => ({
                         ...data,
                         game: event.target.value,
                     }));
                     setData([]);
                 }}
-                value={formData.game}
+                value={tenLinesFormState.game}
                 select
                 fullWidth
             >
@@ -114,15 +124,19 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setTenLinesFormState((data) => ({
                         ...data,
                         gameConsole: event.target.value,
                     }));
                 }}
-                value={formData.gameConsole}
+                value={tenLinesFormState.gameConsole}
                 select
                 fullWidth
-                sx={formData.game === "painting" ? { display: "none" } : {}}
+                sx={
+                    tenLinesFormState.game === "painting"
+                        ? { display: "none" }
+                        : {}
+                }
             >
                 <MenuItem value="GBA">Game Boy Advance</MenuItem>
                 <MenuItem value="GBP">Game Boy Player</MenuItem>
@@ -134,8 +148,8 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             </Button>
             <TenLinesTable
                 rows={data}
-                isFRLG={formData.game !== "painting"}
-                gameConsole={formData.gameConsole}
+                isFRLG={tenLinesFormState.game !== "painting"}
+                gameConsole={tenLinesFormState.gameConsole}
             />
         </Box>
     );

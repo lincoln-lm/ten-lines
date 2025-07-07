@@ -26,66 +26,55 @@ import IvEntry from "./IvEntry";
 import IvCalculator from "./IvCalculator";
 import StaticEncounterSelector from "./StaticEncounterSelector";
 
-export default function CalibrationForm({ sx }: { sx?: any }) {
+export interface CalibrationFormState {
+    game: string;
+    sound: string;
+    buttonMode: string;
+    button: string;
+    heldButton: string;
+    gameConsole: string;
+    targetSeed: FRLGContiguousSeedEntry;
+    seedLeewayString: string;
+    advanceMinString: string;
+    advanceMaxString: string;
+    nature: number;
+    ivRangeStrings: [string, string][];
+    ivCalculatorText: string;
+    staticCategory: number;
+    staticPokemon: number;
+    method: number;
+}
+
+export default function CalibrationForm({
+    calibrationFormState,
+    setCalibrationFormState,
+    sx,
+}: {
+    calibrationFormState: CalibrationFormState;
+    setCalibrationFormState: (
+        state:
+            | CalibrationFormState
+            | ((state: CalibrationFormState) => CalibrationFormState)
+    ) => void;
+    sx?: any;
+}) {
     const [rows, setRows] = useState<CalibrationState[]>([]);
     const [searching, setSearching] = useState(false);
-    const [formData, setFormData] = useState<{
-        game: string;
-        sound: string;
-        buttonMode: string;
-        button: string;
-        heldButton: string;
-        gameConsole: string;
-        targetSeed: FRLGContiguousSeedEntry;
-        seedLeewayString: string;
-        advanceMinString: string;
-        advanceMaxString: string;
-        nature: number;
-        ivRangeStrings: [string, string][];
-        ivCalculatorText: string;
-        staticCategory: number;
-        staticPokemon: number;
-        method: number;
-    }>({
-        game: "fr",
-        sound: "mono",
-        buttonMode: "a",
-        button: "a",
-        heldButton: "none",
-        gameConsole: "GBA",
-        targetSeed: { initialSeed: 0xdead, seedFrame: 0 },
-        seedLeewayString: "20",
-        advanceMinString: "0",
-        advanceMaxString: "100",
-        nature: -1,
-        ivRangeStrings: [
-            ["0", "31"],
-            ["0", "31"],
-            ["0", "31"],
-            ["0", "31"],
-            ["0", "31"],
-            ["0", "31"],
-        ],
-        ivCalculatorText: "",
-        staticCategory: 0,
-        staticPokemon: 0,
-        method: 1,
-    });
 
     const [seedLeewayIsValid, setSeedLeewayIsValid] = useState(true);
     const seedLeeway = seedLeewayIsValid
-        ? parseInt(formData.seedLeewayString, 10)
+        ? parseInt(calibrationFormState.seedLeewayString, 10)
         : 0;
     const [advanceRangeIsValid, setAdvanceRangeIsValid] = useState(true);
     const advanceRange = advanceRangeIsValid
         ? [
-              parseInt(formData.advanceMinString, 10),
-              parseInt(formData.advanceMaxString, 10),
+              parseInt(calibrationFormState.advanceMinString, 10),
+              parseInt(calibrationFormState.advanceMaxString, 10),
           ]
         : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges =
-        formData.nature == -1
+        calibrationFormState.nature == -1
             ? [
                   [0, 31],
                   [0, 31],
@@ -95,7 +84,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                   [0, 31],
               ]
             : ivRangesAreValid
-            ? formData.ivRangeStrings.map((range) => [
+            ? calibrationFormState.ivRangeStrings.map((range) => [
                   parseInt(range[0], 10),
                   parseInt(range[1], 10),
               ])
@@ -106,16 +95,16 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
 
     useEffect(() => {
         const fetchSeedList = async () => {
-            const seedData = await fetchSeedData(formData.game);
+            const seedData = await fetchSeedData(calibrationFormState.game);
             const tenLines = await fetchTenLines();
             const seedList = await tenLines.get_contiguous_seed_list(
                 seedData,
-                `${formData.sound}_${formData.buttonMode}_${formData.button}`,
-                formData.game,
-                formData.heldButton
+                `${calibrationFormState.sound}_${calibrationFormState.buttonMode}_${calibrationFormState.button}`,
+                calibrationFormState.game,
+                calibrationFormState.heldButton
             );
             setSeedList(seedList);
-            setFormData((data) => ({
+            setCalibrationFormState((data) => ({
                 ...data,
                 targetSeed:
                     seedList.length > 0
@@ -125,19 +114,21 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         };
         fetchSeedList();
     }, [
-        formData.game,
-        formData.sound,
-        formData.buttonMode,
-        formData.button,
-        formData.heldButton,
+        calibrationFormState.game,
+        calibrationFormState.sound,
+        calibrationFormState.buttonMode,
+        calibrationFormState.button,
+        calibrationFormState.heldButton,
     ]);
 
     const targetSeedIndex = useMemo(
         () =>
             seedList.findIndex(
-                (seed) => seed.initialSeed === formData.targetSeed.initialSeed
+                (seed) =>
+                    seed.initialSeed ===
+                    calibrationFormState.targetSeed.initialSeed
             ),
-        [seedList, formData.targetSeed.initialSeed]
+        [seedList, calibrationFormState.targetSeed.initialSeed]
     );
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -160,10 +151,10 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             await tenLines.check_seeds_static(
                 searchSeeds,
                 advanceRange,
-                formData.staticCategory,
-                formData.staticPokemon,
-                formData.method,
-                formData.nature,
+                calibrationFormState.staticCategory,
+                calibrationFormState.staticPokemon,
+                calibrationFormState.method,
+                calibrationFormState.nature,
                 ivRanges,
                 proxy((results: CalibrationState[]) => {
                     if (rows.length > 1000) {
@@ -193,12 +184,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         game: event.target.value,
                     }));
                 }}
-                value={formData.game}
+                value={calibrationFormState.game}
                 select
                 fullWidth
             >
@@ -218,12 +209,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         sound: event.target.value,
                     }));
                 }}
-                value={formData.sound}
+                value={calibrationFormState.sound}
                 select
                 fullWidth
             >
@@ -235,12 +226,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         buttonMode: event.target.value,
                     }));
                 }}
-                value={formData.buttonMode}
+                value={calibrationFormState.buttonMode}
                 select
                 fullWidth
             >
@@ -253,12 +244,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         button: event.target.value,
                     }));
                 }}
-                value={formData.button}
+                value={calibrationFormState.button}
                 select
                 fullWidth
             >
@@ -271,12 +262,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         heldButton: event.target.value,
                     }));
                 }}
-                value={formData.heldButton}
+                value={calibrationFormState.heldButton}
                 select
                 fullWidth
             >
@@ -293,12 +284,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         gameConsole: event.target.value,
                     }));
                 }}
-                value={formData.gameConsole}
+                value={calibrationFormState.gameConsole}
                 select
                 fullWidth
             >
@@ -309,9 +300,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             </TextField>
             <Autocomplete
                 options={seedList}
-                value={formData.targetSeed}
+                value={calibrationFormState.targetSeed}
                 onChange={(_event, newValue) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         targetSeed: newValue as FRLGContiguousSeedEntry,
                     }));
@@ -320,7 +311,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     const item = item_ as FRLGContiguousSeedEntry;
                     return `${hexSeed(item.initialSeed, 16)} (${frameToMS(
                         item.seedFrame,
-                        formData.gameConsole
+                        calibrationFormState.gameConsole
                     )}ms)`;
                 }}
                 filterOptions={targetSeedFilterOptions}
@@ -341,13 +332,13 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     label="Seed +/-"
                     margin="normal"
                     onChange={(_event, value) => {
-                        setFormData((data) => ({
+                        setCalibrationFormState((data) => ({
                             ...data,
                             seedLeewayString: value.value,
                         }));
                         setSeedLeewayIsValid(value.isValid);
                     }}
-                    value={formData.seedLeewayString}
+                    value={calibrationFormState.seedLeewayString}
                     minimumValue={0}
                     maximumValue={10000}
                     isHex={false}
@@ -393,14 +384,17 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 label="Advance"
                 name="advanceRange"
                 onChange={(_event, value) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         advanceMinString: value.value[0],
                         advanceMaxString: value.value[1],
                     }));
                     setAdvanceRangeIsValid(value.isValid);
                 }}
-                value={[formData.advanceMinString, formData.advanceMaxString]}
+                value={[
+                    calibrationFormState.advanceMinString,
+                    calibrationFormState.advanceMaxString,
+                ]}
                 minimumValue={0}
                 maximumValue={999999}
             />
@@ -409,12 +403,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         method: parseInt(event.target.value),
                     }));
                 }}
-                value={formData.method}
+                value={calibrationFormState.method}
                 select
                 fullWidth
             >
@@ -426,10 +420,10 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 <MenuItem value="8">Wild 4</MenuItem> */}
             </TextField>
             <StaticEncounterSelector
-                staticCategory={formData.staticCategory}
-                staticPokemon={formData.staticPokemon}
+                staticCategory={calibrationFormState.staticCategory}
+                staticPokemon={calibrationFormState.staticPokemon}
                 onChange={(staticCategory, staticPokemon) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         staticCategory,
                         staticPokemon,
@@ -441,12 +435,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setFormData((data) => ({
+                    setCalibrationFormState((data) => ({
                         ...data,
                         nature: parseInt(event.target.value),
                     }));
                 }}
-                value={formData.nature}
+                value={calibrationFormState.nature}
                 select
                 fullWidth
             >
@@ -457,17 +451,17 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     </MenuItem>
                 ))}
             </TextField>
-            {formData.nature !== -1 ? (
+            {calibrationFormState.nature !== -1 ? (
                 <React.Fragment>
                     <IvCalculator
                         onChange={(_event, value) => {
-                            setFormData((data) => ({
+                            setCalibrationFormState((data) => ({
                                 ...data,
                                 ivCalculatorText: value.value,
                             }));
                             if (value.isValid) {
                                 console.log(value.calculatedValue);
-                                setFormData((data) => ({
+                                setCalibrationFormState((data) => ({
                                     ...data,
                                     ivRangeStrings: value.calculatedValue.map(
                                         (ivRange) => [
@@ -481,23 +475,23 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         calculateIVs={async (parsedLines) => {
                             const tenLines = await fetchTenLines();
                             return await tenLines.calc_ivs_static(
-                                formData.staticCategory,
-                                formData.staticPokemon,
+                                calibrationFormState.staticCategory,
+                                calibrationFormState.staticPokemon,
                                 parsedLines,
-                                formData.nature
+                                calibrationFormState.nature
                             );
                         }}
-                        value={formData.ivCalculatorText}
+                        value={calibrationFormState.ivCalculatorText}
                     />
                     <IvEntry
                         onChange={(_event, value) => {
                             setIvRangesAreValid(value.isValid);
-                            setFormData((data) => ({
+                            setCalibrationFormState((data) => ({
                                 ...data,
                                 ivRangeStrings: value.value,
                             }));
                         }}
-                        value={formData.ivRangeStrings}
+                        value={calibrationFormState.ivRangeStrings}
                     />
                 </React.Fragment>
             ) : (
@@ -514,8 +508,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             </Button>
             <CalibrationTable
                 rows={rows}
-                target={formData.targetSeed}
-                gameConsole={formData.gameConsole}
+                target={calibrationFormState.targetSeed}
+                gameConsole={calibrationFormState.gameConsole}
             />
         </Box>
     );
