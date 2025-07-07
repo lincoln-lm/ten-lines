@@ -118,7 +118,7 @@ emscripten::val get_contiguous_seed_list(emscripten::val seed_data, std::string 
     {
         entries.call<void>("push", emscripten::val(FRLGContiguousSeedEntry{
                                        .seedFrame = seed.seedFrame,
-                                       .initialSeed = seed.initialSeed,
+                                       .initialSeed = seed.initialSeed + held_button_offset->offset,
                                    }));
     }
     return entries;
