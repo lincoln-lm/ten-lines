@@ -34,8 +34,6 @@ import { useSearchParams } from "react-router-dom";
 
 export interface CalibrationFormState {
     seedLeewayString: string;
-    advanceMinString: string;
-    advanceMaxString: string;
     nature: number;
     ivRangeStrings: [string, string][];
     ivCalculatorText: string;
@@ -52,6 +50,8 @@ export interface CalibrationURLState {
     heldButton: string;
     gameConsole: string;
     targetInitialSeed: string;
+    advanceMin: string;
+    advanceMax: string;
 }
 
 function useCalibrationURLState() {
@@ -62,6 +62,8 @@ function useCalibrationURLState() {
     const button = searchParams.get("button") || "a";
     const heldButton = searchParams.get("heldButton") || "none";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
+    const advanceMin = searchParams.get("advanceMin") || "0";
+    const advanceMax = searchParams.get("advanceMax") || "100";
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) || 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
@@ -80,6 +82,8 @@ function useCalibrationURLState() {
         heldButton,
         gameConsole,
         targetSeedValue,
+        advanceMin,
+        advanceMax,
         setCalibrationURLState,
     };
 }
@@ -88,8 +92,6 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const [calibrationFormState, setCalibrationFormState] =
         useState<CalibrationFormState>({
             seedLeewayString: "20",
-            advanceMinString: "0",
-            advanceMaxString: "100",
             nature: -1,
             ivRangeStrings: [
                 ["0", "31"],
@@ -112,6 +114,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         heldButton,
         gameConsole,
         targetSeedValue,
+        advanceMin,
+        advanceMax,
         setCalibrationURLState,
     } = useCalibrationURLState();
 
@@ -124,10 +128,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         : 0;
     const [advanceRangeIsValid, setAdvanceRangeIsValid] = useState(true);
     const advanceRange = advanceRangeIsValid
-        ? [
-              parseInt(calibrationFormState.advanceMinString, 10),
-              parseInt(calibrationFormState.advanceMaxString, 10),
-          ]
+        ? [parseInt(advanceMin, 10), parseInt(advanceMax, 10)]
         : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges =
@@ -430,17 +431,13 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 label="Advance"
                 name="advanceRange"
                 onChange={(_event, value) => {
-                    setCalibrationFormState((data) => ({
-                        ...data,
-                        advanceMinString: value.value[0],
-                        advanceMaxString: value.value[1],
-                    }));
+                    setCalibrationURLState({
+                        advanceMin: value.value[0],
+                        advanceMax: value.value[1],
+                    });
                     setAdvanceRangeIsValid(value.isValid);
                 }}
-                value={[
-                    calibrationFormState.advanceMinString,
-                    calibrationFormState.advanceMaxString,
-                ]}
+                value={[advanceMin, advanceMax]}
                 minimumValue={0}
                 maximumValue={999999}
             />

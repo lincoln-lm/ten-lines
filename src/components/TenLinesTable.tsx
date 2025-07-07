@@ -141,10 +141,25 @@ const TenLinesTable = memo(function TenLinesTable({
                                                     prev.set(
                                                         "heldButton",
                                                         held_button_modifier +
-                                                            "_" +
-                                                            held_button
+                                                            (held_button
+                                                                ? "_" +
+                                                                  held_button
+                                                                : "")
                                                     );
                                                     prev.set("page", "1");
+                                                    prev.set(
+                                                        "advanceMin",
+                                                        Math.max(
+                                                            0,
+                                                            row.advance - 1000
+                                                        ).toString()
+                                                    );
+                                                    prev.set(
+                                                        "advanceMax",
+                                                        (
+                                                            row.advance + 1000
+                                                        ).toString()
+                                                    );
                                                     return prev;
                                                 });
                                             }}
