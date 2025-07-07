@@ -31,8 +31,10 @@ function TenLinesPages() {
                 <Tabs
                     value={currentPage}
                     onChange={(_, newValue) => {
-                        searchParams.set("page", newValue);
-                        setSearchParams(searchParams);
+                        setSearchParams((prev) => {
+                            prev.set("page", newValue);
+                            return prev;
+                        });
                     }}
                     variant="fullWidth"
                 >

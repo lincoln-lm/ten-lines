@@ -65,10 +65,12 @@ function useCalibrationURLState() {
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) || 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
-        for (const [key, value] of Object.entries(state)) {
-            searchParams.set(key, value);
-        }
-        setSearchParams(searchParams);
+        setSearchParams((prev) => {
+            for (const [key, value] of Object.entries(state)) {
+                prev.set(key, value);
+            }
+            return prev;
+        });
     };
     return {
         game,
@@ -159,15 +161,22 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 heldButton
             );
             setSeedList(seedList);
-            setCalibrationURLState({
-                targetInitialSeed: hexSeed(
-                    seedList.length > 0
-                        ? seedList[Math.min(51, seedList.length - 1)]
-                              .initialSeed
-                        : 0xdead,
-                    16
-                ),
-            });
+            if (
+                seedList.findIndex(
+                    (seed: FRLGContiguousSeedEntry) =>
+                        seed.initialSeed === targetSeedValue
+                ) == -1
+            ) {
+                setCalibrationURLState({
+                    targetInitialSeed: hexSeed(
+                        seedList.length > 0
+                            ? seedList[Math.min(51, seedList.length - 1)]
+                                  .initialSeed
+                            : 0xdead,
+                        16
+                    ),
+                });
+            }
         };
         fetchSeedList();
     }, [game, sound, buttonMode, button, heldButton]);

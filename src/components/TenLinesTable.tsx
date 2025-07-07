@@ -10,6 +10,8 @@ import duration from "dayjs/plugin/duration";
 import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
 import type { InitialSeedResult } from "../tenLines/generated";
+import { Button } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 
 dayjs.extend(duration);
 
@@ -22,6 +24,7 @@ const TenLinesTable = memo(function TenLinesTable({
     isFRLG: boolean;
     gameConsole: string;
 }) {
+    const [_, setSearchParams] = useSearchParams();
     if (!isFRLG) gameConsole = "Generic";
     function humanizeSettings(settings: string | undefined) {
         if (!settings) return "";
@@ -65,6 +68,7 @@ const TenLinesTable = memo(function TenLinesTable({
                         <TableCell>Estimated Total Time</TableCell>
                         <TableCell>Seed Time</TableCell>
                         {isFRLG && <TableCell>Settings</TableCell>}
+                        {isFRLG && <TableCell>Open In Calibration</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -100,6 +104,53 @@ const TenLinesTable = memo(function TenLinesTable({
                                         {humanizeSettings(
                                             row.settings as string
                                         )}
+                                    </TableCell>
+                                )}
+                                {isFRLG && (
+                                    <TableCell>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => {
+                                                setSearchParams((prev) => {
+                                                    const [
+                                                        sound,
+                                                        buttonMode,
+                                                        active_button,
+                                                        held_button_modifier,
+                                                        held_button,
+                                                    ] = (
+                                                        row.settings as string
+                                                    ).split("_");
+                                                    prev.set(
+                                                        "targetInitialSeed",
+                                                        hexSeed(
+                                                            row.initialSeed,
+                                                            16
+                                                        )
+                                                    );
+                                                    prev.set("sound", sound);
+                                                    prev.set(
+                                                        "buttonMode",
+                                                        buttonMode
+                                                    );
+                                                    prev.set(
+                                                        "button",
+                                                        active_button
+                                                    );
+                                                    prev.set(
+                                                        "heldButton",
+                                                        held_button_modifier +
+                                                            "_" +
+                                                            held_button
+                                                    );
+                                                    prev.set("page", "1");
+                                                    return prev;
+                                                });
+                                            }}
+                                        >
+                                            Calibration
+                                        </Button>
                                     </TableCell>
                                 )}
                             </TableRow>

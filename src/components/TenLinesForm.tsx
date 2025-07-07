@@ -28,10 +28,12 @@ function useTenLinesURLState() {
     const game = searchParams.get("game") || "painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const setTenLinesURLState = (state: Partial<TenLinesURLState>) => {
-        for (const [key, value] of Object.entries(state)) {
-            searchParams.set(key, value);
-        }
-        setSearchParams(searchParams);
+        setSearchParams((prev) => {
+            for (const [key, value] of Object.entries(state)) {
+                prev.set(key, value);
+            }
+            return prev;
+        });
     };
     return { targetSeed, count, game, gameConsole, setTenLinesURLState };
 }
