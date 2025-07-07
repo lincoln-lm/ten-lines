@@ -7,29 +7,43 @@ import fetchTenLines, { fetchSeedData, hexSeed } from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import TenLinesTable from "./TenLinesTable";
 import type { InitialSeedResult } from "../tenLines/generated";
+import { useSearchParams } from "react-router-dom";
 
 export interface TenLinesFormState {
-    targetSeed: string;
     targetSeedIsValid: boolean;
-    count: string;
     countIsValid: boolean;
+}
+
+export interface TenLinesURLState {
+    targetSeed: string;
+    count: string;
     game: string;
     gameConsole: string;
 }
 
-export default function TenLinesForm({
-    tenLinesFormState,
-    setTenLinesFormState,
-    sx,
-}: {
-    tenLinesFormState: TenLinesFormState;
-    setTenLinesFormState: (
-        state:
-            | TenLinesFormState
-            | ((state: TenLinesFormState) => TenLinesFormState)
-    ) => void;
-    sx?: any;
-}) {
+function useTenLinesURLState() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const targetSeed = searchParams.get("targetSeed") || "DEADBEEF";
+    const count = searchParams.get("count") || "10";
+    const game = searchParams.get("game") || "painting";
+    const gameConsole = searchParams.get("gameConsole") || "GBA";
+    const setTenLinesURLState = (state: Partial<TenLinesURLState>) => {
+        for (const [key, value] of Object.entries(state)) {
+            searchParams.set(key, value);
+        }
+        setSearchParams(searchParams);
+    };
+    return { targetSeed, count, game, gameConsole, setTenLinesURLState };
+}
+
+export default function TenLinesForm({ sx }: { sx?: any }) {
+    const [tenLinesFormState, setTenLinesFormState] =
+        useState<TenLinesFormState>({
+            targetSeedIsValid: true,
+            countIsValid: true,
+        });
+    const { targetSeed, count, game, gameConsole, setTenLinesURLState } =
+        useTenLinesURLState();
     const [data, setData] = useState<InitialSeedResult[]>([]);
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -40,18 +54,18 @@ export default function TenLinesForm({
             return;
         fetchTenLines().then((lib) => {
             setData([]);
-            if (tenLinesFormState.game === "painting") {
+            if (game === "painting") {
                 lib.ten_lines_painting(
-                    parseInt(tenLinesFormState.targetSeed, 16),
-                    parseInt(tenLinesFormState.count, 10),
+                    parseInt(targetSeed, 16),
+                    parseInt(count, 10),
                     proxy(setData)
                 );
             } else {
-                fetchSeedData(tenLinesFormState.game).then((data) => {
+                fetchSeedData(game).then((data) => {
                     lib.ten_lines_frlg(
-                        parseInt(tenLinesFormState.targetSeed, 16),
-                        parseInt(tenLinesFormState.count, 10),
-                        tenLinesFormState.game,
+                        parseInt(targetSeed, 16),
+                        parseInt(count, 10),
+                        game,
                         data,
                         proxy(setData)
                     );
@@ -68,43 +82,44 @@ export default function TenLinesForm({
                 minimumValue={0}
                 maximumValue={0xffffffff}
                 isHex={true}
-                onChange={(_, value) =>
-                    setTenLinesFormState((data) => ({
-                        ...data,
+                onChange={(_, value) => {
+                    setTenLinesURLState({
                         targetSeed: value.isValid
                             ? hexSeed(parseInt(value.value, 16), 32)
                             : value.value,
+                    });
+                    setTenLinesFormState((data) => ({
+                        ...data,
                         targetSeedIsValid: value.isValid,
-                    }))
-                }
-                value={tenLinesFormState.targetSeed}
+                    }));
+                }}
+                value={targetSeed}
             ></NumericalInput>
             <NumericalInput
                 label="Result Count"
                 name="resultCount"
                 minimumValue={0}
                 maximumValue={5000}
-                onChange={(_, value) =>
+                onChange={(_, value) => {
+                    setTenLinesURLState({
+                        count: value.value,
+                    });
                     setTenLinesFormState((data) => ({
                         ...data,
-                        count: value.value,
                         countIsValid: value.isValid,
-                    }))
-                }
-                value={tenLinesFormState.count}
+                    }));
+                }}
+                value={count}
             ></NumericalInput>
             <TextField
                 label="Game"
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setTenLinesFormState((data) => ({
-                        ...data,
-                        game: event.target.value,
-                    }));
+                    setTenLinesURLState({ game: event.target.value });
                     setData([]);
                 }}
-                value={tenLinesFormState.game}
+                value={game}
                 select
                 fullWidth
             >
@@ -124,19 +139,12 @@ export default function TenLinesForm({
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setTenLinesFormState((data) => ({
-                        ...data,
-                        gameConsole: event.target.value,
-                    }));
+                    setTenLinesURLState({ gameConsole: event.target.value });
                 }}
-                value={tenLinesFormState.gameConsole}
+                value={gameConsole}
                 select
                 fullWidth
-                sx={
-                    tenLinesFormState.game === "painting"
-                        ? { display: "none" }
-                        : {}
-                }
+                sx={game === "painting" ? { display: "none" } : {}}
             >
                 <MenuItem value="GBA">Game Boy Advance</MenuItem>
                 <MenuItem value="GBP">Game Boy Player</MenuItem>
@@ -148,8 +156,8 @@ export default function TenLinesForm({
             </Button>
             <TenLinesTable
                 rows={data}
-                isFRLG={tenLinesFormState.game !== "painting"}
-                gameConsole={tenLinesFormState.gameConsole}
+                isFRLG={game !== "painting"}
+                gameConsole={gameConsole}
             />
         </Box>
     );

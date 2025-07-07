@@ -18,7 +18,8 @@
     "dayjs": "^1.11.13",
     "dayjs-plugin-duration": "^0.0.1-security",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

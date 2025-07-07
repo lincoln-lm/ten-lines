@@ -3,15 +3,11 @@ import "./App.css";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import TenLinesForm, {
-    type TenLinesFormState,
-} from "./components/TenLinesForm";
+import TenLinesForm from "./components/TenLinesForm";
 import { Box, Tab, Tabs } from "@mui/material";
-import { useState } from "react";
-import CalibrationForm, {
-    type CalibrationFormState,
-} from "./components/CalibrationForm";
+import CalibrationForm from "./components/CalibrationForm";
 import FrLgSeedsTimestamp from "./wasm/src/generated/frlg_seeds_timestamp.txt?raw";
+import { BrowserRouter, useSearchParams } from "react-router-dom";
 
 const darkTheme = createTheme({
     palette: {
@@ -19,45 +15,14 @@ const darkTheme = createTheme({
     },
 });
 
-function App() {
-    const [currentPage, setCurrentPage] = useState(0);
+function TenLinesPages() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get("page") || "0") || 0;
 
-    const [tenLinesFormState, setTenLinesFormState] =
-        useState<TenLinesFormState>({
-            targetSeed: "DEADBEEF",
-            targetSeedIsValid: true,
-            count: "10",
-            countIsValid: true,
-            game: "painting",
-            gameConsole: "GBA",
-        });
-
-    const [calibrationState, setCalibrationState] =
-        useState<CalibrationFormState>({
-            game: "fr",
-            sound: "mono",
-            buttonMode: "a",
-            button: "a",
-            heldButton: "none",
-            gameConsole: "GBA",
-            targetSeed: { initialSeed: 0xdead, seedFrame: 0 },
-            seedLeewayString: "20",
-            advanceMinString: "0",
-            advanceMaxString: "100",
-            nature: -1,
-            ivRangeStrings: [
-                ["0", "31"],
-                ["0", "31"],
-                ["0", "31"],
-                ["0", "31"],
-                ["0", "31"],
-                ["0", "31"],
-            ],
-            ivCalculatorText: "",
-            staticCategory: 0,
-            staticPokemon: 0,
-            method: 1,
-        });
+    const pages = [
+        <TenLinesForm sx={{ maxWidth: 1000 }} />,
+        <CalibrationForm sx={{ maxWidth: 1000 }} />,
+    ];
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -65,26 +30,16 @@ function App() {
             <Box>
                 <Tabs
                     value={currentPage}
-                    onChange={(_, newValue) => setCurrentPage(newValue)}
+                    onChange={(_, newValue) => {
+                        searchParams.set("page", newValue);
+                        setSearchParams(searchParams);
+                    }}
                     variant="fullWidth"
                 >
                     <Tab label="Initial Seed" value={0} />
                     <Tab label="Calibration" value={1} />
                 </Tabs>
-                {currentPage === 0 && (
-                    <TenLinesForm
-                        tenLinesFormState={tenLinesFormState}
-                        setTenLinesFormState={setTenLinesFormState}
-                        sx={{ maxWidth: 1000 }}
-                    />
-                )}
-                {currentPage === 1 && (
-                    <CalibrationForm
-                        calibrationFormState={calibrationState}
-                        setCalibrationFormState={setCalibrationState}
-                        sx={{ maxWidth: 1000 }}
-                    />
-                )}
+                {pages[currentPage]}
             </Box>
 
             <footer>
@@ -99,6 +54,14 @@ function App() {
                 FRLG seed data as of {FrLgSeedsTimestamp}
             </footer>
         </ThemeProvider>
+    );
+}
+
+function App() {
+    return (
+        <BrowserRouter>
+            <TenLinesPages />
+        </BrowserRouter>
     );
 }
 
