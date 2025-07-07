@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import type { StaticTemplateDisplayInfo } from "../tenLines/generated";
-import fetchTenLines from "../tenLines";
+import fetchTenLines, { Game } from "../tenLines";
 import { MenuItem, TextField } from "@mui/material";
 import { GAMES_EN, getNameEn } from "../tenLines/resources";
 
@@ -9,10 +9,12 @@ function StaticEncounterSelector({
     staticCategory,
     staticPokemon,
     onChange,
+    game = Game.Gen3,
 }: {
     staticCategory: number;
     staticPokemon: number;
     onChange: (staticCategory: number, staticPokemon: number) => void;
+    game?: number;
 }) {
     const [staticTemplates, setStaticTemplates] = useState<
         StaticTemplateDisplayInfo[]
@@ -21,8 +23,10 @@ function StaticEncounterSelector({
     useEffect(() => {
         const fetchStaticTemplates = async () => {
             const tenLines = await fetchTenLines();
-            const staticTemplates = await tenLines.get_static_template_info(
-                staticCategory
+            const staticTemplates = (
+                await tenLines.get_static_template_info(staticCategory)
+            ).filter(
+                (template: StaticTemplateDisplayInfo) => template.version & game
             );
             setStaticTemplates(staticTemplates);
             onChange(
@@ -31,7 +35,7 @@ function StaticEncounterSelector({
             );
         };
         fetchStaticTemplates();
-    }, [staticCategory]);
+    }, [staticCategory, game]);
 
     return (
         <React.Fragment>

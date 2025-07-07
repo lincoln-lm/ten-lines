@@ -11,7 +11,12 @@ import {
     TextField,
 } from "@mui/material";
 
-import fetchTenLines, { fetchSeedData, frameToMS, hexSeed } from "../tenLines";
+import fetchTenLines, {
+    fetchSeedData,
+    frameToMS,
+    hexSeed,
+    SEED_IDENTIFIER_TO_GAME,
+} from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import RangeInput from "./RangeInput";
 import { proxy } from "comlink";
@@ -422,6 +427,7 @@ export default function CalibrationForm({
             <StaticEncounterSelector
                 staticCategory={calibrationFormState.staticCategory}
                 staticPokemon={calibrationFormState.staticPokemon}
+                game={SEED_IDENTIFIER_TO_GAME[calibrationFormState.game]}
                 onChange={(staticCategory, staticPokemon) => {
                     setCalibrationFormState((data) => ({
                         ...data,

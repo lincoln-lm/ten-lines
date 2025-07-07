@@ -75,8 +75,6 @@ emscripten::val get_static_template_info(int category)
     emscripten::val array = emscripten::val::array();
     for (int i = 0; i < size; i++)
     {
-        if ((templates[i].getVersion() & Game::FRLG) == Game::None)
-            continue;
         array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm(), static_cast<u32>(templates[i].getVersion())}));
     }
     return array;

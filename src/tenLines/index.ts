@@ -33,6 +33,18 @@ const fetchTenLines: () => Promise<Remote<MainModule>> = async () => {
     });
 };
 
+export const SEED_IDENTIFIER_TO_GAME: Record<string, number> = {
+    fr: Game.FireRed,
+    fr_eu: Game.FireRed,
+    lg: Game.LeafGreen,
+    lg_eu: Game.LeafGreen,
+    fr_jpn_1_0: Game.FireRed,
+    fr_jpn_1_1: Game.FireRed,
+    lg_jpn: Game.LeafGreen,
+    fr_mgba: Game.FireRed,
+    lg_mgba: Game.LeafGreen,
+};
+
 const SEED_URLS: Record<string, string> = {
     fr: "generated/fr_eng.bin",
     fr_eu: "generated/fr_eng.bin",
