@@ -18,7 +18,7 @@
 #include "initial_seed.hpp"
 #include "calibration.hpp"
 
-void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
@@ -40,7 +40,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
 
     Profile3 profile("", Game::FireRed, trainer_id, secret_id, false);
-    StateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers);
+    StateFilter filter(255, 255, shininess, false, min_ivs, max_ivs, natures, powers);
 
     searching_callback(true);
 
@@ -62,7 +62,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     searching_callback(false);
 }
 
-void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 game, u8 encounter_category, u16 location, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 game, u8 encounter_category, u16 location, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
 
     u32 initial_advances = advance_range[0].as<u32>();
@@ -87,7 +87,7 @@ void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 
     std::array<bool, 12> encounter_slots = {true, true, true, true, true, true, true, true, true, true, true, true};
 
     Profile3 profile("", Game(game), trainer_id, secret_id, false);
-    WildStateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers, encounter_slots);
+    WildStateFilter filter(255, 255, shininess, false, min_ivs, max_ivs, natures, powers, encounter_slots);
 
     searching_callback(true);
 

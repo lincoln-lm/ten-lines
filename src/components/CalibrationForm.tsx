@@ -36,6 +36,7 @@ import WildEncounterSelector from "./WildEncounterSelector";
 
 export interface CalibrationFormState {
     seedLeewayString: string;
+    shininess: number;
     nature: number;
     ivRangeStrings: [string, string][];
     ivCalculatorText: string;
@@ -103,6 +104,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const [calibrationFormState, setCalibrationFormState] =
         useState<CalibrationFormState>({
             seedLeewayString: "20",
+            shininess: 255,
             nature: -1,
             ivRangeStrings: [
                 ["0", "31"],
@@ -240,6 +242,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     calibrationFormState.staticCategory,
                     calibrationFormState.staticPokemon,
                     calibrationFormState.method,
+                    calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
                     proxy((results: CalibrationState[]) => {
@@ -262,6 +265,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     calibrationFormState.wildCategory,
                     calibrationFormState.wildLocation,
                     calibrationFormState.method,
+                    calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
                     proxy((results: CalibrationWildState[]) => {
@@ -577,6 +581,25 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     }}
                 />
             )}
+            <TextField
+                label="Shininess"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setCalibrationFormState((data) => ({
+                        ...data,
+                        shininess: parseInt(event.target.value),
+                    }));
+                }}
+                value={calibrationFormState.shininess}
+                select
+                fullWidth
+            >
+                <MenuItem value="255">Any</MenuItem>
+                <MenuItem value="1">Star</MenuItem>
+                <MenuItem value="2">Square</MenuItem>
+                <MenuItem value="3">Star/Square</MenuItem>
+            </TextField>
             <TextField
                 label="Nature"
                 margin="normal"
