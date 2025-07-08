@@ -15,7 +15,7 @@
 #include "initial_seed.hpp"
 #include "calibration.hpp"
 
-void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, int category, int template_index, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
@@ -36,7 +36,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, in
     std::array<u8, 6> max_ivs = {iv_ranges[0][1].as<u8>(), iv_ranges[1][1].as<u8>(), iv_ranges[2][1].as<u8>(), iv_ranges[3][1].as<u8>(), iv_ranges[4][1].as<u8>(), iv_ranges[5][1].as<u8>()};
     std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
 
-    Profile3 profile("", Game::FireRed, 0, 0, false);
+    Profile3 profile("", Game::FireRed, trainer_id, secret_id, false);
     StateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers);
 
     searching_callback(true);
@@ -145,7 +145,8 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("ability", &CalibrationState::getAbility, &CalibrationState::dummySetter<u8>)
         .field("abilityIndex", &CalibrationState::getAbilityIndex, &CalibrationState::dummySetter<u16>)
         .field("gender", &CalibrationState::getGender, &CalibrationState::dummySetter<u8>)
-        .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>);
+        .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>)
+        .field("shiny", &CalibrationState::getShiny, &CalibrationState::dummySetter<u8>);
 
     emscripten::value_object<StaticTemplateDisplayInfo>("StaticTemplateDisplayInfo")
         .field("index", &StaticTemplateDisplayInfo::index)

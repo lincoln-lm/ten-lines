@@ -52,6 +52,8 @@ export interface CalibrationURLState {
     targetInitialSeed: string;
     advanceMin: string;
     advanceMax: string;
+    trainerID: string;
+    secretID: string;
 }
 
 function useCalibrationURLState() {
@@ -64,6 +66,8 @@ function useCalibrationURLState() {
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const advanceMin = searchParams.get("advanceMin") || "0";
     const advanceMax = searchParams.get("advanceMax") || "100";
+    const trainerID = searchParams.get("trainerID") || "0";
+    const secretID = searchParams.get("secretID") || "0";
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) || 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
@@ -84,6 +88,8 @@ function useCalibrationURLState() {
         targetSeedValue,
         advanceMin,
         advanceMax,
+        trainerID,
+        secretID,
         setCalibrationURLState,
     };
 }
@@ -116,6 +122,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         targetSeedValue,
         advanceMin,
         advanceMax,
+        trainerID,
+        secretID,
         setCalibrationURLState,
     } = useCalibrationURLState();
 
@@ -147,6 +155,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                   parseInt(range[1], 10),
               ])
             : [];
+
+    const [trainerIDIsValid, setTrainerIDIsValid] = useState(true);
+    const [secretIDIsValid, setSecretIDIsValid] = useState(true);
 
     const [seedList, setSeedList] = useState<FRLGContiguousSeedEntry[]>([]);
     const [seedDialogOpen, setSeedDialogOpen] = useState(false);
@@ -197,6 +208,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         event.preventDefault();
         if (
             seedList.length === 0 ||
+            !trainerIDIsValid ||
+            !secretIDIsValid ||
             !seedLeewayIsValid ||
             !advanceRangeIsValid ||
             !ivRangesAreValid
@@ -213,6 +226,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             await tenLines.check_seeds_static(
                 searchSeeds,
                 advanceRange,
+                parseInt(trainerID),
+                parseInt(secretID),
                 calibrationFormState.staticCategory,
                 calibrationFormState.staticPokemon,
                 calibrationFormState.method,
@@ -441,6 +456,42 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={999999}
             />
+            <Box sx={{ flexDirection: "row", display: "flex" }}>
+                <NumericalInput
+                    label="Trainer ID"
+                    margin="normal"
+                    onChange={(_event, value) => {
+                        setCalibrationURLState({ trainerID: value.value });
+                        setTrainerIDIsValid(value.isValid);
+                    }}
+                    value={trainerID}
+                    minimumValue={0}
+                    maximumValue={65535}
+                    isHex={false}
+                    name="trainerID"
+                />
+                <span
+                    style={{
+                        margin: "0 10px",
+                        alignSelf: "center",
+                    }}
+                >
+                    /
+                </span>
+                <NumericalInput
+                    label="Secret ID"
+                    margin="normal"
+                    onChange={(_event, value) => {
+                        setCalibrationURLState({ secretID: value.value });
+                        setSecretIDIsValid(value.isValid);
+                    }}
+                    value={secretID}
+                    minimumValue={0}
+                    maximumValue={65535}
+                    isHex={false}
+                    name="secretID"
+                />
+            </Box>
             <TextField
                 label="Method"
                 margin="normal"

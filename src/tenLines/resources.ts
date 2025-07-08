@@ -14,6 +14,7 @@ const parseList = (text: string) => {
 };
 
 export const GENDERS_EN = ["♂", "♀", "-"];
+export const SHININESS_EN = ["No", "Star", "Square"];
 export const NATURES_EN = parseList(natures_en_txt);
 export const ABILITIES_EN = parseList(abilities_en_txt);
 export const SPECIES_EN = ["Egg", ...parseList(species_en_txt)];
