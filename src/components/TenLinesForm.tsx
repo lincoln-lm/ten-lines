@@ -47,13 +47,11 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
     const { targetSeed, count, game, gameConsole, setTenLinesURLState } =
         useTenLinesURLState();
     const [data, setData] = useState<InitialSeedResult[]>([]);
+    const isNotSubmittable =
+        !tenLinesFormState.targetSeedIsValid || !tenLinesFormState.countIsValid;
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (
-            !tenLinesFormState.targetSeedIsValid ||
-            !tenLinesFormState.countIsValid
-        )
-            return;
+        if (isNotSubmittable) return;
         fetchTenLines().then((lib) => {
             setData([]);
             if (game === "painting") {
@@ -153,7 +151,13 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 <MenuItem value="NDS">Nintendo DS</MenuItem>
                 <MenuItem value="3DS">Nintendo 3DS (open_agb_firm)</MenuItem>
             </TextField>
-            <Button variant="contained" color="primary" type="submit" fullWidth>
+            <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isNotSubmittable}
+                fullWidth
+            >
                 Submit
             </Button>
             <TenLinesTable

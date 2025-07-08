@@ -172,6 +172,15 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     const [seedList, setSeedList] = useState<FRLGContiguousSeedEntry[]>([]);
     const [seedDialogOpen, setSeedDialogOpen] = useState(false);
 
+    const isNotSubmittable =
+        searching ||
+        seedList.length === 0 ||
+        !trainerIDIsValid ||
+        !secretIDIsValid ||
+        !seedLeewayIsValid ||
+        !advanceRangeIsValid ||
+        !ivRangesAreValid;
+
     useEffect(() => {
         const fetchSeedList = async () => {
             const seedData = await fetchSeedData(game);
@@ -216,15 +225,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (
-            seedList.length === 0 ||
-            !trainerIDIsValid ||
-            !secretIDIsValid ||
-            !seedLeewayIsValid ||
-            !advanceRangeIsValid ||
-            !ivRangesAreValid
-        )
-            return;
+        if (isNotSubmittable) return;
         const searchSeeds = seedList.slice(
             Math.max(0, targetSeedIndex - seedLeeway),
             Math.min(seedList.length, targetSeedIndex + seedLeeway + 1)
@@ -678,7 +679,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={searching}
+                disabled={isNotSubmittable}
                 fullWidth
             >
                 {searching ? "Searching..." : "Submit"}
