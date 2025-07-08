@@ -60,14 +60,14 @@ function RangeInput({
                 value={value[0]}
                 {...props}
             />
-            <div
+            <span
                 style={{
                     margin: "0 10px",
                     alignSelf: "center",
                 }}
             >
                 -
-            </div>
+            </span>
             <NumericalInput
                 label={`Maximum ${label}`}
                 name={name}
