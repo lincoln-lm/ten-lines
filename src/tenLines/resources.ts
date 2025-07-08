@@ -38,7 +38,10 @@ export const GAMES_EN: Record<number, string> = {
     [Game.Gen3]: "Generation 3",
 };
 
-export const getNameEn = (species: number | string, form: number | string) => {
+export const getNameEn = (
+    species: number | string,
+    form: number | string = 0
+) => {
     const speciesName =
         SPECIES_EN[typeof species === "number" ? species : parseInt(species)];
     const formName = FORMS_EN[`${species}-${form}`];

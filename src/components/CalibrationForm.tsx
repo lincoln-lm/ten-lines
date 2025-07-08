@@ -31,6 +31,7 @@ import IvEntry from "./IvEntry";
 import IvCalculator from "./IvCalculator";
 import StaticEncounterSelector from "./StaticEncounterSelector";
 import { useSearchParams } from "react-router-dom";
+import WildEncounterSelector from "./WildEncounterSelector";
 
 export interface CalibrationFormState {
     seedLeewayString: string;
@@ -39,6 +40,9 @@ export interface CalibrationFormState {
     ivCalculatorText: string;
     staticCategory: number;
     staticPokemon: number;
+    wildCategory: number;
+    wildLocation: number;
+    wildPokemon: number;
     method: number;
 }
 
@@ -110,6 +114,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             ivCalculatorText: "",
             staticCategory: 0,
             staticPokemon: 0,
+            wildCategory: 0,
+            wildLocation: 0,
+            wildPokemon: 0,
             method: 1,
         });
     const {
@@ -253,6 +260,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         stringify: (option: FRLGContiguousSeedEntry) =>
             `${hexSeed(option.initialSeed, 16)}`,
     });
+
+    const isStatic = calibrationFormState.method <= 4;
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={sx}>
@@ -509,22 +518,40 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 <MenuItem value="1">Static 1</MenuItem>
                 {/* <MenuItem value="3">Static 2</MenuItem> */}
                 <MenuItem value="4">Static 4</MenuItem>
-                {/* <MenuItem value="5">Wild 1</MenuItem>
+                <MenuItem value="5">Wild 1</MenuItem>
                 <MenuItem value="7">Wild 2</MenuItem>
-                <MenuItem value="8">Wild 4</MenuItem> */}
+                <MenuItem value="8">Wild 4</MenuItem>
             </TextField>
-            <StaticEncounterSelector
-                staticCategory={calibrationFormState.staticCategory}
-                staticPokemon={calibrationFormState.staticPokemon}
-                game={SEED_IDENTIFIER_TO_GAME[game]}
-                onChange={(staticCategory, staticPokemon) => {
-                    setCalibrationFormState((data) => ({
-                        ...data,
-                        staticCategory,
-                        staticPokemon,
-                    }));
-                }}
-            />
+            {isStatic && (
+                <StaticEncounterSelector
+                    staticCategory={calibrationFormState.staticCategory}
+                    staticPokemon={calibrationFormState.staticPokemon}
+                    game={SEED_IDENTIFIER_TO_GAME[game]}
+                    onChange={(staticCategory, staticPokemon) => {
+                        setCalibrationFormState((data) => ({
+                            ...data,
+                            staticCategory,
+                            staticPokemon,
+                        }));
+                    }}
+                />
+            )}
+            {!isStatic && (
+                <WildEncounterSelector
+                    wildCategory={calibrationFormState.wildCategory}
+                    wildLocation={calibrationFormState.wildLocation}
+                    wildPokemon={calibrationFormState.wildPokemon}
+                    game={SEED_IDENTIFIER_TO_GAME[game]}
+                    onChange={(wildCategory, wildLocation, wildPokemon) => {
+                        setCalibrationFormState((data) => ({
+                            ...data,
+                            wildCategory,
+                            wildLocation,
+                            wildPokemon,
+                        }));
+                    }}
+                />
+            )}
             <TextField
                 label="Nature"
                 margin="normal"
@@ -568,9 +595,17 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         }}
                         calculateIVs={async (parsedLines) => {
                             const tenLines = await fetchTenLines();
-                            return await tenLines.calc_ivs_static(
-                                calibrationFormState.staticCategory,
-                                calibrationFormState.staticPokemon,
+                            if (isStatic) {
+                                return await tenLines.calc_ivs_static(
+                                    calibrationFormState.staticCategory,
+                                    calibrationFormState.staticPokemon,
+                                    parsedLines,
+                                    calibrationFormState.nature
+                                );
+                            }
+                            return await tenLines.calc_ivs_generic(
+                                calibrationFormState.wildPokemon & 0x7ff,
+                                calibrationFormState.wildPokemon >> 11,
                                 parsedLines,
                                 calibrationFormState.nature
                             );

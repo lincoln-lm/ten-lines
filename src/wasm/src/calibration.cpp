@@ -5,6 +5,7 @@
 #include <emscripten/bind.h>
 #include <Core/Gen3/Generators/StaticGenerator3.hpp>
 #include <Core/Gen3/Encounters3.hpp>
+#include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/StaticTemplate3.hpp>
 #include <Core/Gen3/Profile3.hpp>
 #include <Core/Enum/Method.hpp>
@@ -86,12 +87,8 @@ struct IVRange
     u8 max;
 };
 
-std::array<IVRange, 6> calc_ivs_static(int category, int template_index, emscripten::val stats, u8 nature)
+std::array<IVRange, 6> calc_ivs(emscripten::val stats, std::array<u8, 6> baseStats, u8 nature)
 {
-    const StaticTemplate3 *tmplate = Encounters3::getStaticEncounter(category, template_index);
-    const PersonalInfo *info = tmplate->getInfo();
-    const std::array<u8, 6> baseStats = info->getStats();
-
     std::vector<u8> levels;
     std::vector<std::array<u16, 6>> parsed_stats;
 
@@ -122,11 +119,48 @@ std::array<IVRange, 6> calc_ivs_static(int category, int template_index, emscrip
     return ranges;
 }
 
+std::array<IVRange, 6> calc_ivs_static(int category, int template_index, emscripten::val stats, u8 nature)
+{
+    const StaticTemplate3 *tmplate = Encounters3::getStaticEncounter(category, template_index);
+    const PersonalInfo *info = tmplate->getInfo();
+    const std::array<u8, 6> baseStats = info->getStats();
+    return calc_ivs(stats, baseStats, nature);
+}
+
+std::array<IVRange, 6> calc_ivs_generic(u16 species, u8 form, emscripten::val stats, u8 nature)
+{
+    const PersonalInfo *info = PersonalLoader::getPersonal(Game::Gen3, species, form);
+    const std::array<u8, 6> baseStats = info->getStats();
+    return calc_ivs(stats, baseStats, nature);
+}
+
+emscripten::val get_wild_locations(u32 game, u8 encounter_category)
+{
+    EncounterSettings3 settings;
+    auto encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, Game(game));
+    std::vector<u16> locs;
+    std::transform(encounter_areas.begin(), encounter_areas.end(), std::back_inserter(locs),
+                   [](const EncounterArea3 &area)
+                   { return area.getLocation(); });
+    return emscripten::val::array(locs);
+}
+
+emscripten::val get_area_species(u32 game, u8 encounter_category, u16 location)
+{
+    EncounterSettings3 settings;
+    auto encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, Game(game));
+    EncounterArea3 area = encounter_areas[location];
+    return emscripten::val::array(area.getUniqueSpecies());
+}
+
 EMSCRIPTEN_BINDINGS(calibration)
 {
     emscripten::function("check_seeds_static", &check_seeds_static);
     emscripten::function("get_static_template_info", &get_static_template_info);
     emscripten::function("calc_ivs_static", &calc_ivs_static);
+    emscripten::function("calc_ivs_generic", &calc_ivs_generic);
+    emscripten::function("get_wild_locations", &get_wild_locations);
+    emscripten::function("get_area_species", &get_area_species);
 
     emscripten::value_array<std::array<u8, 6>>("std_array_u8_6")
         .element(emscripten::index<0>())
