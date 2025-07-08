@@ -84,11 +84,13 @@ function WildEncounterSelector({
                 <MenuItem value="8">Super Rod</MenuItem>
             </TextField>
             <Autocomplete
-                options={wildLocations}
+                options={wildLocations.map((_, index) => index)}
                 onChange={(_event, newValue) => {
                     onChange(wildCategory, newValue, wildPokemon);
                 }}
-                getOptionLabel={(option) => FRLG_LOCATIONS_EN[option] || ""}
+                getOptionLabel={(option) =>
+                    FRLG_LOCATIONS_EN[wildLocations[option]] || ""
+                }
                 renderInput={(params) => (
                     <TextField {...params} label="Location" margin="normal" />
                 )}

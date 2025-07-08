@@ -4,6 +4,7 @@
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <Core/Gen3/Generators/StaticGenerator3.hpp>
+#include <Core/Gen3/Generators/WildGenerator3.hpp>
 #include <Core/Gen3/Encounters3.hpp>
 #include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/StaticTemplate3.hpp>
@@ -11,6 +12,7 @@
 #include <Core/Enum/Method.hpp>
 #include <Core/Enum/Game.hpp>
 #include <Core/Enum/Shiny.hpp>
+#include <Core/Enum/Lead.hpp>
 #include <Core/Parents/Filters/StateFilter.hpp>
 #include <Core/Util/IVChecker.hpp>
 #include "initial_seed.hpp"
@@ -54,6 +56,52 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
         for (auto &generator_result : generator_results)
         {
             results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
+        }
+        result_callback(results);
+    }
+    searching_callback(false);
+}
+
+void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 game, u8 encounter_category, u16 location, u32 method, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+{
+
+    u32 initial_advances = advance_range[0].as<u32>();
+    u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+
+    EncounterSettings3 settings;
+    auto encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, Game(game));
+
+    std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+    if (nature != -1)
+    {
+        for (int i = 0; i < 25; i++)
+        {
+            natures[i] = false;
+        }
+        natures[nature] = true;
+    }
+
+    std::array<u8, 6> min_ivs = {iv_ranges[0][0].as<u8>(), iv_ranges[1][0].as<u8>(), iv_ranges[2][0].as<u8>(), iv_ranges[3][0].as<u8>(), iv_ranges[4][0].as<u8>(), iv_ranges[5][0].as<u8>()};
+    std::array<u8, 6> max_ivs = {iv_ranges[0][1].as<u8>(), iv_ranges[1][1].as<u8>(), iv_ranges[2][1].as<u8>(), iv_ranges[3][1].as<u8>(), iv_ranges[4][1].as<u8>(), iv_ranges[5][1].as<u8>()};
+    std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+    std::array<bool, 12> encounter_slots = {true, true, true, true, true, true, true, true, true, true, true, true};
+
+    Profile3 profile("", Game(game), trainer_id, secret_id, false);
+    WildStateFilter filter(255, 255, 255, false, min_ivs, max_ivs, natures, powers, encounter_slots);
+
+    searching_callback(true);
+
+    for (int i = 0; i < seeds["length"].as<int>(); i++)
+    {
+        FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
+        u16 seed = entry.initialSeed;
+        u16 frame = entry.seedFrame;
+        WildGenerator3 generator(initial_advances, max_advances, 0, Method(method - 4), Lead::None, false, encounter_areas[location], profile, filter);
+        auto generator_results = generator.generate(seed);
+        auto results = emscripten::val::array();
+        for (auto &generator_result : generator_results)
+        {
+            results.call<void>("push", emscripten::val(CalibrationWildState(seed, frame, generator_result)));
         }
         result_callback(results);
     }
@@ -156,6 +204,7 @@ emscripten::val get_area_species(u32 game, u8 encounter_category, u16 location)
 EMSCRIPTEN_BINDINGS(calibration)
 {
     emscripten::function("check_seeds_static", &check_seeds_static);
+    emscripten::function("check_seeds_wild", &check_seeds_wild);
     emscripten::function("get_static_template_info", &get_static_template_info);
     emscripten::function("calc_ivs_static", &calc_ivs_static);
     emscripten::function("calc_ivs_generic", &calc_ivs_generic);
@@ -181,6 +230,22 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("gender", &CalibrationState::getGender, &CalibrationState::dummySetter<u8>)
         .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>)
         .field("shiny", &CalibrationState::getShiny, &CalibrationState::dummySetter<u8>);
+
+    emscripten::value_object<CalibrationWildState>("CalibrationWildState")
+        .field("initialSeed", &CalibrationWildState::initialSeed)
+        .field("seedFrame", &CalibrationWildState::seedFrame)
+        .field("advances", &CalibrationWildState::getAdvances, &CalibrationWildState::dummySetter<u32>)
+        .field("pid", &CalibrationWildState::getPID, &CalibrationWildState::dummySetter<u32>)
+        .field("nature", &CalibrationWildState::getNature, &CalibrationWildState::dummySetter<u8>)
+        .field("ability", &CalibrationWildState::getAbility, &CalibrationWildState::dummySetter<u8>)
+        .field("abilityIndex", &CalibrationWildState::getAbilityIndex, &CalibrationWildState::dummySetter<u16>)
+        .field("gender", &CalibrationWildState::getGender, &CalibrationWildState::dummySetter<u8>)
+        .field("ivs", &CalibrationWildState::getIVs, &CalibrationWildState::dummySetter<std::array<u8, 6>>)
+        .field("shiny", &CalibrationWildState::getShiny, &CalibrationWildState::dummySetter<u8>)
+        .field("encounterSlot", &CalibrationWildState::getEncounterSlot, &CalibrationWildState::dummySetter<u8>)
+        .field("species", &CalibrationWildState::getSpecie, &CalibrationWildState::dummySetter<u16>)
+        .field("form", &CalibrationWildState::getForm, &CalibrationWildState::dummySetter<u8>)
+        .field("level", &CalibrationWildState::getLevel, &CalibrationWildState::dummySetter<u8>);
 
     emscripten::value_object<StaticTemplateDisplayInfo>("StaticTemplateDisplayInfo")
         .field("index", &StaticTemplateDisplayInfo::index)

@@ -21,7 +21,7 @@ function TenLinesPages() {
 
     const pages = [
         <TenLinesForm sx={{ maxWidth: 1000 }} />,
-        <CalibrationForm sx={{ maxWidth: 1000 }} />,
+        <CalibrationForm sx={{ maxWidth: 1100 }} />,
     ];
 
     return (

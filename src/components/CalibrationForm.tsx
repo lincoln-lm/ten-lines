@@ -23,6 +23,7 @@ import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
 import {
     type CalibrationState,
+    type CalibrationWildState,
     type FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import React from "react";
@@ -230,26 +231,50 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             const tenLines = await fetchTenLines();
             setRows([]);
             setSearching(true);
-            await tenLines.check_seeds_static(
-                searchSeeds,
-                advanceRange,
-                parseInt(trainerID),
-                parseInt(secretID),
-                calibrationFormState.staticCategory,
-                calibrationFormState.staticPokemon,
-                calibrationFormState.method,
-                calibrationFormState.nature,
-                ivRanges,
-                proxy((results: CalibrationState[]) => {
-                    if (rows.length > 1000) {
-                        return;
-                    }
-                    if (results.length !== 0) {
-                        setRows((rows) => [...rows, ...results]);
-                    }
-                }),
-                proxy(setSearching)
-            );
+            if (isStatic) {
+                await tenLines.check_seeds_static(
+                    searchSeeds,
+                    advanceRange,
+                    parseInt(trainerID),
+                    parseInt(secretID),
+                    calibrationFormState.staticCategory,
+                    calibrationFormState.staticPokemon,
+                    calibrationFormState.method,
+                    calibrationFormState.nature,
+                    ivRanges,
+                    proxy((results: CalibrationState[]) => {
+                        if (rows.length > 1000) {
+                            return;
+                        }
+                        if (results.length !== 0) {
+                            setRows((rows) => [...rows, ...results]);
+                        }
+                    }),
+                    proxy(setSearching)
+                );
+            } else {
+                await tenLines.check_seeds_wild(
+                    searchSeeds,
+                    advanceRange,
+                    parseInt(trainerID),
+                    parseInt(secretID),
+                    SEED_IDENTIFIER_TO_GAME[game],
+                    calibrationFormState.wildCategory,
+                    calibrationFormState.wildLocation,
+                    calibrationFormState.method,
+                    calibrationFormState.nature,
+                    ivRanges,
+                    proxy((results: CalibrationWildState[]) => {
+                        if (rows.length > 1000) {
+                            return;
+                        }
+                        if (results.length !== 0) {
+                            setRows((rows) => [...rows, ...results]);
+                        }
+                    }),
+                    proxy(setSearching)
+                );
+            }
         };
         submit();
     };
@@ -639,6 +664,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 rows={rows}
                 target={targetSeed}
                 gameConsole={gameConsole}
+                isStatic={isStatic}
             />
         </Box>
     );

@@ -9,11 +9,13 @@ import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
 import type {
     CalibrationState,
+    CalibrationWildState,
     FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import {
     ABILITIES_EN,
     GENDERS_EN,
+    getNameEn,
     NATURES_EN,
     SHININESS_EN,
 } from "../tenLines/resources";
@@ -22,10 +24,12 @@ const CalibrationTable = memo(function CalibrationTable({
     rows,
     target,
     gameConsole,
+    isStatic,
 }: {
-    rows: CalibrationState[];
+    rows: CalibrationState[] | CalibrationWildState[];
     target: FRLGContiguousSeedEntry;
     gameConsole: string;
+    isStatic: boolean;
 }) {
     return (
         <TableContainer component={Paper}>
@@ -34,6 +38,8 @@ const CalibrationTable = memo(function CalibrationTable({
                     <TableRow>
                         <TableCell>Seed</TableCell>
                         <TableCell>Advances</TableCell>
+                        {!isStatic && <TableCell>Slot</TableCell>}
+                        {!isStatic && <TableCell>Level</TableCell>}
                         <TableCell>PID</TableCell>
                         <TableCell>Shiny</TableCell>
                         <TableCell>Nature</TableCell>
@@ -52,6 +58,7 @@ const CalibrationTable = memo(function CalibrationTable({
                         const seedMS = frameToMS(row.seedFrame, gameConsole);
                         const offsetMS =
                             seedMS - frameToMS(target.seedFrame, gameConsole);
+
                         return (
                             <TableRow key={index}>
                                 <TableCell>
@@ -61,6 +68,25 @@ const CalibrationTable = memo(function CalibrationTable({
                                     ms)
                                 </TableCell>
                                 <TableCell>{row.advances}</TableCell>
+                                {!isStatic && (
+                                    <TableCell>
+                                        {
+                                            (row as CalibrationWildState)
+                                                .encounterSlot
+                                        }
+                                        :{" "}
+                                        {getNameEn(
+                                            (row as CalibrationWildState)
+                                                .species,
+                                            (row as CalibrationWildState).form
+                                        )}
+                                    </TableCell>
+                                )}
+                                {!isStatic && (
+                                    <TableCell>
+                                        {(row as CalibrationWildState).level}
+                                    </TableCell>
+                                )}
                                 <TableCell>{hexSeed(row.pid, 32)}</TableCell>
                                 <TableCell>{SHININESS_EN[row.shiny]}</TableCell>
                                 <TableCell>{NATURES_EN[row.nature]}</TableCell>
