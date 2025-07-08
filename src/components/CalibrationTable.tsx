@@ -62,8 +62,12 @@ const CalibrationTable = memo(function CalibrationTable({
                         return (
                             <TableRow key={index}>
                                 <TableCell>
-                                    {hexSeed(row.initialSeed, 16)} | {seedMS}ms
-                                    ({offsetMS >= 0 && "+"}
+                                    {/* so only the actual number gets selected on double click */}
+                                    <div style={{ float: "left" }}>
+                                        {hexSeed(row.initialSeed, 16)} |{" "}
+                                        {seedMS}
+                                    </div>
+                                    <span>ms</span> ({offsetMS >= 0 && "+"}
                                     {offsetMS}
                                     ms)
                                 </TableCell>
