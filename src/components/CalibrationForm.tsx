@@ -421,6 +421,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         {...params}
                         label="Target Seed"
                         margin="normal"
+                        error={seedList.length === 0}
+                        helperText={
+                            seedList.length === 0
+                                ? "No known seeds for this game & settings"
+                                : undefined
+                        }
                     />
                 )}
                 disablePortal
