@@ -40,7 +40,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
 
     Profile3 profile("", Game::FireRed, trainer_id, secret_id, false);
-    StateFilter filter(255, 255, shininess, false, min_ivs, max_ivs, natures, powers);
+    StateFilter filter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
 
     searching_callback(true);
 
@@ -87,7 +87,7 @@ void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 
     std::array<bool, 12> encounter_slots = {true, true, true, true, true, true, true, true, true, true, true, true};
 
     Profile3 profile("", Game(game), trainer_id, secret_id, false);
-    WildStateFilter filter(255, 255, shininess, false, min_ivs, max_ivs, natures, powers, encounter_slots);
+    WildStateFilter filter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers, encounter_slots);
 
     searching_callback(true);
 
