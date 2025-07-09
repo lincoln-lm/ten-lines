@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from "react";
 import fetchTenLines, { Game } from "../tenLines";
 import { Autocomplete, MenuItem, TextField } from "@mui/material";
-import { FRLG_LOCATIONS_EN, getNameEn } from "../tenLines/resources";
+import { getLocationEn, getNameEn } from "../tenLines/resources";
 
 function WildEncounterSelector({
     wildCategory,
@@ -89,7 +89,7 @@ function WildEncounterSelector({
                     onChange(wildCategory, newValue, wildPokemon);
                 }}
                 getOptionLabel={(option) =>
-                    FRLG_LOCATIONS_EN[wildLocations[option]] || ""
+                    getLocationEn(game, wildLocations[option])
                 }
                 renderInput={(params) => (
                     <TextField {...params} label="Location" margin="normal" />

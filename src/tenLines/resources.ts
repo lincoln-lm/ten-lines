@@ -3,6 +3,8 @@ import abilities_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/
 import species_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/species_en.txt?raw";
 import forms_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/forms_en.txt?raw";
 import frlg_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/frlg_en.txt?raw";
+import rs_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/rs_en.txt?raw";
+import e_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/e_en.txt?raw";
 import { Game } from ".";
 
 const parseMap = (text: string) => {
@@ -25,6 +27,15 @@ export const FORMS_EN = Object.fromEntries(
     })
 );
 export const FRLG_LOCATIONS_EN = parseMap(frlg_en_txt);
+export const RS_LOCATIONS_EN = parseMap(rs_en_txt);
+export const E_LOCATIONS_EN = parseMap(e_en_txt);
+
+export const getLocationEn = (game: number, location: number) => {
+    if (game & Game.RS) return RS_LOCATIONS_EN[location];
+    if (game & Game.Emerald) return E_LOCATIONS_EN[location];
+    return FRLG_LOCATIONS_EN[location];
+};
+
 export const GAMES_EN: Record<number, string> = {
     [Game.None]: "None",
     [Game.Ruby]: "Ruby",
