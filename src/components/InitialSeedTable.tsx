@@ -60,6 +60,11 @@ const InitialSeedTable = memo(function InitialSeedTable({
         setSearchParams((previous) => {
             let params = new URLSearchParams(previous);
             params.set("targetInitialSeed", hexSeed(row.initialSeed, 16));
+            params.set(
+                "advanceMin",
+                Math.max(0, row.advance - 1000).toString()
+            );
+            params.set("advanceMax", (row.advance + 1000).toString());
             params.set("page", "1");
             if (isFRLG) {
                 const [
@@ -77,11 +82,6 @@ const InitialSeedTable = memo(function InitialSeedTable({
                     held_button_modifier +
                         (held_button ? "_" + held_button : "")
                 );
-                params.set(
-                    "advanceMin",
-                    Math.max(0, row.advance - 1000).toString()
-                );
-                params.set("advanceMax", (row.advance + 1000).toString());
             }
             if (isAuxClick) {
                 window.open(`/?${params.toString()}`);
