@@ -84,7 +84,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 );
             }
             if (isAuxClick) {
-                window.open(`/?${params.toString()}`);
+                window.open(`?${params.toString()}`);
                 return previous;
             }
             return params;

@@ -39,7 +39,7 @@ const SearcherTable = memo(function SearcherTable({
             params.set("targetSeed", hexSeed(row.seed, 32));
             params.set("page", "0");
             if (isAuxClick) {
-                window.open(`/?${params.toString()}`);
+                window.open(`?${params.toString()}`);
                 return previous;
             }
             return params;
