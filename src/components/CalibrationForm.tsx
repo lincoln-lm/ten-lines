@@ -65,7 +65,7 @@ export interface CalibrationURLState {
 
 function useCalibrationURLState() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const game = searchParams.get("game") || "fr";
+    const game = searchParams.get("game") || "r_painting";
     const sound = searchParams.get("sound") || "mono";
     const buttonMode = searchParams.get("buttonMode") || "a";
     const button = searchParams.get("button") || "a";
