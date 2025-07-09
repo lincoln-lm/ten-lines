@@ -40,15 +40,6 @@ function StaticEncounterSelector({
     const isFRLG = game & Game.FRLG;
     const isFRLGE = game & (Game.FRLG | Game.Emerald);
 
-    if (staticCategory == 3 && !isFRLG) {
-        staticCategory = 0;
-        onChange(staticCategory, staticPokemon);
-    }
-    if (staticCategory == 6 && !isFRLGE) {
-        staticCategory = 0;
-        onChange(staticCategory, staticPokemon);
-    }
-
     return (
         <React.Fragment>
             <TextField

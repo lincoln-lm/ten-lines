@@ -302,6 +302,16 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
 
     const isStatic = calibrationFormState.method <= 4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
+    const isFRLGE = isFRLG || game.startsWith("e_");
+
+    if (calibrationFormState.staticCategory == 3 && !isFRLG) {
+        calibrationFormState.staticCategory = 0;
+        setCalibrationFormState(calibrationFormState);
+    }
+    if (calibrationFormState.staticCategory == 6 && !isFRLGE) {
+        calibrationFormState.staticCategory = 0;
+        setCalibrationFormState(calibrationFormState);
+    }
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={sx}>
