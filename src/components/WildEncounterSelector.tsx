@@ -11,6 +11,7 @@ function WildEncounterSelector({
     wildLead,
     onChange,
     game = Game.Gen3,
+    allowAnyPokemon = false,
 }: {
     wildCategory: number;
     wildLocation: number;
@@ -23,6 +24,7 @@ function WildEncounterSelector({
         wildLead: number
     ) => void;
     game?: number;
+    allowAnyPokemon?: boolean;
 }) {
     const [wildLocations, setWildLocations] = useState<number[]>([]);
     const [areaSpecies, setAreaSpecies] = useState<number[]>([]);
@@ -57,7 +59,11 @@ function WildEncounterSelector({
             onChange(
                 wildCategory,
                 wildLocation,
-                areaSpecies.length > 0 ? areaSpecies[0] : 0,
+                allowAnyPokemon
+                    ? -1
+                    : areaSpecies.length > 0
+                    ? areaSpecies[0]
+                    : 0,
                 wildLead
             );
         };
@@ -97,7 +103,7 @@ function WildEncounterSelector({
                     onChange(wildCategory, newValue, wildPokemon, wildLead);
                 }}
                 getOptionLabel={(option) =>
-                    getLocationEn(game, wildLocations[option])
+                    getLocationEn(game, wildLocations[option]) || ""
                 }
                 renderInput={(params) => (
                     <TextField {...params} label="Location" margin="normal" />
@@ -124,6 +130,7 @@ function WildEncounterSelector({
                 select
                 fullWidth
             >
+                {allowAnyPokemon && <MenuItem value="-1">Any</MenuItem>}
                 {areaSpecies.map((speciesForm) => (
                     <MenuItem key={speciesForm} value={speciesForm}>
                         {getNameEn(speciesForm & 0x7ff, speciesForm >> 11)}
