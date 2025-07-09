@@ -4,6 +4,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import InitialSeedForm from "./components/InitialSeedForm";
+import SearcherForm from "./components/SearcherForm";
 import { Box, Tab, Tabs } from "@mui/material";
 import CalibrationForm from "./components/CalibrationForm";
 import FrLgSeedsTimestamp from "./wasm/src/generated/frlg_seeds_timestamp.txt?raw";
@@ -22,6 +23,7 @@ function TenLinesPages() {
     const pages = [
         <InitialSeedForm sx={{ maxWidth: 1000 }} />,
         <CalibrationForm sx={{ maxWidth: 1100 }} />,
+        <SearcherForm sx={{ maxWidth: 1100 }} />,
     ];
 
     return (
@@ -38,6 +40,7 @@ function TenLinesPages() {
                     }}
                     variant="fullWidth"
                 >
+                    <Tab label="Searcher" value={2} />
                     <Tab label="Initial Seed" value={0} />
                     <Tab label="Calibration" value={1} />
                 </Tabs>

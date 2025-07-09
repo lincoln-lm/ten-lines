@@ -12,6 +12,7 @@ function WildEncounterSelector({
     onChange,
     game = Game.Gen3,
     allowAnyPokemon = false,
+    isSearcher = false,
 }: {
     wildCategory: number;
     wildLocation: number;
@@ -25,6 +26,7 @@ function WildEncounterSelector({
     ) => void;
     game?: number;
     allowAnyPokemon?: boolean;
+    isSearcher?: boolean;
 }) {
     const [wildLocations, setWildLocations] = useState<number[]>([]);
     const [areaSpecies, setAreaSpecies] = useState<number[]>([]);
@@ -160,11 +162,15 @@ function WildEncounterSelector({
                     <MenuItem value="27">Magnet Pull</MenuItem>
                     <MenuItem value="28">Static</MenuItem>
                     <MenuItem value="32">Hustle/Pressure/Vital Spirit</MenuItem>
-                    {NATURES_EN.map((nature, index) => (
-                        <MenuItem key={index} value={index}>
-                            {nature} Synchronize
-                        </MenuItem>
-                    ))}
+                    {isSearcher ? (
+                        <MenuItem value="0">Matching Synchronize</MenuItem>
+                    ) : (
+                        NATURES_EN.map((nature, index) => (
+                            <MenuItem key={index} value={index}>
+                                {nature} Synchronize
+                            </MenuItem>
+                        ))
+                    )}
                 </TextField>
             )}
         </React.Fragment>
