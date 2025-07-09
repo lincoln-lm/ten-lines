@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import fetchTenLines, { Game } from "../tenLines";
-import { Autocomplete, MenuItem, TextField } from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Checkbox,
+    FormControlLabel,
+    MenuItem,
+    TextField,
+} from "@mui/material";
 import { getLocationEn, getNameEn, NATURES_EN } from "../tenLines/resources";
 
 function WildEncounterSelector({
@@ -9,6 +16,7 @@ function WildEncounterSelector({
     wildLocation,
     wildPokemon,
     wildLead,
+    shouldFilterPokemon,
     onChange,
     game = Game.Gen3,
     allowAnyPokemon = false,
@@ -18,11 +26,13 @@ function WildEncounterSelector({
     wildLocation: number;
     wildPokemon: number;
     wildLead: number;
+    shouldFilterPokemon: boolean;
     onChange: (
         wildCategory: number,
         wildLocation: number,
         wildPokemon: number,
-        wildLead: number
+        wildLead: number,
+        shouldFilterPokemon: boolean
     ) => void;
     game?: number;
     allowAnyPokemon?: boolean;
@@ -43,7 +53,8 @@ function WildEncounterSelector({
                 wildCategory,
                 wildLocations.length > 0 ? wildLocations[0] : 0,
                 wildPokemon,
-                wildLead
+                wildLead,
+                shouldFilterPokemon
             );
         };
         fetchWildLocations();
@@ -66,7 +77,8 @@ function WildEncounterSelector({
                     : areaSpecies.length > 0
                     ? areaSpecies[0]
                     : 0,
-                wildLead
+                wildLead,
+                shouldFilterPokemon
             );
         };
         fetchAreaSpecies();
@@ -85,7 +97,8 @@ function WildEncounterSelector({
                         parseInt(event.target.value),
                         wildLocation,
                         wildPokemon,
-                        wildLead
+                        wildLead,
+                        shouldFilterPokemon
                     );
                 }}
                 value={wildCategory}
@@ -102,7 +115,13 @@ function WildEncounterSelector({
             <Autocomplete
                 options={wildLocations.map((_, index) => index)}
                 onChange={(_event, newValue) => {
-                    onChange(wildCategory, newValue, wildPokemon, wildLead);
+                    onChange(
+                        wildCategory,
+                        newValue,
+                        wildPokemon,
+                        wildLead,
+                        shouldFilterPokemon
+                    );
                 }}
                 getOptionLabel={(option) =>
                     getLocationEn(game, wildLocations[option]) || ""
@@ -116,29 +135,55 @@ function WildEncounterSelector({
                 selectOnFocus
                 fullWidth
             />
-            <TextField
-                label="Pokemon"
-                margin="normal"
-                style={{ textAlign: "left" }}
-                onChange={(event) => {
-                    onChange(
-                        wildCategory,
-                        wildLocation,
-                        parseInt(event.target.value),
-                        wildLead
-                    );
-                }}
-                value={wildPokemon}
-                select
-                fullWidth
-            >
-                {allowAnyPokemon && <MenuItem value="-1">Any</MenuItem>}
-                {areaSpecies.map((speciesForm) => (
-                    <MenuItem key={speciesForm} value={speciesForm}>
-                        {getNameEn(speciesForm & 0x7ff, speciesForm >> 11)}
-                    </MenuItem>
-                ))}
-            </TextField>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                    label="Pokemon"
+                    margin="normal"
+                    style={{ textAlign: "left" }}
+                    onChange={(event) => {
+                        onChange(
+                            wildCategory,
+                            wildLocation,
+                            parseInt(event.target.value),
+                            wildLead,
+                            shouldFilterPokemon
+                        );
+                    }}
+                    value={wildPokemon}
+                    select
+                    fullWidth
+                >
+                    {allowAnyPokemon && <MenuItem value="-1">Any</MenuItem>}
+                    {areaSpecies.map((speciesForm) => (
+                        <MenuItem key={speciesForm} value={speciesForm}>
+                            {getNameEn(speciesForm & 0x7ff, speciesForm >> 11)}
+                        </MenuItem>
+                    ))}
+                </TextField>
+                {!allowAnyPokemon && (
+                    <FormControlLabel
+                        style={{ marginLeft: 8 }}
+                        control={
+                            <Checkbox
+                                checked={shouldFilterPokemon}
+                                onChange={(event) => {
+                                    onChange(
+                                        wildCategory,
+                                        wildLocation,
+                                        wildPokemon,
+                                        wildLead,
+                                        event.target.checked
+                                    );
+                                }}
+                            />
+                        }
+                        label="Filter"
+                        sx={{
+                            whiteSpace: "nowrap",
+                        }}
+                    />
+                )}
+            </Box>
             {isEmerald && (
                 <TextField
                     label="Lead"
@@ -149,7 +194,8 @@ function WildEncounterSelector({
                             wildCategory,
                             wildLocation,
                             wildPokemon,
-                            parseInt(event.target.value)
+                            parseInt(event.target.value),
+                            shouldFilterPokemon
                         );
                     }}
                     value={wildLead}

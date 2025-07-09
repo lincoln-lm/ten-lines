@@ -46,6 +46,7 @@ export interface CalibrationFormState {
     wildLocation: number;
     wildPokemon: number;
     wildLead: number;
+    shouldFilterPokemon: boolean;
     method: number;
 }
 
@@ -122,6 +123,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             wildLocation: 0,
             wildPokemon: 0,
             wildLead: 255,
+            shouldFilterPokemon: false,
             method: 1,
         });
     const {
@@ -260,12 +262,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     calibrationFormState.nature,
                     ivRanges,
                     proxy((results: CalibrationState[]) => {
-                        if (rows.length > 1000) {
-                            return;
-                        }
-                        if (results.length !== 0) {
-                            setRows((rows) => [...rows, ...results]);
-                        }
+                        setRows((rows) => {
+                            if (rows.length > 1000 || results.length === 0) {
+                                return rows;
+                            }
+                            return [...rows, ...results];
+                        });
                     }),
                     proxy(setSearching)
                 );
@@ -278,18 +280,21 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     SEED_IDENTIFIER_TO_GAME[game],
                     calibrationFormState.wildCategory,
                     calibrationFormState.wildLocation,
+                    !calibrationFormState.shouldFilterPokemon
+                        ? -1
+                        : calibrationFormState.wildPokemon,
                     calibrationFormState.method,
                     calibrationFormState.wildLead,
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
                     proxy((results: CalibrationWildState[]) => {
-                        if (rows.length > 1000) {
-                            return;
-                        }
-                        if (results.length !== 0) {
-                            setRows((rows) => [...rows, ...results]);
-                        }
+                        setRows((rows) => {
+                            if (rows.length > 1000 || results.length === 0) {
+                                return rows;
+                            }
+                            return [...rows, ...results];
+                        });
                     }),
                     proxy(setSearching)
                 );
@@ -620,12 +625,16 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     wildLocation={calibrationFormState.wildLocation}
                     wildPokemon={calibrationFormState.wildPokemon}
                     wildLead={calibrationFormState.wildLead}
+                    shouldFilterPokemon={
+                        calibrationFormState.shouldFilterPokemon
+                    }
                     game={SEED_IDENTIFIER_TO_GAME[game]}
                     onChange={(
                         wildCategory,
                         wildLocation,
                         wildPokemon,
-                        wildLead
+                        wildLead,
+                        shouldFilterPokemon
                     ) => {
                         setCalibrationFormState((data) => ({
                             ...data,
@@ -633,6 +642,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                             wildLocation,
                             wildPokemon,
                             wildLead,
+                            shouldFilterPokemon,
                         }));
                     }}
                 />

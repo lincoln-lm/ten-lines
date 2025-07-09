@@ -116,13 +116,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     searcherFormState.nature,
                     ivRanges,
                     proxy((results: G3SearcherState[]) => {
-                        if (rows.length > 1000) {
-                            return;
-                        }
-                        if (results.length !== 0) {
-                            console.log(results);
-                            setRows((rows) => [...rows, ...results]);
-                        }
+                        setRows((rows) => {
+                            if (rows.length > 1000 || results.length === 0) {
+                                return rows;
+                            }
+                            return [...rows, ...results];
+                        });
                     }),
                     proxy(setSearching)
                 );
@@ -140,12 +139,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     searcherFormState.nature,
                     ivRanges,
                     proxy((results: G3WildSearcherState[]) => {
-                        if (rows.length > 1000) {
-                            return;
-                        }
-                        if (results.length !== 0) {
-                            setRows((rows) => [...rows, ...results]);
-                        }
+                        setRows((rows) => {
+                            if (rows.length > 1000 || results.length === 0) {
+                                return rows;
+                            }
+                            return [...rows, ...results];
+                        });
                     }),
                     proxy(setSearching)
                 );
@@ -277,7 +276,8 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                         wildCategory,
                         wildLocation,
                         wildPokemon,
-                        wildLead
+                        wildLead,
+                        _
                     ) => {
                         setSearcherFormState((data) => ({
                             ...data,
@@ -287,6 +287,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                             wildLead,
                         }));
                     }}
+                    shouldFilterPokemon={true}
                     allowAnyPokemon
                     isSearcher
                 />
