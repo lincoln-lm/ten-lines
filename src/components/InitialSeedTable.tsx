@@ -67,7 +67,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                         <TableCell>Estimated Total Time</TableCell>
                         <TableCell>Seed Time</TableCell>
                         {isFRLG && <TableCell>Settings</TableCell>}
-                        {isFRLG && <TableCell>Open In Calibration</TableCell>}
+                        <TableCell>Open In Calibration</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -105,7 +105,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                         )}
                                     </TableCell>
                                 )}
-                                {isFRLG && (
+                                {isFRLG ? (
                                     <TableCell>
                                         <Button
                                             variant="contained"
@@ -159,6 +159,28 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                                             row.advance + 1000
                                                         ).toString()
                                                     );
+                                                    return prev;
+                                                });
+                                            }}
+                                        >
+                                            Calibration
+                                        </Button>
+                                    </TableCell>
+                                ) : (
+                                    <TableCell>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => {
+                                                setSearchParams((prev) => {
+                                                    prev.set(
+                                                        "targetInitialSeed",
+                                                        hexSeed(
+                                                            row.initialSeed,
+                                                            16
+                                                        )
+                                                    );
+                                                    prev.set("page", "1");
                                                     return prev;
                                                 });
                                             }}

@@ -55,7 +55,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
         if (isNotSubmittable) return;
         fetchTenLines().then((lib) => {
             setData([]);
-            if (game === "r_painting") {
+            if (game.endsWith("painting")) {
                 lib.ten_lines_painting(
                     parseInt(targetSeed, 16),
                     parseInt(count, 10),
@@ -124,7 +124,9 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 select
                 fullWidth
             >
-                <MenuItem value="r_painting">Painting Seed</MenuItem>
+                <MenuItem value="r_painting">Ruby Painting Seed</MenuItem>
+                <MenuItem value="s_painting">Sapphire Painting Seed</MenuItem>
+                <MenuItem value="e_painting">Emerald Painting Seed</MenuItem>
                 <MenuItem value="fr">FireRed (ENG)</MenuItem>
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
@@ -162,7 +164,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             </Button>
             <InitialSeedTable
                 rows={data}
-                isFRLG={game !== "r_painting"}
+                isFRLG={!game.endsWith("painting")}
                 gameConsole={gameConsole}
             />
         </Box>
