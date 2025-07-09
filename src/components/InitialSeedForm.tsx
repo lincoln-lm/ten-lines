@@ -25,7 +25,7 @@ function useInitialSeedURLState() {
     const [searchParams, setSearchParams] = useSearchParams();
     const targetSeed = searchParams.get("targetSeed") || "DEADBEEF";
     const count = searchParams.get("count") || "10";
-    const game = searchParams.get("game") || "painting";
+    const game = searchParams.get("game") || "r_painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
         setSearchParams((prev) => {
@@ -55,7 +55,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
         if (isNotSubmittable) return;
         fetchTenLines().then((lib) => {
             setData([]);
-            if (game === "painting") {
+            if (game === "r_painting") {
                 lib.ten_lines_painting(
                     parseInt(targetSeed, 16),
                     parseInt(count, 10),
@@ -124,7 +124,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 select
                 fullWidth
             >
-                <MenuItem value="painting">Painting Seed</MenuItem>
+                <MenuItem value="r_painting">Painting Seed</MenuItem>
                 <MenuItem value="fr">FireRed (ENG)</MenuItem>
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
@@ -145,7 +145,6 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 value={gameConsole}
                 select
                 fullWidth
-                sx={game === "painting" ? { display: "none" } : {}}
             >
                 <MenuItem value="GBA">Game Boy Advance</MenuItem>
                 <MenuItem value="GBP">Game Boy Player</MenuItem>
@@ -163,7 +162,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             </Button>
             <InitialSeedTable
                 rows={data}
-                isFRLG={game !== "painting"}
+                isFRLG={game !== "r_painting"}
                 gameConsole={gameConsole}
             />
         </Box>

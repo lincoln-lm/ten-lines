@@ -183,6 +183,15 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
 
     useEffect(() => {
         const fetchSeedList = async () => {
+            if (!isFRLG) {
+                setSeedList(
+                    [...Array(0x10000).keys()].map((seed) => ({
+                        initialSeed: seed,
+                        seedFrame: seed,
+                    }))
+                );
+                return;
+            }
             const seedData = await fetchSeedData(game);
             const tenLines = await fetchTenLines();
             const seedList = await tenLines.get_contiguous_seed_list(
@@ -292,6 +301,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     });
 
     const isStatic = calibrationFormState.method <= 4;
+    const isFRLG = game.startsWith("fr") || game.startsWith("lg");
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={sx}>
@@ -308,7 +318,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 select
                 fullWidth
             >
-                {/* <MenuItem value="painting">Painting Seed</MenuItem> */}
+                <MenuItem value="r_painting">Ruby Painting Seed</MenuItem>
+                <MenuItem value="s_painting">Sapphire Painting Seed</MenuItem>
+                <MenuItem value="e_painting">Emerald Painting Seed</MenuItem>
                 <MenuItem value="fr">FireRed (ENG)</MenuItem>
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
@@ -319,77 +331,92 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
-            <TextField
-                label="Sound"
-                margin="normal"
-                style={{ textAlign: "left" }}
-                onChange={(event) =>
-                    setCalibrationURLState({
-                        sound: event.target.value,
-                    })
-                }
-                value={sound}
-                select
-                fullWidth
-            >
-                <MenuItem value="mono">Mono</MenuItem>
-                <MenuItem value="stereo">Stereo</MenuItem>
-            </TextField>
-            <TextField
-                label="Button Mode"
-                margin="normal"
-                style={{ textAlign: "left" }}
-                onChange={(event) =>
-                    setCalibrationURLState({ buttonMode: event.target.value })
-                }
-                value={buttonMode}
-                select
-                fullWidth
-            >
-                <MenuItem value="a">L=A</MenuItem>
-                <MenuItem value="h">Help</MenuItem>
-                <MenuItem value="r">LR</MenuItem>
-            </TextField>
-            <TextField
-                label="A Button"
-                margin="normal"
-                style={{ textAlign: "left" }}
-                onChange={(event) =>
-                    setCalibrationURLState({ button: event.target.value })
-                }
-                value={button}
-                select
-                fullWidth
-            >
-                <MenuItem value="a">A</MenuItem>
-                <MenuItem value="start">Start</MenuItem>
-                <MenuItem value="l">L (L=A)</MenuItem>
-            </TextField>
-            <TextField
-                label="Held Button"
-                margin="normal"
-                style={{ textAlign: "left" }}
-                onChange={(event) =>
-                    setCalibrationURLState({ heldButton: event.target.value })
-                }
-                value={heldButton}
-                select
-                fullWidth
-            >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="startup_select">Startup Select</MenuItem>
-                <MenuItem value="startup_a">Startup A</MenuItem>
-                <MenuItem value="blackout_r">Blackout R</MenuItem>
-                <MenuItem value="blackout_a">Blackout A</MenuItem>
-                <MenuItem value="blackout_l">Blackout L</MenuItem>
-                <MenuItem value="blackout_al">Blackout A+L</MenuItem>
-            </TextField>
+            {isFRLG && (
+                <React.Fragment>
+                    <TextField
+                        label="Sound"
+                        margin="normal"
+                        style={{ textAlign: "left" }}
+                        onChange={(event) =>
+                            setCalibrationURLState({
+                                sound: event.target.value,
+                            })
+                        }
+                        value={sound}
+                        select
+                        fullWidth
+                    >
+                        <MenuItem value="mono">Mono</MenuItem>
+                        <MenuItem value="stereo">Stereo</MenuItem>
+                    </TextField>
+                    <TextField
+                        label="Button Mode"
+                        margin="normal"
+                        style={{ textAlign: "left" }}
+                        onChange={(event) =>
+                            setCalibrationURLState({
+                                buttonMode: event.target.value,
+                            })
+                        }
+                        value={buttonMode}
+                        select
+                        fullWidth
+                    >
+                        <MenuItem value="a">L=A</MenuItem>
+                        <MenuItem value="h">Help</MenuItem>
+                        <MenuItem value="r">LR</MenuItem>
+                    </TextField>
+                    <TextField
+                        label="A Button"
+                        margin="normal"
+                        style={{ textAlign: "left" }}
+                        onChange={(event) =>
+                            setCalibrationURLState({
+                                button: event.target.value,
+                            })
+                        }
+                        value={button}
+                        select
+                        fullWidth
+                    >
+                        <MenuItem value="a">A</MenuItem>
+                        <MenuItem value="start">Start</MenuItem>
+                        <MenuItem value="l">L (L=A)</MenuItem>
+                    </TextField>
+                    <TextField
+                        label="Held Button"
+                        margin="normal"
+                        style={{ textAlign: "left" }}
+                        onChange={(event) =>
+                            setCalibrationURLState({
+                                heldButton: event.target.value,
+                            })
+                        }
+                        value={heldButton}
+                        select
+                        fullWidth
+                    >
+                        <MenuItem value="none">None</MenuItem>
+                        <MenuItem value="startup_select">
+                            Startup Select
+                        </MenuItem>
+                        <MenuItem value="startup_a">Startup A</MenuItem>
+                        <MenuItem value="blackout_r">Blackout R</MenuItem>
+                        <MenuItem value="blackout_a">Blackout A</MenuItem>
+                        <MenuItem value="blackout_l">Blackout L</MenuItem>
+                        <MenuItem value="blackout_al">Blackout A+L</MenuItem>
+                    </TextField>
+                </React.Fragment>
+            )}
+
             <TextField
                 label="Console"
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) =>
-                    setCalibrationURLState({ gameConsole: event.target.value })
+                    setCalibrationURLState({
+                        gameConsole: event.target.value,
+                    })
                 }
                 value={gameConsole}
                 select

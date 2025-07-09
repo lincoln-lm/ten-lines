@@ -25,7 +25,6 @@ const InitialSeedTable = memo(function InitialSeedTable({
     gameConsole: string;
 }) {
     const [_, setSearchParams] = useSearchParams();
-    if (!isFRLG) gameConsole = "Generic";
     function humanizeSettings(settings: string | undefined) {
         if (!settings) return "";
         const [

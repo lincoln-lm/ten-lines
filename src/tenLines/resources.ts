@@ -31,6 +31,8 @@ export const GAMES_EN: Record<number, string> = {
     [Game.Sapphire]: "Sapphire",
     [Game.RS]: "Ruby & Sapphire",
     [Game.Emerald]: "Emerald",
+    [Game.Ruby | Game.Emerald]: "Ruby & Emerald",
+    [Game.Sapphire | Game.Emerald]: "Sapphire & Emerald",
     [Game.RSE]: "Ruby, Sapphire & Emerald",
     [Game.FireRed]: "FireRed",
     [Game.LeafGreen]: "LeafGreen",

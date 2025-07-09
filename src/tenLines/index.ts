@@ -34,6 +34,9 @@ const fetchTenLines: () => Promise<Remote<MainModule>> = async () => {
 };
 
 export const SEED_IDENTIFIER_TO_GAME: Record<string, number> = {
+    r_painting: Game.Ruby,
+    s_painting: Game.Sapphire,
+    e_painting: Game.Emerald,
     fr: Game.FireRed,
     fr_eu: Game.FireRed,
     lg: Game.LeafGreen,
