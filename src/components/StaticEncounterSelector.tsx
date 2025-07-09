@@ -37,6 +37,18 @@ function StaticEncounterSelector({
         fetchStaticTemplates();
     }, [staticCategory, game]);
 
+    const isFRLG = game & Game.FRLG;
+    const isFRLGE = game & (Game.FRLG | Game.Emerald);
+
+    if (staticCategory == 3 && !isFRLG) {
+        staticCategory = 0;
+        onChange(staticCategory, staticPokemon);
+    }
+    if (staticCategory == 6 && !isFRLGE) {
+        staticCategory = 0;
+        onChange(staticCategory, staticPokemon);
+    }
+
     return (
         <React.Fragment>
             <TextField
@@ -53,10 +65,10 @@ function StaticEncounterSelector({
                 <MenuItem value="0">Starters</MenuItem>
                 <MenuItem value="1">Fossils</MenuItem>
                 <MenuItem value="2">Gifts</MenuItem>
-                <MenuItem value="3">Game Corner</MenuItem>
+                {isFRLG && <MenuItem value="3">Game Corner</MenuItem>}
                 <MenuItem value="4">Stationary</MenuItem>
                 <MenuItem value="5">Legends</MenuItem>
-                <MenuItem value="6">Events</MenuItem>
+                {isFRLGE && <MenuItem value="6">Events</MenuItem>}
                 <MenuItem value="7">Roamers</MenuItem>
             </TextField>
             <TextField
