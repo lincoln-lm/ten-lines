@@ -139,7 +139,9 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         setCalibrationURLState,
     } = useCalibrationURLState();
 
-    const [rows, setRows] = useState<CalibrationState[]>([]);
+    const [rows, setRows] = useState<
+        CalibrationState[] | CalibrationWildState[]
+    >([]);
     const [searching, setSearching] = useState(false);
 
     const [seedLeewayIsValid, setSeedLeewayIsValid] = useState(true);
