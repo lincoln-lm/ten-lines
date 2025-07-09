@@ -41,6 +41,7 @@ jobs:
                   restore-keys: |
                       ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ github.head_ref }}
                       ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+                      ${{ env.cache-name }}-
             - name: Setup emsdk
               uses: lincoln-lm/setup-emsdk@main
               with:
