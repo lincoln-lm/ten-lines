@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import fetchTenLines, { Game } from "../tenLines";
-import { Autocomplete, Menu, MenuItem, TextField } from "@mui/material";
+import { Autocomplete, MenuItem, TextField } from "@mui/material";
 import { getLocationEn, getNameEn, NATURES_EN } from "../tenLines/resources";
 
 function WildEncounterSelector({
