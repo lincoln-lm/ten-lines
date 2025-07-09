@@ -102,7 +102,13 @@ function useCalibrationURLState() {
     };
 }
 
-export default function CalibrationForm({ sx }: { sx?: any }) {
+export default function CalibrationForm({
+    sx,
+    hidden,
+}: {
+    sx?: any;
+    hidden?: boolean;
+}) {
     const [calibrationFormState, setCalibrationFormState] =
         useState<CalibrationFormState>({
             seedLeewayString: "20",
@@ -323,8 +329,12 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
         setCalibrationFormState(calibrationFormState);
     }
 
+    if (hidden) {
+        return null;
+    }
+
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={sx}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ sx }}>
             <TextField
                 label="Game"
                 margin="normal"

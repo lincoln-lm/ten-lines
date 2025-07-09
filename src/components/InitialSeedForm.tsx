@@ -38,7 +38,13 @@ function useInitialSeedURLState() {
     return { targetSeed, count, game, gameConsole, setInitialSeedURLState };
 }
 
-export default function TenLinesForm({ sx }: { sx?: any }) {
+export default function TenLinesForm({
+    sx,
+    hidden,
+}: {
+    sx?: any;
+    hidden?: boolean;
+}) {
     const [initialSeedFormState, setInitialSeedFormState] =
         useState<InitialSeedFormState>({
             targetSeedIsValid: true,
@@ -75,8 +81,12 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
         });
     };
 
+    if (hidden) {
+        return null;
+    }
+
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={sx}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ sx }}>
             <NumericalInput
                 label="Target Seed"
                 name="targetSeed"

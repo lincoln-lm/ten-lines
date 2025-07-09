@@ -57,7 +57,13 @@ function useSearcherURLState() {
     };
 }
 
-export default function CalibrationForm({ sx }: { sx?: any }) {
+export default function CalibrationForm({
+    sx,
+    hidden,
+}: {
+    sx?: any;
+    hidden?: boolean;
+}) {
     const [searcherFormState, setSearcherFormState] =
         useState<SearcherFormState>({
             shininess: 255,
@@ -164,6 +170,10 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
     if (searcherFormState.staticCategory == 6 && !isFRLGE) {
         searcherFormState.staticCategory = 0;
         setSearcherFormState(searcherFormState);
+    }
+
+    if (hidden) {
+        return null;
     }
 
     return (
