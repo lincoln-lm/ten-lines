@@ -5,29 +5,29 @@ import { Box, Button, MenuItem, TextField } from "@mui/material";
 
 import fetchTenLines, { fetchSeedData, hexSeed } from "../tenLines";
 import NumericalInput from "./NumericalInput";
-import TenLinesTable from "./TenLinesTable";
+import InitialSeedTable from "./InitialSeedTable";
 import type { InitialSeedResult } from "../tenLines/generated";
 import { useSearchParams } from "react-router-dom";
 
-export interface TenLinesFormState {
+export interface InitialSeedFormState {
     targetSeedIsValid: boolean;
     countIsValid: boolean;
 }
 
-export interface TenLinesURLState {
+export interface InitialSeedURLState {
     targetSeed: string;
     count: string;
     game: string;
     gameConsole: string;
 }
 
-function useTenLinesURLState() {
+function useInitialSeedURLState() {
     const [searchParams, setSearchParams] = useSearchParams();
     const targetSeed = searchParams.get("targetSeed") || "DEADBEEF";
     const count = searchParams.get("count") || "10";
     const game = searchParams.get("game") || "painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
-    const setTenLinesURLState = (state: Partial<TenLinesURLState>) => {
+    const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
         setSearchParams((prev) => {
             for (const [key, value] of Object.entries(state)) {
                 prev.set(key, value);
@@ -35,20 +35,21 @@ function useTenLinesURLState() {
             return prev;
         });
     };
-    return { targetSeed, count, game, gameConsole, setTenLinesURLState };
+    return { targetSeed, count, game, gameConsole, setInitialSeedURLState };
 }
 
 export default function TenLinesForm({ sx }: { sx?: any }) {
-    const [tenLinesFormState, setTenLinesFormState] =
-        useState<TenLinesFormState>({
+    const [initialSeedFormState, setInitialSeedFormState] =
+        useState<InitialSeedFormState>({
             targetSeedIsValid: true,
             countIsValid: true,
         });
-    const { targetSeed, count, game, gameConsole, setTenLinesURLState } =
-        useTenLinesURLState();
+    const { targetSeed, count, game, gameConsole, setInitialSeedURLState } =
+        useInitialSeedURLState();
     const [data, setData] = useState<InitialSeedResult[]>([]);
     const isNotSubmittable =
-        !tenLinesFormState.targetSeedIsValid || !tenLinesFormState.countIsValid;
+        !initialSeedFormState.targetSeedIsValid ||
+        !initialSeedFormState.countIsValid;
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (isNotSubmittable) return;
@@ -83,12 +84,12 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 maximumValue={0xffffffff}
                 isHex={true}
                 onChange={(_, value) => {
-                    setTenLinesURLState({
+                    setInitialSeedURLState({
                         targetSeed: value.isValid
                             ? hexSeed(parseInt(value.value, 16), 32)
                             : value.value,
                     });
-                    setTenLinesFormState((data) => ({
+                    setInitialSeedFormState((data) => ({
                         ...data,
                         targetSeedIsValid: value.isValid,
                     }));
@@ -101,10 +102,10 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 minimumValue={0}
                 maximumValue={5000}
                 onChange={(_, value) => {
-                    setTenLinesURLState({
+                    setInitialSeedURLState({
                         count: value.value,
                     });
-                    setTenLinesFormState((data) => ({
+                    setInitialSeedFormState((data) => ({
                         ...data,
                         countIsValid: value.isValid,
                     }));
@@ -116,7 +117,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setTenLinesURLState({ game: event.target.value });
+                    setInitialSeedURLState({ game: event.target.value });
                     setData([]);
                 }}
                 value={game}
@@ -139,7 +140,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setTenLinesURLState({ gameConsole: event.target.value });
+                    setInitialSeedURLState({ gameConsole: event.target.value });
                 }}
                 value={gameConsole}
                 select
@@ -160,7 +161,7 @@ export default function TenLinesForm({ sx }: { sx?: any }) {
             >
                 Submit
             </Button>
-            <TenLinesTable
+            <InitialSeedTable
                 rows={data}
                 isFRLG={game !== "painting"}
                 gameConsole={gameConsole}

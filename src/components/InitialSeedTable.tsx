@@ -15,7 +15,7 @@ import { useSearchParams } from "react-router-dom";
 
 dayjs.extend(duration);
 
-const TenLinesTable = memo(function TenLinesTable({
+const InitialSeedTable = memo(function InitialSeedTable({
     rows,
     isFRLG,
     gameConsole,
@@ -177,4 +177,4 @@ const TenLinesTable = memo(function TenLinesTable({
     );
 });
 
-export default TenLinesTable;
+export default InitialSeedTable;

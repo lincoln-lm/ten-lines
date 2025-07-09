@@ -3,7 +3,7 @@ import "./App.css";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import TenLinesForm from "./components/TenLinesForm";
+import InitialSeedForm from "./components/InitialSeedForm";
 import { Box, Tab, Tabs } from "@mui/material";
 import CalibrationForm from "./components/CalibrationForm";
 import FrLgSeedsTimestamp from "./wasm/src/generated/frlg_seeds_timestamp.txt?raw";
@@ -20,7 +20,7 @@ function TenLinesPages() {
     const currentPage = parseInt(searchParams.get("page") || "0") || 0;
 
     const pages = [
-        <TenLinesForm sx={{ maxWidth: 1000 }} />,
+        <InitialSeedForm sx={{ maxWidth: 1000 }} />,
         <CalibrationForm sx={{ maxWidth: 1100 }} />,
     ];
 
