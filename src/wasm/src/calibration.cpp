@@ -62,14 +62,18 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     searching_callback(false);
 }
 
-void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 game, u8 encounter_category, u16 location, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 _game, u8 encounter_category, u16 location, u32 _method, u8 _lead, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
 
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
 
+    Game game = Game(_game);
+    Method method = Method(_method - 4);
+    Lead lead = game == Game::Emerald ? Lead(_lead) : Lead::None;
+
     EncounterSettings3 settings;
-    auto encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, Game(game));
+    auto encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, game);
 
     std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     if (nature != -1)
@@ -86,7 +90,7 @@ void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 
     std::array<bool, 16> powers = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     std::array<bool, 12> encounter_slots = {true, true, true, true, true, true, true, true, true, true, true, true};
 
-    Profile3 profile("", Game(game), trainer_id, secret_id, false);
+    Profile3 profile("", game, trainer_id, secret_id, false);
     WildStateFilter filter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers, encounter_slots);
 
     searching_callback(true);
@@ -96,7 +100,7 @@ void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 
         FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
         u16 seed = entry.initialSeed;
         u16 frame = entry.seedFrame;
-        WildGenerator3 generator(initial_advances, max_advances, 0, Method(method - 4), Lead::None, false, encounter_areas[location], profile, filter);
+        WildGenerator3 generator(initial_advances, max_advances, 0, method, lead, false, encounter_areas[location], profile, filter);
         auto generator_results = generator.generate(seed);
         auto results = emscripten::val::array();
         for (auto &generator_result : generator_results)

@@ -45,6 +45,7 @@ export interface CalibrationFormState {
     wildCategory: number;
     wildLocation: number;
     wildPokemon: number;
+    wildLead: number;
     method: number;
 }
 
@@ -120,6 +121,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
             wildCategory: 0,
             wildLocation: 0,
             wildPokemon: 0,
+            wildLead: 255,
             method: 1,
         });
     const {
@@ -275,6 +277,7 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     calibrationFormState.wildCategory,
                     calibrationFormState.wildLocation,
                     calibrationFormState.method,
+                    calibrationFormState.wildLead,
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
@@ -614,13 +617,20 @@ export default function CalibrationForm({ sx }: { sx?: any }) {
                     wildCategory={calibrationFormState.wildCategory}
                     wildLocation={calibrationFormState.wildLocation}
                     wildPokemon={calibrationFormState.wildPokemon}
+                    wildLead={calibrationFormState.wildLead}
                     game={SEED_IDENTIFIER_TO_GAME[game]}
-                    onChange={(wildCategory, wildLocation, wildPokemon) => {
+                    onChange={(
+                        wildCategory,
+                        wildLocation,
+                        wildPokemon,
+                        wildLead
+                    ) => {
                         setCalibrationFormState((data) => ({
                             ...data,
                             wildCategory,
                             wildLocation,
                             wildPokemon,
+                            wildLead,
                         }));
                     }}
                 />

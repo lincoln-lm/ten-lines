@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import fetchTenLines, { Game } from "../tenLines";
-import { Autocomplete, MenuItem, TextField } from "@mui/material";
-import { getLocationEn, getNameEn } from "../tenLines/resources";
+import { Autocomplete, Menu, MenuItem, TextField } from "@mui/material";
+import { getLocationEn, getNameEn, NATURES_EN } from "../tenLines/resources";
 
 function WildEncounterSelector({
     wildCategory,
     wildLocation,
     wildPokemon,
+    wildLead,
     onChange,
     game = Game.Gen3,
 }: {
     wildCategory: number;
     wildLocation: number;
     wildPokemon: number;
+    wildLead: number;
     onChange: (
         wildCategory: number,
         wildLocation: number,
-        wildPokemon: number
+        wildPokemon: number,
+        wildLead: number
     ) => void;
     game?: number;
 }) {
@@ -35,7 +38,8 @@ function WildEncounterSelector({
             onChange(
                 wildCategory,
                 wildLocations.length > 0 ? wildLocations[0] : 0,
-                wildPokemon
+                wildPokemon,
+                wildLead
             );
         };
         fetchWildLocations();
@@ -53,11 +57,14 @@ function WildEncounterSelector({
             onChange(
                 wildCategory,
                 wildLocation,
-                areaSpecies.length > 0 ? areaSpecies[0] : 0
+                areaSpecies.length > 0 ? areaSpecies[0] : 0,
+                wildLead
             );
         };
         fetchAreaSpecies();
     }, [game, wildCategory, wildLocation]);
+
+    const isEmerald = (game & Game.Emerald) == Game.Emerald;
 
     return (
         <React.Fragment>
@@ -69,7 +76,8 @@ function WildEncounterSelector({
                     onChange(
                         parseInt(event.target.value),
                         wildLocation,
-                        wildPokemon
+                        wildPokemon,
+                        wildLead
                     );
                 }}
                 value={wildCategory}
@@ -86,7 +94,7 @@ function WildEncounterSelector({
             <Autocomplete
                 options={wildLocations.map((_, index) => index)}
                 onChange={(_event, newValue) => {
-                    onChange(wildCategory, newValue, wildPokemon);
+                    onChange(wildCategory, newValue, wildPokemon, wildLead);
                 }}
                 getOptionLabel={(option) =>
                     getLocationEn(game, wildLocations[option])
@@ -108,7 +116,8 @@ function WildEncounterSelector({
                     onChange(
                         wildCategory,
                         wildLocation,
-                        parseInt(event.target.value)
+                        parseInt(event.target.value),
+                        wildLead
                     );
                 }}
                 value={wildPokemon}
@@ -121,6 +130,36 @@ function WildEncounterSelector({
                     </MenuItem>
                 ))}
             </TextField>
+            {isEmerald && (
+                <TextField
+                    label="Lead"
+                    margin="normal"
+                    style={{ textAlign: "left" }}
+                    onChange={(event) => {
+                        onChange(
+                            wildCategory,
+                            wildLocation,
+                            wildPokemon,
+                            parseInt(event.target.value)
+                        );
+                    }}
+                    value={wildLead}
+                    select
+                    fullWidth
+                >
+                    <MenuItem value="255">None</MenuItem>
+                    <MenuItem value="25">Female Cute Charm</MenuItem>
+                    <MenuItem value="26">Male Cute Charm</MenuItem>
+                    <MenuItem value="27">Magnet Pull</MenuItem>
+                    <MenuItem value="28">Static</MenuItem>
+                    <MenuItem value="32">Hustle/Pressure/Vital Spirit</MenuItem>
+                    {NATURES_EN.map((nature, index) => (
+                        <MenuItem key={index} value={index}>
+                            {nature} Synchronize
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
         </React.Fragment>
     );
 }
