@@ -19,8 +19,33 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
+                  fetch-depth: 0
                   submodules: recursive
-            - uses: mymindstorm/setup-emsdk@v14
+            - name: Install git-restore-mtime
+              run: |
+                  wget https://raw.githubusercontent.com/chetan/git-restore-mtime-action/refs/heads/master/git-restore-mtime -O ${{ github.workspace }}/git-restore-mtime
+                  chmod +x ${{ github.workspace }}/git-restore-mtime
+            - name: Restore mtime for ten-lines
+              run: ${{ github.workspace }}/git-restore-mtime
+            - name: Restore mtime for all submodules
+              run: git submodule foreach --recursive '${{ github.workspace }}/git-restore-mtime'
+            - name: Cache CMake build files
+              uses: actions/cache@v4
+              env:
+                  cache-name: cache-cmake-build-files
+              with:
+                  path: |
+                      ${{ github.workspace }}/src/wasm/build
+                      ${{ github.workspace }}/src/wasm/src/generated
+                  key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ github.head_ref }}-${{ github.run_id }}
+                  restore-keys: |
+                      ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ github.head_ref }}
+                      ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+            - name: Setup emsdk
+              uses: lincoln-lm/setup-emsdk@main
+              with:
+                  version: 4.0.10
+                  actions-cache-folder: "emsdk-cache"
             - name: Verify
               run: emcc -v
             - name: Install Dependencies
