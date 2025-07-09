@@ -55,6 +55,41 @@ const InitialSeedTable = memo(function InitialSeedTable({
         };
         return `${humanizedTerms[sound]} | ${humanizedButtonModes[buttonMode]} Button: ${humanizedTerms[active_button]} |  Held: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
     }
+
+    function openInCalibration(row: InitialSeedResult, isAuxClick: boolean) {
+        setSearchParams((previous) => {
+            let params = new URLSearchParams(previous);
+            params.set("targetInitialSeed", hexSeed(row.initialSeed, 16));
+            params.set("page", "1");
+            if (isFRLG) {
+                const [
+                    sound,
+                    buttonMode,
+                    active_button,
+                    held_button_modifier,
+                    held_button,
+                ] = (row.settings as string).split("_");
+                params.set("sound", sound);
+                params.set("buttonMode", buttonMode);
+                params.set("button", active_button);
+                params.set(
+                    "heldButton",
+                    held_button_modifier +
+                        (held_button ? "_" + held_button : "")
+                );
+                params.set(
+                    "advanceMin",
+                    Math.max(0, row.advance - 1000).toString()
+                );
+                params.set("advanceMax", (row.advance + 1000).toString());
+            }
+            if (isAuxClick) {
+                window.open(`/?${params.toString()}`);
+                return previous;
+            }
+            return params;
+        });
+    }
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -105,90 +140,23 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                         )}
                                     </TableCell>
                                 )}
-                                {isFRLG ? (
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => {
-                                                setSearchParams((prev) => {
-                                                    const [
-                                                        sound,
-                                                        buttonMode,
-                                                        active_button,
-                                                        held_button_modifier,
-                                                        held_button,
-                                                    ] = (
-                                                        row.settings as string
-                                                    ).split("_");
-                                                    prev.set(
-                                                        "targetInitialSeed",
-                                                        hexSeed(
-                                                            row.initialSeed,
-                                                            16
-                                                        )
-                                                    );
-                                                    prev.set("sound", sound);
-                                                    prev.set(
-                                                        "buttonMode",
-                                                        buttonMode
-                                                    );
-                                                    prev.set(
-                                                        "button",
-                                                        active_button
-                                                    );
-                                                    prev.set(
-                                                        "heldButton",
-                                                        held_button_modifier +
-                                                            (held_button
-                                                                ? "_" +
-                                                                  held_button
-                                                                : "")
-                                                    );
-                                                    prev.set("page", "1");
-                                                    prev.set(
-                                                        "advanceMin",
-                                                        Math.max(
-                                                            0,
-                                                            row.advance - 1000
-                                                        ).toString()
-                                                    );
-                                                    prev.set(
-                                                        "advanceMax",
-                                                        (
-                                                            row.advance + 1000
-                                                        ).toString()
-                                                    );
-                                                    return prev;
-                                                });
-                                            }}
-                                        >
-                                            Calibration
-                                        </Button>
-                                    </TableCell>
-                                ) : (
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => {
-                                                setSearchParams((prev) => {
-                                                    prev.set(
-                                                        "targetInitialSeed",
-                                                        hexSeed(
-                                                            row.initialSeed,
-                                                            16
-                                                        )
-                                                    );
-                                                    prev.set("page", "1");
-                                                    return prev;
-                                                });
-                                            }}
-                                        >
-                                            Calibration
-                                        </Button>
-                                    </TableCell>
-                                )}
+                                <TableCell>
+                                    <Button
+                                        variant="contained"
+                                        size="small"
+                                        onClick={() => {
+                                            openInCalibration(row, false);
+                                        }}
+                                        onMouseDown={(e) => {
+                                            if (e.button === 1) {
+                                                e.preventDefault();
+                                                openInCalibration(row, true);
+                                            }
+                                        }}
+                                    >
+                                        Calibration
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         );
                     })}
