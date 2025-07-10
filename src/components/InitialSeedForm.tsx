@@ -8,6 +8,7 @@ import NumericalInput from "./NumericalInput";
 import InitialSeedTable from "./InitialSeedTable";
 import type { InitialSeedResult } from "../tenLines/generated";
 import { useSearchParams } from "react-router-dom";
+import TeachyTVEntry from "./TeachyTVEntry";
 
 export interface InitialSeedFormState {
     targetSeedIsValid: boolean;
@@ -19,6 +20,8 @@ export interface InitialSeedURLState {
     count: string;
     game: string;
     gameConsole: string;
+    teachyTVMode: string;
+    teachyTVFramesOut: string;
 }
 
 function useInitialSeedURLState() {
@@ -27,6 +30,8 @@ function useInitialSeedURLState() {
     const count = searchParams.get("count") || "10";
     const game = searchParams.get("game") || "r_painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
+    const teachyTVMode = searchParams.get("teachyTVMode") || "false";
+    const teachyTVFramesOut = searchParams.get("teachyTVFramesOut") || "3600";
     const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
         setSearchParams((prev) => {
             for (const [key, value] of Object.entries(state)) {
@@ -35,7 +40,15 @@ function useInitialSeedURLState() {
             return prev;
         });
     };
-    return { targetSeed, count, game, gameConsole, setInitialSeedURLState };
+    return {
+        targetSeed,
+        count,
+        game,
+        gameConsole,
+        teachyTVMode,
+        teachyTVFramesOut,
+        setInitialSeedURLState,
+    };
 }
 
 export default function TenLinesForm({
@@ -50,8 +63,15 @@ export default function TenLinesForm({
             targetSeedIsValid: true,
             countIsValid: true,
         });
-    const { targetSeed, count, game, gameConsole, setInitialSeedURLState } =
-        useInitialSeedURLState();
+    const {
+        targetSeed,
+        count,
+        game,
+        gameConsole,
+        teachyTVMode,
+        teachyTVFramesOut,
+        setInitialSeedURLState,
+    } = useInitialSeedURLState();
     const [data, setData] = useState<InitialSeedResult[]>([]);
     const isNotSubmittable =
         !initialSeedFormState.targetSeedIsValid ||
@@ -61,7 +81,7 @@ export default function TenLinesForm({
         if (isNotSubmittable) return;
         fetchTenLines().then((lib) => {
             setData([]);
-            if (game.endsWith("painting")) {
+            if (!isFRLG) {
                 lib.ten_lines_painting(
                     parseInt(targetSeed, 16),
                     parseInt(count, 10),
@@ -73,6 +93,7 @@ export default function TenLinesForm({
                         parseInt(targetSeed, 16),
                         parseInt(count, 10),
                         game,
+                        parseInt(teachyTVFramesOut, 10) || -0,
                         data,
                         proxy(setData)
                     );
@@ -80,6 +101,8 @@ export default function TenLinesForm({
             }
         });
     };
+
+    const isFRLG = !game.endsWith("painting");
 
     if (hidden) {
         return null;
@@ -163,6 +186,18 @@ export default function TenLinesForm({
                 <MenuItem value="NDS">Nintendo DS</MenuItem>
                 <MenuItem value="3DS">Nintendo 3DS (open_agb_firm)</MenuItem>
             </TextField>
+            {isFRLG && (
+                <TeachyTVEntry
+                    teachyTVMode={teachyTVMode === "true"}
+                    teachyTVFramesOut={teachyTVFramesOut}
+                    onChange={(teachyTVMode, teachyTVFramesOut) => {
+                        setInitialSeedURLState({
+                            teachyTVMode: teachyTVMode.toString(),
+                            teachyTVFramesOut: teachyTVFramesOut.value,
+                        });
+                    }}
+                ></TeachyTVEntry>
+            )}
             <Button
                 variant="contained"
                 color="primary"
@@ -174,8 +209,10 @@ export default function TenLinesForm({
             </Button>
             <InitialSeedTable
                 rows={data}
-                isFRLG={!game.endsWith("painting")}
+                isFRLG={isFRLG}
                 gameConsole={gameConsole}
+                teachyTVMode={teachyTVMode === "true" && isFRLG}
+                teachyTVFramesOut={parseInt(teachyTVFramesOut, 10) || 0}
             />
         </Box>
     );

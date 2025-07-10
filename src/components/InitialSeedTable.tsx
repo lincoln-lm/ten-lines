@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { memo } from "react";
-import { frameToMS, hexSeed } from "../tenLines";
+import { frameToMS, hexSeed, teachyTVConversion } from "../tenLines";
 import type { InitialSeedResult } from "../tenLines/generated";
 import { Button } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
@@ -19,10 +19,14 @@ const InitialSeedTable = memo(function InitialSeedTable({
     rows,
     isFRLG,
     gameConsole,
+    teachyTVMode,
+    teachyTVFramesOut,
 }: {
     rows: InitialSeedResult[];
     isFRLG: boolean;
     gameConsole: string;
+    teachyTVMode: boolean;
+    teachyTVFramesOut: number;
 }) {
     const [_, setSearchParams] = useSearchParams();
     function humanizeSettings(settings: string | undefined) {
@@ -98,6 +102,9 @@ const InitialSeedTable = memo(function InitialSeedTable({
                         {!isFRLG && <TableCell>Seed (dec)</TableCell>}
                         <TableCell>Seed (hex)</TableCell>
                         <TableCell>Advances</TableCell>
+                        {teachyTVMode && (
+                            <TableCell>Frames in TeachyTV</TableCell>
+                        )}
                         <TableCell>Estimated Total Frames</TableCell>
                         <TableCell>Estimated Total Time</TableCell>
                         <TableCell>Seed Time</TableCell>
@@ -107,6 +114,17 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 </TableHead>
                 <TableBody>
                     {rows.map((row, index) => {
+                        let visual_frame = row.advance;
+                        let frames_in_ttv = 0;
+                        if (teachyTVMode) {
+                            const ttv = teachyTVConversion(
+                                row.advance,
+                                teachyTVFramesOut
+                            );
+                            frames_in_ttv = ttv.frames_in_ttv;
+                            visual_frame =
+                                frames_in_ttv + ttv.frames_out_of_ttv;
+                        }
                         return (
                             <TableRow key={index}>
                                 {!isFRLG && (
@@ -116,14 +134,17 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                     {hexSeed(row.initialSeed, 16)}
                                 </TableCell>
                                 <TableCell>{row.advance}</TableCell>
+                                {teachyTVMode && (
+                                    <TableCell>{frames_in_ttv}</TableCell>
+                                )}
                                 <TableCell>
-                                    {row.seedFrame + row.advance}
+                                    {row.seedFrame + visual_frame}
                                 </TableCell>
                                 <TableCell>
                                     {dayjs
                                         .duration(
                                             frameToMS(
-                                                row.seedFrame + row.advance,
+                                                row.seedFrame + visual_frame,
                                                 gameConsole
                                             )
                                         )

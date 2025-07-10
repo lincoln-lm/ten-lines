@@ -49,7 +49,7 @@ void painting_seeds(u32 target_seed, u16 result_count, emscripten::val callback)
     callback(results);
 }
 
-void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, emscripten::val seed_data, emscripten::val callback)
+void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32 ttv_frames_out, emscripten::val seed_data, emscripten::val callback)
 {
     std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);
     FRLGSeedDataStore seed_store(seed_data_vector);
@@ -61,7 +61,14 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, ems
     auto results = emscripten::val::array();
     for (u32 i = 0, valid_results = 0; valid_results < result_count; i++)
     {
-        auto [advance, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
+        auto [offset_advance, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
+        u32 advance = offset_advance + distance_from_base;
+        // if the advances required to reach this seed are less than the required frames in the overworld
+        // then the target is unreachable
+        if (advance < ttv_frames_out)
+        {
+            continue;
+        }
         for (auto &held_button_offset : held_button_offsets)
         {
             u16 unoffset_seed = seed - held_button_offset.offset;
@@ -82,7 +89,7 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, ems
                 u16 frame = entry.seedFrame;
                 const char *key = entry.key;
                 results.call<void>("push", emscripten::val(InitialSeedResult{
-                                               .advance = advance + distance_from_base,
+                                               .advance = advance,
                                                .seedFrame = frame,
                                                .key = std::string(key) + "_" + held_button_offset.held_button,
                                                .initialSeed = seed,
