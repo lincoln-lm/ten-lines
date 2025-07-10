@@ -79,7 +79,11 @@ function StaticEncounterSelector({
                 {staticTemplates.map((template) => (
                     <MenuItem key={template.index} value={template.index}>
                         {`${getNameEn(template.species, template.form)}${
-                            template.shiny == 1 ? " (Shiny Locked)" : ""
+                            template.shiny == 1
+                                ? " (Shiny Locked)"
+                                : template.species == 251
+                                ? " (Lock Break)"
+                                : ""
                         } - ${GAMES_EN[template.version]}`}
                     </MenuItem>
                 ))}
