@@ -21,9 +21,21 @@ function TenLinesPages() {
     const currentPage = parseInt(searchParams.get("page") || "0") || 0;
 
     const pages = [
-        <InitialSeedForm sx={{ maxWidth: 1100 }} hidden={currentPage != 0} />,
-        <CalibrationForm sx={{ maxWidth: 1100 }} hidden={currentPage != 1} />,
-        <SearcherForm sx={{ maxWidth: 1100 }} hidden={currentPage != 2} />,
+        <InitialSeedForm
+            key={0}
+            sx={{ maxWidth: 1100 }}
+            hidden={currentPage != 0}
+        />,
+        <CalibrationForm
+            key={1}
+            sx={{ maxWidth: 1100 }}
+            hidden={currentPage != 1}
+        />,
+        <SearcherForm
+            key={2}
+            sx={{ maxWidth: 1100 }}
+            hidden={currentPage != 2}
+        />,
     ];
 
     return (
