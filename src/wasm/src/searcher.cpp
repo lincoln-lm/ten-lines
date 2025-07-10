@@ -3,6 +3,7 @@
 #include <array>
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#include <Core/Gen3/Searchers/GameCubeSearcher.hpp>
 #include <Core/Gen3/Searchers/StaticSearcher3.hpp>
 #include <Core/Gen3/Searchers/WildSearcher3.hpp>
 #include <Core/Gen3/Encounters3.hpp>
@@ -19,8 +20,6 @@
 
 void search_seeds_static(u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
-    const StaticTemplate3 tmplate = *Encounters3::getStaticEncounter(category, template_index);
-
     std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     if (nature != -1)
     {
@@ -39,6 +38,27 @@ void search_seeds_static(u16 trainer_id, u16 secret_id, int category, int templa
     StateFilter filter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
 
     searching_callback(true);
+
+    // blisy's e-reader events
+    if (category == 8)
+    {
+        const StaticTemplate3 *tmplate = &blisy_e_reader_templates[template_index];
+
+        GameCubeSearcher searcher(tmplate->getSpecie() == 385 ? Method::Channel : Method(method), false, profile, filter);
+        searcher.startSearch(min_ivs, max_ivs, tmplate);
+        auto searcherResults = searcher.getResults();
+
+        auto results = emscripten::val::array();
+        for (auto &searcher_result : searcherResults)
+        {
+            results.call<void>("push", emscripten::val(G3SearcherState(searcher_result)));
+        }
+        result_callback(results);
+        searching_callback(false);
+        return;
+    }
+
+    const StaticTemplate3 tmplate = *Encounters3::getStaticEncounter(category, template_index);
 
     StaticSearcher3 searcher(Method(method), profile, filter);
     searcher.startSearch(min_ivs, max_ivs, &tmplate);

@@ -19,3 +19,13 @@ public:
     template <typename T>
     void dummySetter(T argument) { (void)argument; }
 };
+
+// TODO: better header for this
+const std::array<StaticTemplate3, 6> blisy_e_reader_templates = {
+    StaticTemplate3(Game::RSE, 243, 0, Shiny::Random, 0, false),
+    StaticTemplate3(Game::RSE, 244, 0, Shiny::Random, 0, false),
+    StaticTemplate3(Game::RSE, 245, 0, Shiny::Random, 0, false),
+    StaticTemplate3(Game::RSE, 251, 0, Shiny::Never, 0, false),
+    StaticTemplate3(Game::RSE, 251, 0, Shiny::Random, 0, false),
+    StaticTemplate3(Game::RSE, 385, 0, Shiny::Random, 0, false),
+};

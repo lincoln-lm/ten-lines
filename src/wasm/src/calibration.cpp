@@ -5,6 +5,7 @@
 #include <emscripten/bind.h>
 #include <Core/Gen3/Generators/StaticGenerator3.hpp>
 #include <Core/Gen3/Generators/WildGenerator3.hpp>
+#include <Core/Gen3/Generators/GameCubeGenerator.hpp>
 #include <Core/Gen3/Encounters3.hpp>
 #include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/StaticTemplate3.hpp>
@@ -17,13 +18,12 @@
 #include <Core/Util/IVChecker.hpp>
 #include "initial_seed.hpp"
 #include "calibration.hpp"
+#include "searcher.hpp"
 
 void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
     u32 initial_advances = advance_range[0].as<u32>();
     u32 max_advances = advance_range[1].as<u32>() - initial_advances;
-
-    const StaticTemplate3 tmplate = *Encounters3::getStaticEncounter(category, template_index);
 
     std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     if (nature != -1)
@@ -43,6 +43,33 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     StateFilter filter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
 
     searching_callback(true);
+    // blisy's e-reader events
+    if (category == 8)
+    {
+        const StaticTemplate3 *tmplate = &blisy_e_reader_templates[template_index];
+        for (int i = 0; i < seeds["length"].as<int>(); i++)
+        {
+            FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
+            u16 seed = entry.initialSeed;
+            u16 frame = entry.seedFrame;
+            PokeRNG rng(seed, initial_advances);
+            auto results = emscripten::val::array();
+            for (u32 cnt = 0; cnt <= max_advances; cnt++, rng.next())
+            {
+                GameCubeGenerator generator(0, 0, 0, tmplate->getSpecie() == 385 ? Method::Channel : Method(method), false, profile, filter);
+                auto generator_results = generator.generate(rng.getSeed(), tmplate);
+                for (auto &generator_result : generator_results)
+                {
+                    results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
+                }
+            }
+            result_callback(results);
+        }
+        searching_callback(false);
+        return;
+    }
+
+    const StaticTemplate3 tmplate = *Encounters3::getStaticEncounter(category, template_index);
 
     for (int i = 0; i < seeds["length"].as<int>(); i++)
     {
@@ -130,17 +157,30 @@ struct StaticTemplateDisplayInfo
     u16 species;
     u8 form;
     u32 version;
+    u8 shiny;
 };
 
 emscripten::val get_static_template_info(int category)
 {
+    emscripten::val array = emscripten::val::array();
+    // blisy's e-reader events
+    if (category == 8)
+    {
+        for (size_t i = 0; i < blisy_e_reader_templates.size(); i++)
+        {
+            auto tmplate = blisy_e_reader_templates[i];
+            array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{static_cast<int>(i), tmplate.getSpecie(), tmplate.getForm(), static_cast<u32>(tmplate.getVersion()), static_cast<u8>(tmplate.getShiny())}));
+        }
+        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{0, 243, 0, static_cast<u32>(Game::RSE), static_cast<u8>(Shiny::Random)}));
+        return array;
+    }
+
     int size;
     const StaticTemplate3 *templates = Encounters3::getStaticEncounters(category, &size);
 
-    emscripten::val array = emscripten::val::array();
     for (int i = 0; i < size; i++)
     {
-        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm(), static_cast<u32>(templates[i].getVersion())}));
+        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{i, templates[i].getSpecie(), templates[i].getForm(), static_cast<u32>(templates[i].getVersion()), static_cast<u8>(templates[i].getShiny())}));
     }
     return array;
 }
@@ -267,7 +307,8 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("index", &StaticTemplateDisplayInfo::index)
         .field("species", &StaticTemplateDisplayInfo::species)
         .field("form", &StaticTemplateDisplayInfo::form)
-        .field("version", &StaticTemplateDisplayInfo::version);
+        .field("version", &StaticTemplateDisplayInfo::version)
+        .field("shiny", &StaticTemplateDisplayInfo::shiny);
 
     emscripten::value_object<IVRange>("IVRange")
         .field("min", &IVRange::min)

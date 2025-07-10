@@ -61,6 +61,9 @@ function StaticEncounterSelector({
                 <MenuItem value="5">Legends</MenuItem>
                 {isFRLGE && <MenuItem value="6">Events</MenuItem>}
                 <MenuItem value="7">Roamers</MenuItem>
+                {!isFRLG && (
+                    <MenuItem value="8">Blisy's E-Reader Events</MenuItem>
+                )}
             </TextField>
             <TextField
                 label="Pokemon"
@@ -75,9 +78,9 @@ function StaticEncounterSelector({
             >
                 {staticTemplates.map((template) => (
                     <MenuItem key={template.index} value={template.index}>
-                        {`${getNameEn(template.species, template.form)} - ${
-                            GAMES_EN[template.version]
-                        }`}
+                        {`${getNameEn(template.species, template.form)}${
+                            template.shiny == 1 ? " (Shiny Locked)" : ""
+                        } - ${GAMES_EN[template.version]}`}
                     </MenuItem>
                 ))}
             </TextField>
