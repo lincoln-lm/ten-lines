@@ -48,6 +48,7 @@ export const GAMES_EN: Record<number, string> = {
     [Game.FireRed]: "FireRed",
     [Game.LeafGreen]: "LeafGreen",
     [Game.FRLG]: "FireRed & LeafGreen",
+    [Game.FRLG | Game.Emerald]: "FireRed, LeafGreen & Emerald",
     [Game.Gen3]: "Generation 3",
 };
 
