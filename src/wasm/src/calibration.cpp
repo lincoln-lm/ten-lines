@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <vector>
 #include <array>
 #include <emscripten.h>
@@ -20,10 +21,14 @@
 #include "calibration.hpp"
 #include "searcher.hpp"
 
-void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, emscripten::val ttv_advance_range, u16 trainer_id, u16 secret_id, int category, int template_index, u32 method, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
-    u32 initial_advances = advance_range[0].as<u32>();
-    u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+    u32 starting_final_frame = advance_range[0].as<u32>();
+    u32 ending_final_frame = advance_range[1].as<u32>();
+    u32 initial_ttv_advances = ttv_advance_range[0].as<u32>();
+    u32 ending_ttv_advances = ttv_advance_range[1].as<u32>();
+
+    ending_ttv_advances = std::min(ending_ttv_advances, ending_final_frame);
 
     std::array<bool, 25> natures = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
     if (nature != -1)
@@ -46,6 +51,8 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
     // blisy's e-reader events
     if (category == 8)
     {
+        u32 initial_advances = starting_final_frame;
+        u32 max_advances = ending_final_frame - starting_final_frame;
         const StaticTemplate3 *tmplate = &blisy_e_reader_templates[template_index];
         for (int i = 0; i < seeds["length"].as<int>(); i++)
         {
@@ -60,7 +67,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
                 auto generator_results = generator.generate(rng.getSeed(), tmplate);
                 for (auto &generator_result : generator_results)
                 {
-                    CalibrationState current_result(seed, frame, generator_result);
+                    CalibrationState current_result(seed, frame, 0, generator_result);
                     current_result.setAdvances(cnt + initial_advances);
                     results.call<void>("push", emscripten::val(current_result));
                 }
@@ -78,24 +85,34 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
         FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
         u16 seed = entry.initialSeed;
         u16 frame = entry.seedFrame;
-        StaticGenerator3 generator(
-            initial_advances, max_advances, 0, Method(method), tmplate, profile, filter);
-        auto generator_results = generator.generate(seed);
         auto results = emscripten::val::array();
-        for (auto &generator_result : generator_results)
+        for (u32 ttv_advance = initial_ttv_advances; ttv_advance <= ending_ttv_advances; ttv_advance++)
         {
-            results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
+            u32 starting_advances = starting_final_frame > ttv_advance ? starting_final_frame - ttv_advance : 0;
+            u32 ending_advances = ending_final_frame > ttv_advance ? ending_final_frame - ttv_advance : 0;
+            u32 max_advances = ending_advances - starting_advances;
+
+            StaticGenerator3 generator(
+                starting_advances + ttv_advance * 313, max_advances, 0, Method(method), tmplate, profile, filter);
+            auto generator_results = generator.generate(seed);
+            for (auto &generator_result : generator_results)
+            {
+                results.call<void>("push", emscripten::val(CalibrationState(seed, frame, ttv_advance, generator_result)));
+            }
         }
         result_callback(results);
     }
     searching_callback(false);
 }
 
-void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 trainer_id, u16 secret_id, u32 _game, u8 encounter_category, u16 location, int pokemon, u32 _method, u8 _lead, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
+void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, emscripten::val ttv_advance_range, u16 trainer_id, u16 secret_id, u32 _game, u8 encounter_category, u16 location, int pokemon, u32 _method, u8 _lead, u8 shininess, int nature, emscripten::val iv_ranges, emscripten::val result_callback, emscripten::val searching_callback)
 {
+    u32 starting_final_frame = advance_range[0].as<u32>();
+    u32 ending_final_frame = advance_range[1].as<u32>();
+    u32 initial_ttv_advances = ttv_advance_range[0].as<u32>();
+    u32 ending_ttv_advances = ttv_advance_range[1].as<u32>();
 
-    u32 initial_advances = advance_range[0].as<u32>();
-    u32 max_advances = advance_range[1].as<u32>() - initial_advances;
+    ending_ttv_advances = std::min(ending_ttv_advances, ending_final_frame);
 
     Game game = Game(_game);
     Method method = Method(_method - 4);
@@ -141,14 +158,21 @@ void check_seeds_wild(emscripten::val seeds, emscripten::val advance_range, u16 
         FRLGContiguousSeedEntry entry = seeds[i].as<FRLGContiguousSeedEntry>();
         u16 seed = entry.initialSeed;
         u16 frame = entry.seedFrame;
-        WildGenerator3 generator(initial_advances, max_advances, 0, method, lead, false, area, profile, filter);
-        auto generator_results = generator.generate(seed);
-        auto results = emscripten::val::array();
-        for (auto &generator_result : generator_results)
+        for (u32 ttv_advance = initial_ttv_advances; ttv_advance <= ending_ttv_advances; ttv_advance++)
         {
-            results.call<void>("push", emscripten::val(CalibrationWildState(seed, frame, generator_result)));
+            u32 starting_advances = starting_final_frame > ttv_advance ? starting_final_frame - ttv_advance : 0;
+            u32 ending_advances = ending_final_frame > ttv_advance ? ending_final_frame - ttv_advance : 0;
+            u32 max_advances = ending_advances - starting_advances;
+
+            WildGenerator3 generator(starting_advances + ttv_advance * 313, max_advances, 0, method, lead, false, area, profile, filter);
+            auto generator_results = generator.generate(seed);
+            auto results = emscripten::val::array();
+            for (auto &generator_result : generator_results)
+            {
+                results.call<void>("push", emscripten::val(CalibrationWildState(seed, frame, ttv_advance, generator_result)));
+            }
+            result_callback(results);
         }
-        result_callback(results);
     }
     searching_callback(false);
 }
@@ -279,6 +303,7 @@ EMSCRIPTEN_BINDINGS(calibration)
     emscripten::value_object<CalibrationState>("CalibrationState")
         .field("initialSeed", &CalibrationState::initialSeed)
         .field("seedFrame", &CalibrationState::seedFrame)
+        .field("ttvAdvances", &CalibrationState::ttvAdvances)
         .field("advances", &CalibrationState::getAdvances, &CalibrationState::dummySetter<u32>)
         .field("pid", &CalibrationState::getPID, &CalibrationState::dummySetter<u32>)
         .field("nature", &CalibrationState::getNature, &CalibrationState::dummySetter<u8>)
@@ -291,6 +316,7 @@ EMSCRIPTEN_BINDINGS(calibration)
     emscripten::value_object<CalibrationWildState>("CalibrationWildState")
         .field("initialSeed", &CalibrationWildState::initialSeed)
         .field("seedFrame", &CalibrationWildState::seedFrame)
+        .field("ttvAdvances", &CalibrationWildState::ttvAdvances)
         .field("advances", &CalibrationWildState::getAdvances, &CalibrationWildState::dummySetter<u32>)
         .field("pid", &CalibrationWildState::getPID, &CalibrationWildState::dummySetter<u32>)
         .field("nature", &CalibrationWildState::getNature, &CalibrationWildState::dummySetter<u8>)

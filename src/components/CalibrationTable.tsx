@@ -25,11 +25,13 @@ const CalibrationTable = memo(function CalibrationTable({
     target,
     gameConsole,
     isStatic,
+    isTeachyTVMode,
 }: {
     rows: CalibrationState[] | CalibrationWildState[];
     target: FRLGContiguousSeedEntry;
     gameConsole: string;
     isStatic: boolean;
+    isTeachyTVMode: boolean;
 }) {
     return (
         <TableContainer component={Paper}>
@@ -38,6 +40,12 @@ const CalibrationTable = memo(function CalibrationTable({
                     <TableRow>
                         <TableCell>Seed</TableCell>
                         <TableCell>Advances</TableCell>
+                        {isTeachyTVMode && (
+                            <TableCell>Final A Press Frame</TableCell>
+                        )}
+                        {isTeachyTVMode && (
+                            <TableCell>TeachyTV Advances</TableCell>
+                        )}
                         {!isStatic && <TableCell>Slot</TableCell>}
                         {!isStatic && <TableCell>Level</TableCell>}
                         <TableCell>PID</TableCell>
@@ -72,6 +80,16 @@ const CalibrationTable = memo(function CalibrationTable({
                                     ms)
                                 </TableCell>
                                 <TableCell>{row.advances}</TableCell>
+                                {isTeachyTVMode && (
+                                    <TableCell>
+                                        {row.advances -
+                                            row.ttvAdvances * 313 +
+                                            row.ttvAdvances}
+                                    </TableCell>
+                                )}
+                                {isTeachyTVMode && (
+                                    <TableCell>{row.ttvAdvances}</TableCell>
+                                )}
                                 {!isStatic && (
                                     <TableCell>
                                         {

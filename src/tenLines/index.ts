@@ -88,16 +88,16 @@ export function frameToMS(frame: number, system: string) {
 
 export function teachyTVConversion(
     advance: number,
-    minimum_frames_out: number
+    minimum_advances_out: number
 ) {
-    const target_advances_via_ttv = advance - minimum_frames_out;
-    const frames_in_ttv = Math.floor(target_advances_via_ttv / 313);
-    const actual_advances_via_ttv = frames_in_ttv * 313;
-    const frames_out_of_ttv = advance - actual_advances_via_ttv;
+    const target_advances_via_ttv = advance - minimum_advances_out;
+    const ttv_advance = Math.floor(target_advances_via_ttv / 313);
+    const actual_advances_via_ttv = ttv_advance * 313;
+    const regular_advance = advance - actual_advances_via_ttv;
 
     return {
-        frames_in_ttv,
-        frames_out_of_ttv,
+        ttv_advance,
+        regular_advance,
     };
 }
 

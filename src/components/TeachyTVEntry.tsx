@@ -3,42 +3,45 @@ import { useState } from "react";
 import NumericalInput from "./NumericalInput";
 
 function TeachyTVEntry({
-    teachyTVMode,
-    teachyTVFramesOut,
+    isTeachyTVMode,
+    teachyTVRegularOut,
     onChange,
 }: {
-    teachyTVMode: boolean;
-    teachyTVFramesOut: string;
+    isTeachyTVMode: boolean;
+    teachyTVRegularOut: string;
     onChange: (
-        teachyTVMode: boolean,
-        teachyTVFramesOut: { isValid: boolean; value: string }
+        isTeachyTVMode: boolean,
+        teachyTVRegularOut: { isValid: boolean; value: string }
     ) => void;
 }) {
-    const [teachyTVFramesOutValid, setTeachyTVFramesOutValid] = useState(true);
+    const [teachyTVRegularOutValid, setTeachyTVRegularOutValid] =
+        useState(true);
     return (
-        <Box sx={teachyTVMode ? { display: "flex", alignItems: "center" } : {}}>
-            {teachyTVMode && (
+        <Box
+            sx={isTeachyTVMode ? { display: "flex", alignItems: "center" } : {}}
+        >
+            {isTeachyTVMode && (
                 <NumericalInput
-                    label="Minimum Frames Outside of TeachyTV"
-                    name="teachyTVFramesOut"
-                    value={teachyTVFramesOut}
+                    label="Minimum Advances Outside of TeachyTV"
+                    name="teachyTVRegularOut"
+                    value={teachyTVRegularOut}
                     minimumValue={0}
                     maximumValue={100000000}
                     onChange={(_, value) => {
-                        setTeachyTVFramesOutValid(value.isValid);
-                        onChange(teachyTVMode, value);
+                        setTeachyTVRegularOutValid(value.isValid);
+                        onChange(isTeachyTVMode, value);
                     }}
                 />
             )}
             <FormControlLabel
-                style={teachyTVMode ? { marginLeft: 8 } : {}}
+                style={isTeachyTVMode ? { marginLeft: 8 } : {}}
                 control={
                     <Checkbox
-                        checked={teachyTVMode}
+                        checked={isTeachyTVMode}
                         onChange={(e) => {
                             onChange(e.target.checked, {
-                                value: teachyTVFramesOut,
-                                isValid: teachyTVFramesOutValid,
+                                value: teachyTVRegularOut,
+                                isValid: teachyTVRegularOutValid,
                             });
                         }}
                     />

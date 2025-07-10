@@ -4,9 +4,11 @@ import {
     Autocomplete,
     Box,
     Button,
+    Checkbox,
     createFilterOptions,
     Dialog,
     DialogContent,
+    FormControlLabel,
     MenuItem,
     TextField,
 } from "@mui/material";
@@ -60,8 +62,11 @@ export interface CalibrationURLState {
     targetInitialSeed: string;
     advanceMin: string;
     advanceMax: string;
+    ttvAdvanceMin: string;
+    ttvAdvanceMax: string;
     trainerID: string;
     secretID: string;
+    teachyTVMode: string;
 }
 
 function useCalibrationURLState() {
@@ -74,8 +79,11 @@ function useCalibrationURLState() {
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const advanceMin = searchParams.get("advanceMin") || "0";
     const advanceMax = searchParams.get("advanceMax") || "100";
+    const ttvAdvanceMin = searchParams.get("ttvAdvanceMin") || "0";
+    const ttvAdvanceMax = searchParams.get("ttvAdvanceMax") || "100";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
+    const teachyTVMode = searchParams.get("teachyTVMode") || "false";
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) || 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
@@ -96,8 +104,11 @@ function useCalibrationURLState() {
         targetSeedValue,
         advanceMin,
         advanceMax,
+        ttvAdvanceMin,
+        ttvAdvanceMax,
         trainerID,
         secretID,
+        teachyTVMode,
         setCalibrationURLState,
     };
 }
@@ -142,10 +153,17 @@ export default function CalibrationForm({
         targetSeedValue,
         advanceMin,
         advanceMax,
+        ttvAdvanceMin,
+        ttvAdvanceMax,
         trainerID,
         secretID,
+        teachyTVMode,
         setCalibrationURLState,
     } = useCalibrationURLState();
+
+    const isStatic = calibrationFormState.method <= 4;
+    const isFRLG = game.startsWith("fr") || game.startsWith("lg");
+    const isFRLGE = isFRLG || game.startsWith("e_");
 
     const [rows, setRows] = useState<
         CalibrationState[] | CalibrationWildState[]
@@ -159,6 +177,13 @@ export default function CalibrationForm({
     const [advanceRangeIsValid, setAdvanceRangeIsValid] = useState(true);
     const advanceRange = advanceRangeIsValid
         ? [parseInt(advanceMin, 10), parseInt(advanceMax, 10)]
+        : [0, 0];
+    const isTeachyTVMode = teachyTVMode === "true" && isFRLG;
+    const [ttvAdvanceRangeIsValid, setTTVAdvanceRangeIsValid] = useState(true);
+    const ttvAdvanceRange = !isTeachyTVMode
+        ? [0, 0]
+        : ttvAdvanceRangeIsValid
+        ? [parseInt(ttvAdvanceMin, 10), parseInt(ttvAdvanceMax, 10)]
         : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges =
@@ -191,6 +216,7 @@ export default function CalibrationForm({
         !secretIDIsValid ||
         !seedLeewayIsValid ||
         !advanceRangeIsValid ||
+        (isTeachyTVMode && !ttvAdvanceRangeIsValid) ||
         !ivRangesAreValid;
 
     useEffect(() => {
@@ -259,6 +285,7 @@ export default function CalibrationForm({
                 await tenLines.check_seeds_static(
                     searchSeeds,
                     advanceRange,
+                    ttvAdvanceRange,
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.staticCategory,
@@ -281,6 +308,7 @@ export default function CalibrationForm({
                 await tenLines.check_seeds_wild(
                     searchSeeds,
                     advanceRange,
+                    ttvAdvanceRange,
                     parseInt(trainerID),
                     parseInt(secretID),
                     SEED_IDENTIFIER_TO_GAME[game],
@@ -315,10 +343,6 @@ export default function CalibrationForm({
         stringify: (option: FRLGContiguousSeedEntry) =>
             `${hexSeed(option.initialSeed, 16)}`,
     });
-
-    const isStatic = calibrationFormState.method <= 4;
-    const isFRLG = game.startsWith("fr") || game.startsWith("lg");
-    const isFRLGE = isFRLG || game.startsWith("e_");
 
     if (calibrationFormState.staticCategory == 3 && !isFRLG) {
         calibrationFormState.staticCategory = 0;
@@ -545,7 +569,7 @@ export default function CalibrationForm({
                 </Dialog>
             </Box>
             <RangeInput
-                label="Advance"
+                label={isTeachyTVMode ? "Final A Press Frame" : "Advances"}
                 name="advanceRange"
                 onChange={(_event, value) => {
                     setCalibrationURLState({
@@ -558,6 +582,37 @@ export default function CalibrationForm({
                 minimumValue={0}
                 maximumValue={999999}
             />
+            {isTeachyTVMode && (
+                <RangeInput
+                    label="TeachyTV Advances"
+                    name="ttvRange"
+                    onChange={(_event, value) => {
+                        setCalibrationURLState({
+                            ttvAdvanceMin: value.value[0],
+                            ttvAdvanceMax: value.value[1],
+                        });
+                        setTTVAdvanceRangeIsValid(value.isValid);
+                    }}
+                    value={[ttvAdvanceMin, ttvAdvanceMax]}
+                    minimumValue={0}
+                    maximumValue={999999}
+                />
+            )}
+            {isFRLG && (
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={isTeachyTVMode}
+                            onChange={(e) => {
+                                setCalibrationURLState({
+                                    teachyTVMode: e.target.checked.toString(),
+                                });
+                            }}
+                        />
+                    }
+                    label="TeachyTV Mode"
+                />
+            )}
             <Box sx={{ flexDirection: "row", display: "flex" }}>
                 <NumericalInput
                     label="Trainer ID"
@@ -764,6 +819,7 @@ export default function CalibrationForm({
                 target={targetSeed}
                 gameConsole={gameConsole}
                 isStatic={isStatic}
+                isTeachyTVMode={isTeachyTVMode}
             />
         </Box>
     );

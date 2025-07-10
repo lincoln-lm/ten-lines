@@ -21,7 +21,7 @@ export interface InitialSeedURLState {
     game: string;
     gameConsole: string;
     teachyTVMode: string;
-    teachyTVFramesOut: string;
+    teachyTVRegularOut: string;
 }
 
 function useInitialSeedURLState() {
@@ -31,7 +31,7 @@ function useInitialSeedURLState() {
     const game = searchParams.get("game") || "r_painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
-    const teachyTVFramesOut = searchParams.get("teachyTVFramesOut") || "3600";
+    const teachyTVRegularOut = searchParams.get("teachyTVRegularOut") || "3600";
     const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
         setSearchParams((prev) => {
             for (const [key, value] of Object.entries(state)) {
@@ -46,7 +46,7 @@ function useInitialSeedURLState() {
         game,
         gameConsole,
         teachyTVMode,
-        teachyTVFramesOut,
+        teachyTVRegularOut,
         setInitialSeedURLState,
     };
 }
@@ -69,7 +69,7 @@ export default function TenLinesForm({
         game,
         gameConsole,
         teachyTVMode,
-        teachyTVFramesOut,
+        teachyTVRegularOut,
         setInitialSeedURLState,
     } = useInitialSeedURLState();
     const [data, setData] = useState<InitialSeedResult[]>([]);
@@ -93,7 +93,7 @@ export default function TenLinesForm({
                         parseInt(targetSeed, 16),
                         parseInt(count, 10),
                         game,
-                        parseInt(teachyTVFramesOut, 10) || -0,
+                        parseInt(teachyTVRegularOut, 10) || -0,
                         data,
                         proxy(setData)
                     );
@@ -103,6 +103,7 @@ export default function TenLinesForm({
     };
 
     const isFRLG = !game.endsWith("painting");
+    const isTeachyTVMode = teachyTVMode === "true" && isFRLG;
 
     if (hidden) {
         return null;
@@ -188,12 +189,12 @@ export default function TenLinesForm({
             </TextField>
             {isFRLG && (
                 <TeachyTVEntry
-                    teachyTVMode={teachyTVMode === "true"}
-                    teachyTVFramesOut={teachyTVFramesOut}
-                    onChange={(teachyTVMode, teachyTVFramesOut) => {
+                    isTeachyTVMode={isTeachyTVMode}
+                    teachyTVRegularOut={teachyTVRegularOut}
+                    onChange={(isTeachyTVMode, teachyTVRegularOut) => {
                         setInitialSeedURLState({
-                            teachyTVMode: teachyTVMode.toString(),
-                            teachyTVFramesOut: teachyTVFramesOut.value,
+                            teachyTVMode: isTeachyTVMode.toString(),
+                            teachyTVRegularOut: teachyTVRegularOut.value,
                         });
                     }}
                 ></TeachyTVEntry>
@@ -211,8 +212,8 @@ export default function TenLinesForm({
                 rows={data}
                 isFRLG={isFRLG}
                 gameConsole={gameConsole}
-                teachyTVMode={teachyTVMode === "true" && isFRLG}
-                teachyTVFramesOut={parseInt(teachyTVFramesOut, 10) || 0}
+                isTeachyTVMode={isTeachyTVMode}
+                teachyTVRegularOut={parseInt(teachyTVRegularOut, 10) || 0}
             />
         </Box>
     );

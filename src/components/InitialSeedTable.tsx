@@ -19,14 +19,14 @@ const InitialSeedTable = memo(function InitialSeedTable({
     rows,
     isFRLG,
     gameConsole,
-    teachyTVMode,
-    teachyTVFramesOut,
+    isTeachyTVMode,
+    teachyTVRegularOut,
 }: {
     rows: InitialSeedResult[];
     isFRLG: boolean;
     gameConsole: string;
-    teachyTVMode: boolean;
-    teachyTVFramesOut: number;
+    isTeachyTVMode: boolean;
+    teachyTVRegularOut: number;
 }) {
     const [_, setSearchParams] = useSearchParams();
     function humanizeSettings(settings: string | undefined) {
@@ -64,11 +64,31 @@ const InitialSeedTable = memo(function InitialSeedTable({
         setSearchParams((previous) => {
             let params = new URLSearchParams(previous);
             params.set("targetInitialSeed", hexSeed(row.initialSeed, 16));
-            params.set(
-                "advanceMin",
-                Math.max(0, row.advance - 1000).toString()
-            );
-            params.set("advanceMax", (row.advance + 1000).toString());
+            if (isTeachyTVMode) {
+                const ttv = teachyTVConversion(row.advance, teachyTVRegularOut);
+                params.set(
+                    "advanceMin",
+                    Math.max(
+                        0,
+                        ttv.regular_advance + ttv.ttv_advance - 15
+                    ).toString()
+                );
+                params.set(
+                    "advanceMax",
+                    (ttv.regular_advance + ttv.ttv_advance + 15).toString()
+                );
+                params.set(
+                    "ttvAdvanceMin",
+                    Math.max(0, ttv.ttv_advance - 15).toString()
+                );
+                params.set("ttvAdvanceMax", (ttv.ttv_advance + 15).toString());
+            } else {
+                params.set(
+                    "advanceMin",
+                    Math.max(0, row.advance - 1000).toString()
+                );
+                params.set("advanceMax", (row.advance + 1000).toString());
+            }
             params.set("page", "1");
             if (isFRLG) {
                 const [
@@ -102,8 +122,11 @@ const InitialSeedTable = memo(function InitialSeedTable({
                         {!isFRLG && <TableCell>Seed (dec)</TableCell>}
                         <TableCell>Seed (hex)</TableCell>
                         <TableCell>Advances</TableCell>
-                        {teachyTVMode && (
-                            <TableCell>Frames in TeachyTV</TableCell>
+                        {isTeachyTVMode && (
+                            <TableCell>Final A Press Frame</TableCell>
+                        )}
+                        {isTeachyTVMode && (
+                            <TableCell>TeachyTV Advances</TableCell>
                         )}
                         <TableCell>Estimated Total Frames</TableCell>
                         <TableCell>Estimated Total Time</TableCell>
@@ -115,15 +138,14 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 <TableBody>
                     {rows.map((row, index) => {
                         let visual_frame = row.advance;
-                        let frames_in_ttv = 0;
-                        if (teachyTVMode) {
+                        let ttv_advance = 0;
+                        if (isTeachyTVMode) {
                             const ttv = teachyTVConversion(
                                 row.advance,
-                                teachyTVFramesOut
+                                teachyTVRegularOut
                             );
-                            frames_in_ttv = ttv.frames_in_ttv;
-                            visual_frame =
-                                frames_in_ttv + ttv.frames_out_of_ttv;
+                            ttv_advance = ttv.ttv_advance;
+                            visual_frame = ttv_advance + ttv.regular_advance;
                         }
                         return (
                             <TableRow key={index}>
@@ -134,8 +156,11 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                     {hexSeed(row.initialSeed, 16)}
                                 </TableCell>
                                 <TableCell>{row.advance}</TableCell>
-                                {teachyTVMode && (
-                                    <TableCell>{frames_in_ttv}</TableCell>
+                                {isTeachyTVMode && (
+                                    <TableCell>{visual_frame}</TableCell>
+                                )}
+                                {isTeachyTVMode && (
+                                    <TableCell>{ttv_advance}</TableCell>
                                 )}
                                 <TableCell>
                                     {row.seedFrame + visual_frame}
