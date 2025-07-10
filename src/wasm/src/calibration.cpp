@@ -171,7 +171,6 @@ emscripten::val get_static_template_info(int category)
             auto tmplate = blisy_e_reader_templates[i];
             array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{static_cast<int>(i), tmplate.getSpecie(), tmplate.getForm(), static_cast<u32>(tmplate.getVersion()), static_cast<u8>(tmplate.getShiny())}));
         }
-        array.call<void>("push", emscripten::val(StaticTemplateDisplayInfo{0, 243, 0, static_cast<u32>(Game::RSE), static_cast<u8>(Shiny::Random)}));
         return array;
     }
 
