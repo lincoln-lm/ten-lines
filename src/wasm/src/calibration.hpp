@@ -9,6 +9,7 @@ public:
     CalibrationState() : GeneratorState(0, 0, {0, 0, 0, 0, 0, 0}, 0, 0, 0, 0, 0, nullptr) {};
     template <typename T>
     void dummySetter(T argument) { (void)argument; }
+    void setAdvances(u32 advances) { this->advances = advances; }
     u16 initialSeed;
     u16 seedFrame;
 };
@@ -20,6 +21,7 @@ public:
     CalibrationWildState() : WildGeneratorState(0, 0, {0, 0, 0, 0, 0, 0}, 0, 0, 0, 0, 0, 0, 0, 0, 0, nullptr) {};
     template <typename T>
     void dummySetter(T argument) { (void)argument; }
+    void setAdvances(u32 advances) { this->advances = advances; }
     u16 initialSeed;
     u16 seedFrame;
 };
