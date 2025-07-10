@@ -66,7 +66,7 @@ function StaticEncounterSelector({
                 )}
             </TextField>
             <TextField
-                label="Pokemon"
+                label="Pokémon"
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {

@@ -137,7 +137,7 @@ function WildEncounterSelector({
             />
             <Box sx={{ display: "flex", alignItems: "center" }}>
                 <TextField
-                    label="Pokemon"
+                    label="Pokémon"
                     margin="normal"
                     style={{ textAlign: "left" }}
                     onChange={(event) => {
