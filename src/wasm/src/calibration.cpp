@@ -61,7 +61,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
                 for (auto &generator_result : generator_results)
                 {
                     CalibrationState current_result(seed, frame, generator_result);
-                    current_result.setAdvances(cnt);
+                    current_result.setAdvances(cnt + initial_advances);
                     results.call<void>("push", emscripten::val(current_result));
                 }
             }
