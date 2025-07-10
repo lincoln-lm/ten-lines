@@ -77,6 +77,11 @@ function NumericalInput({
                         </InputAdornment>
                     ),
                 },
+                htmlInput: !isHex
+                    ? {
+                          inputMode: "numeric",
+                      }
+                    : {},
             }}
             {...props}
         ></TextField>
