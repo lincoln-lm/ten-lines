@@ -60,6 +60,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advance_range, u1
                 auto generator_results = generator.generate(rng.getSeed(), tmplate);
                 for (auto &generator_result : generator_results)
                 {
+                    generator_result.advance = cnt;
                     results.call<void>("push", emscripten::val(CalibrationState(seed, frame, generator_result)));
                 }
             }
