@@ -65,29 +65,35 @@ const InitialSeedTable = memo(function InitialSeedTable({
             let params = new URLSearchParams(previous);
             params.set("targetInitialSeed", hexSeed(row.initialSeed, 16));
             if (isTeachyTVMode) {
-                const ttv = teachyTVConversion(row.advance, teachyTVRegularOut);
+                const ttv = teachyTVConversion(
+                    row.advances,
+                    teachyTVRegularOut
+                );
                 params.set(
-                    "advanceMin",
+                    "advancesMin",
                     Math.max(
                         0,
-                        ttv.regular_advance + ttv.ttv_advance - 15
+                        ttv.regular_advances + ttv.ttv_advances - 15
                     ).toString()
                 );
                 params.set(
-                    "advanceMax",
-                    (ttv.regular_advance + ttv.ttv_advance + 15).toString()
+                    "advancesMax",
+                    (ttv.regular_advances + ttv.ttv_advances + 15).toString()
                 );
                 params.set(
-                    "ttvAdvanceMin",
-                    Math.max(0, ttv.ttv_advance - 15).toString()
+                    "ttvAdvancesMin",
+                    Math.max(0, ttv.ttv_advances - 15).toString()
                 );
-                params.set("ttvAdvanceMax", (ttv.ttv_advance + 15).toString());
+                params.set(
+                    "ttvAdvancesMax",
+                    (ttv.ttv_advances + 15).toString()
+                );
             } else {
                 params.set(
-                    "advanceMin",
-                    Math.max(0, row.advance - 1000).toString()
+                    "advancesMin",
+                    Math.max(0, row.advances - 1000).toString()
                 );
-                params.set("advanceMax", (row.advance + 1000).toString());
+                params.set("advancesMax", (row.advances + 1000).toString());
             }
             params.set("page", "1");
             if (isFRLG) {
@@ -137,15 +143,15 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 </TableHead>
                 <TableBody>
                     {rows.map((row, index) => {
-                        let visual_frame = row.advance;
-                        let ttv_advance = 0;
+                        let visual_frame = row.advances;
+                        let ttv_advances = 0;
                         if (isTeachyTVMode) {
                             const ttv = teachyTVConversion(
-                                row.advance,
+                                row.advances,
                                 teachyTVRegularOut
                             );
-                            ttv_advance = ttv.ttv_advance;
-                            visual_frame = ttv_advance + ttv.regular_advance;
+                            ttv_advances = ttv.ttv_advances;
+                            visual_frame = ttv_advances + ttv.regular_advances;
                         }
                         return (
                             <TableRow key={index}>
@@ -155,12 +161,12 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                 <TableCell>
                                     {hexSeed(row.initialSeed, 16)}
                                 </TableCell>
-                                <TableCell>{row.advance}</TableCell>
+                                <TableCell>{row.advances}</TableCell>
                                 {isTeachyTVMode && (
                                     <TableCell>{visual_frame}</TableCell>
                                 )}
                                 {isTeachyTVMode && (
-                                    <TableCell>{ttv_advance}</TableCell>
+                                    <TableCell>{ttv_advances}</TableCell>
                                 )}
                                 <TableCell>
                                     {row.seedFrame + visual_frame}

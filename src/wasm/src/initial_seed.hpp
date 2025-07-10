@@ -6,7 +6,7 @@
 
 struct InitialSeedResult
 {
-    u32 advance;
+    u32 advances;
     u32 seedFrame;
     std::string key;
     u16 initialSeed;

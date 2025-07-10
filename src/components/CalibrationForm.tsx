@@ -60,10 +60,10 @@ export interface CalibrationURLState {
     heldButton: string;
     gameConsole: string;
     targetInitialSeed: string;
-    advanceMin: string;
-    advanceMax: string;
-    ttvAdvanceMin: string;
-    ttvAdvanceMax: string;
+    advancesMin: string;
+    advancesMax: string;
+    ttvAdvancesMin: string;
+    ttvAdvancesMax: string;
     trainerID: string;
     secretID: string;
     teachyTVMode: string;
@@ -77,10 +77,10 @@ function useCalibrationURLState() {
     const button = searchParams.get("button") || "a";
     const heldButton = searchParams.get("heldButton") || "none";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
-    const advanceMin = searchParams.get("advanceMin") || "0";
-    const advanceMax = searchParams.get("advanceMax") || "100";
-    const ttvAdvanceMin = searchParams.get("ttvAdvanceMin") || "0";
-    const ttvAdvanceMax = searchParams.get("ttvAdvanceMax") || "100";
+    const advancesMin = searchParams.get("advancesMin") || "0";
+    const advancesMax = searchParams.get("advancesMax") || "100";
+    const ttvAdvancesMin = searchParams.get("ttvAdvancesMin") || "0";
+    const ttvAdvancesMax = searchParams.get("ttvAdvancesMax") || "100";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
@@ -102,10 +102,10 @@ function useCalibrationURLState() {
         heldButton,
         gameConsole,
         targetSeedValue,
-        advanceMin,
-        advanceMax,
-        ttvAdvanceMin,
-        ttvAdvanceMax,
+        advancesMin,
+        advancesMax,
+        ttvAdvancesMin,
+        ttvAdvancesMax,
         trainerID,
         secretID,
         teachyTVMode,
@@ -151,10 +151,10 @@ export default function CalibrationForm({
         heldButton,
         gameConsole,
         targetSeedValue,
-        advanceMin,
-        advanceMax,
-        ttvAdvanceMin,
-        ttvAdvanceMax,
+        advancesMin,
+        advancesMax,
+        ttvAdvancesMin,
+        ttvAdvancesMax,
         trainerID,
         secretID,
         teachyTVMode,
@@ -174,16 +174,17 @@ export default function CalibrationForm({
     const seedLeeway = seedLeewayIsValid
         ? parseInt(calibrationFormState.seedLeewayString, 10)
         : 0;
-    const [advanceRangeIsValid, setAdvanceRangeIsValid] = useState(true);
-    const advanceRange = advanceRangeIsValid
-        ? [parseInt(advanceMin, 10), parseInt(advanceMax, 10)]
+    const [advancesRangeIsValid, setAdvancesRangeIsValid] = useState(true);
+    const advancesRange = advancesRangeIsValid
+        ? [parseInt(advancesMin, 10), parseInt(advancesMax, 10)]
         : [0, 0];
     const isTeachyTVMode = teachyTVMode === "true" && isFRLG;
-    const [ttvAdvanceRangeIsValid, setTTVAdvanceRangeIsValid] = useState(true);
-    const ttvAdvanceRange = !isTeachyTVMode
+    const [ttvAdvancesRangeIsValid, setTTVAdvancesRangeIsValid] =
+        useState(true);
+    const ttvAdvancesRange = !isTeachyTVMode
         ? [0, 0]
-        : ttvAdvanceRangeIsValid
-        ? [parseInt(ttvAdvanceMin, 10), parseInt(ttvAdvanceMax, 10)]
+        : ttvAdvancesRangeIsValid
+        ? [parseInt(ttvAdvancesMin, 10), parseInt(ttvAdvancesMax, 10)]
         : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges =
@@ -215,8 +216,8 @@ export default function CalibrationForm({
         !trainerIDIsValid ||
         !secretIDIsValid ||
         !seedLeewayIsValid ||
-        !advanceRangeIsValid ||
-        (isTeachyTVMode && !ttvAdvanceRangeIsValid) ||
+        !advancesRangeIsValid ||
+        (isTeachyTVMode && !ttvAdvancesRangeIsValid) ||
         !ivRangesAreValid;
 
     useEffect(() => {
@@ -284,8 +285,8 @@ export default function CalibrationForm({
             if (isStatic) {
                 await tenLines.check_seeds_static(
                     searchSeeds,
-                    advanceRange,
-                    ttvAdvanceRange,
+                    advancesRange,
+                    ttvAdvancesRange,
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.staticCategory,
@@ -307,8 +308,8 @@ export default function CalibrationForm({
             } else {
                 await tenLines.check_seeds_wild(
                     searchSeeds,
-                    advanceRange,
-                    ttvAdvanceRange,
+                    advancesRange,
+                    ttvAdvancesRange,
                     parseInt(trainerID),
                     parseInt(secretID),
                     SEED_IDENTIFIER_TO_GAME[game],
@@ -570,15 +571,15 @@ export default function CalibrationForm({
             </Box>
             <RangeInput
                 label={isTeachyTVMode ? "Final A Press Frame" : "Advances"}
-                name="advanceRange"
+                name="advancesRange"
                 onChange={(_event, value) => {
                     setCalibrationURLState({
-                        advanceMin: value.value[0],
-                        advanceMax: value.value[1],
+                        advancesMin: value.value[0],
+                        advancesMax: value.value[1],
                     });
-                    setAdvanceRangeIsValid(value.isValid);
+                    setAdvancesRangeIsValid(value.isValid);
                 }}
-                value={[advanceMin, advanceMax]}
+                value={[advancesMin, advancesMax]}
                 minimumValue={0}
                 maximumValue={999999}
             />
@@ -588,12 +589,12 @@ export default function CalibrationForm({
                     name="ttvRange"
                     onChange={(_event, value) => {
                         setCalibrationURLState({
-                            ttvAdvanceMin: value.value[0],
-                            ttvAdvanceMax: value.value[1],
+                            ttvAdvancesMin: value.value[0],
+                            ttvAdvancesMax: value.value[1],
                         });
-                        setTTVAdvanceRangeIsValid(value.isValid);
+                        setTTVAdvancesRangeIsValid(value.isValid);
                     }}
-                    value={[ttvAdvanceMin, ttvAdvanceMax]}
+                    value={[ttvAdvancesMin, ttvAdvancesMax]}
                     minimumValue={0}
                     maximumValue={999999}
                 />

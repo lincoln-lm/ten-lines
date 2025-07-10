@@ -38,9 +38,9 @@ void painting_seeds(u32 target_seed, u16 result_count, emscripten::val callback)
     auto results = emscripten::val::array();
     for (u32 i = 0; i < result_count; i++)
     {
-        auto [advance, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
+        auto [offset_advances, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
         results.call<void>("push", emscripten::val(InitialSeedResult{
-                                       .advance = advance + distance_from_base,
+                                       .advances = offset_advances + distance_from_base,
                                        .seedFrame = seed,
                                        .key = "",
                                        .initialSeed = seed,
@@ -61,11 +61,11 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32
     auto results = emscripten::val::array();
     for (u32 i = 0, valid_results = 0; valid_results < result_count; i++)
     {
-        auto [offset_advance, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
-        u32 advance = offset_advance + distance_from_base;
+        auto [offset_advances, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
+        u32 advances = offset_advances + distance_from_base;
         // if the advances required to reach this seed are less than the required frames in the overworld
         // then the target is unreachable
-        if (advance < ttv_frames_out)
+        if (advances < ttv_frames_out)
         {
             continue;
         }
@@ -89,7 +89,7 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32
                 u16 frame = entry.seedFrame;
                 const char *key = entry.key;
                 results.call<void>("push", emscripten::val(InitialSeedResult{
-                                               .advance = advance,
+                                               .advances = advances,
                                                .seedFrame = frame,
                                                .key = std::string(key) + "_" + held_button_offset.held_button,
                                                .initialSeed = seed,
@@ -141,7 +141,7 @@ EMSCRIPTEN_BINDINGS(initial_seed)
         .field("initialSeed", &FRLGContiguousSeedEntry::initialSeed);
 
     emscripten::value_object<InitialSeedResult>("InitialSeedResult")
-        .field("advance", &InitialSeedResult::advance)
+        .field("advances", &InitialSeedResult::advances)
         .field("seedFrame", &InitialSeedResult::seedFrame)
         .field("settings", &InitialSeedResult::key)
         .field("initialSeed", &InitialSeedResult::initialSeed);
