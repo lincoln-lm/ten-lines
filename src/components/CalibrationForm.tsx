@@ -35,6 +35,7 @@ import IvCalculator from "./IvCalculator";
 import StaticEncounterSelector from "./StaticEncounterSelector";
 import { useSearchParams } from "react-router-dom";
 import WildEncounterSelector from "./WildEncounterSelector";
+import { fetchBingo, getBingoActive, useBingoBoard } from "./BingoPage";
 
 export interface CalibrationFormState {
     seedLeewayString: string;
@@ -160,6 +161,11 @@ export default function CalibrationForm({
         teachyTVMode,
         setCalibrationURLState,
     } = useCalibrationURLState();
+
+    const [_bingoBoard, setBingoBoard, _bingoCounters, setBingoCounters] =
+        useBingoBoard();
+
+    const bingoActive = getBingoActive();
 
     const isStatic = calibrationFormState.method <= 4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
@@ -810,11 +816,44 @@ export default function CalibrationForm({
             ) : (
                 <span>IV Calculation disabled. Searching all Natures.</span>
             )}
+            {bingoActive && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    onClick={() => {
+                        if (isNotSubmittable) return;
+                        const searchSeeds = seedList.slice(
+                            Math.max(0, targetSeedIndex - seedLeeway),
+                            Math.min(
+                                seedList.length,
+                                targetSeedIndex + seedLeeway + 1
+                            )
+                        );
+                        fetchBingo(
+                            searchSeeds,
+                            advancesRange,
+                            isStatic,
+                            trainerID,
+                            secretID,
+                            game,
+                            calibrationFormState,
+                            setBingoBoard,
+                            setBingoCounters
+                        );
+                    }}
+                    fullWidth
+                    sx={{ my: 0.5 }}
+                >
+                    Bingo
+                </Button>
+            )}
             <Button
                 variant="contained"
                 color="primary"
                 type="submit"
                 disabled={isNotSubmittable}
+                sx={{ my: 0.5 }}
                 fullWidth
             >
                 {searching ? "Searching..." : "Submit"}

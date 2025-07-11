@@ -67,7 +67,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advances_range, e
                 auto generator_results = generator.generate(rng.getSeed(), tmplate);
                 for (auto &generator_result : generator_results)
                 {
-                    CalibrationState current_result(seed, frame, 0, generator_result);
+                    CalibrationState current_result(seed, frame, 0, tmplate->getSpecie(), tmplate->getForm(), generator_result);
                     current_result.setAdvances(cnt + initial_advances);
                     results.call<void>("push", emscripten::val(current_result));
                 }
@@ -97,7 +97,7 @@ void check_seeds_static(emscripten::val seeds, emscripten::val advances_range, e
             auto generator_results = generator.generate(seed);
             for (auto &generator_result : generator_results)
             {
-                results.call<void>("push", emscripten::val(CalibrationState(seed, frame, ttv_advances, generator_result)));
+                results.call<void>("push", emscripten::val(CalibrationState(seed, frame, ttv_advances, tmplate.getSpecie(), tmplate.getForm(), generator_result)));
             }
         }
         result_callback(results);
@@ -300,6 +300,14 @@ EMSCRIPTEN_BINDINGS(calibration)
         .element(emscripten::index<4>())
         .element(emscripten::index<5>());
 
+    emscripten::value_array<std::array<u16, 6>>("std_array_u16_6")
+        .element(emscripten::index<0>())
+        .element(emscripten::index<1>())
+        .element(emscripten::index<2>())
+        .element(emscripten::index<3>())
+        .element(emscripten::index<4>())
+        .element(emscripten::index<5>());
+
     emscripten::value_object<CalibrationState>("CalibrationState")
         .field("initialSeed", &CalibrationState::initialSeed)
         .field("seedFrame", &CalibrationState::seedFrame)
@@ -311,7 +319,10 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("abilityIndex", &CalibrationState::getAbilityIndex, &CalibrationState::dummySetter<u16>)
         .field("gender", &CalibrationState::getGender, &CalibrationState::dummySetter<u8>)
         .field("ivs", &CalibrationState::getIVs, &CalibrationState::dummySetter<std::array<u8, 6>>)
-        .field("shiny", &CalibrationState::getShiny, &CalibrationState::dummySetter<u8>);
+        .field("stats", &CalibrationState::getStats, &CalibrationState::dummySetter<std::array<u16, 6>>)
+        .field("shiny", &CalibrationState::getShiny, &CalibrationState::dummySetter<u8>)
+        .field("species", &CalibrationState::species)
+        .field("form", &CalibrationState::form);
 
     emscripten::value_object<CalibrationWildState>("CalibrationWildState")
         .field("initialSeed", &CalibrationWildState::initialSeed)
@@ -324,6 +335,7 @@ EMSCRIPTEN_BINDINGS(calibration)
         .field("abilityIndex", &CalibrationWildState::getAbilityIndex, &CalibrationWildState::dummySetter<u16>)
         .field("gender", &CalibrationWildState::getGender, &CalibrationWildState::dummySetter<u8>)
         .field("ivs", &CalibrationWildState::getIVs, &CalibrationWildState::dummySetter<std::array<u8, 6>>)
+        .field("stats", &CalibrationWildState::getStats, &CalibrationWildState::dummySetter<std::array<u16, 6>>)
         .field("shiny", &CalibrationWildState::getShiny, &CalibrationWildState::dummySetter<u8>)
         .field("encounterSlot", &CalibrationWildState::getEncounterSlot, &CalibrationWildState::dummySetter<u8>)
         .field("species", &CalibrationWildState::getSpecie, &CalibrationWildState::dummySetter<u16>)

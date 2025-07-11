@@ -9,6 +9,7 @@ import { Box, Tab, Tabs } from "@mui/material";
 import CalibrationForm from "./components/CalibrationForm";
 import FrLgSeedsTimestamp from "./wasm/src/generated/frlg_seeds_timestamp.txt?raw";
 import { BrowserRouter, useSearchParams } from "react-router-dom";
+import BingoPage, { getBingoActive } from "./components/BingoPage";
 
 const darkTheme = createTheme({
     palette: {
@@ -19,6 +20,7 @@ const darkTheme = createTheme({
 function TenLinesPages() {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") || "0") || 0;
+    const bingoActive = getBingoActive();
 
     const pages = [
         <InitialSeedForm
@@ -36,6 +38,7 @@ function TenLinesPages() {
             sx={{ maxWidth: 1100, minWidth: 1100, width: 1100 }}
             hidden={currentPage != 2}
         />,
+        bingoActive && <BingoPage key={3} hidden={currentPage != 3} />,
     ];
 
     return (
@@ -55,6 +58,7 @@ function TenLinesPages() {
                     <Tab label="Searcher" value={2} />
                     <Tab label="Initial Seed" value={0} />
                     <Tab label="Calibration" value={1} />
+                    {bingoActive && <Tab label="Bingo" value={3} />}
                 </Tabs>
                 {pages}
             </Box>

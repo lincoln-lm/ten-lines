@@ -5,11 +5,13 @@
 class CalibrationState : public GeneratorState
 {
 public:
-    CalibrationState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, const GeneratorState &state) : GeneratorState(state), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances) {}
+    CalibrationState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, u16 species, u8 form, const GeneratorState &state) : GeneratorState(state), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances), species(species), form(form) {}
     CalibrationState() : GeneratorState(0, 0, {0, 0, 0, 0, 0, 0}, 0, 0, 0, 0, 0, nullptr) {};
     template <typename T>
     void dummySetter(T argument) { (void)argument; }
     void setAdvances(u32 advances) { this->advances = advances; }
+    u16 species;
+    u8 form;
     u16 initialSeed;
     u16 seedFrame;
     u32 ttvAdvances;
