@@ -171,6 +171,10 @@ export default function CalibrationForm({
         searcherFormState.staticCategory = 0;
         setSearcherFormState(searcherFormState);
     }
+    if (searcherFormState.staticCategory == 8 && isFRLG) {
+        searcherFormState.staticCategory = 0;
+        setSearcherFormState(searcherFormState);
+    }
 
     if (hidden) {
         return null;

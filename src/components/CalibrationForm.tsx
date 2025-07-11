@@ -353,6 +353,10 @@ export default function CalibrationForm({
         calibrationFormState.staticCategory = 0;
         setCalibrationFormState(calibrationFormState);
     }
+    if (calibrationFormState.staticCategory == 8 && isFRLG) {
+        calibrationFormState.staticCategory = 0;
+        setCalibrationFormState(calibrationFormState);
+    }
 
     if (hidden) {
         return null;
