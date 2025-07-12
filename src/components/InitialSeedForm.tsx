@@ -93,7 +93,9 @@ export default function TenLinesForm({
                         parseInt(targetSeed, 16),
                         parseInt(count, 10),
                         game,
-                        parseInt(teachyTVRegularOut, 10) || -0,
+                        isTeachyTVMode
+                            ? parseInt(teachyTVRegularOut, 10) || 0
+                            : 0,
                         data,
                         proxy(setData)
                     );
