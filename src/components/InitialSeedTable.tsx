@@ -182,8 +182,11 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                         .format("HH:mm:ss.SSS")}
                                 </TableCell>
                                 <TableCell>
-                                    {frameToMS(row.seedFrame, gameConsole)}
-                                    ms
+                                    {/* so only the actual number gets selected on double click */}
+                                    <div style={{ float: "left" }}>
+                                        {frameToMS(row.seedFrame, gameConsole)}
+                                    </div>
+                                    <span>ms</span>
                                 </TableCell>
                                 {isFRLG && (
                                     <TableCell>
