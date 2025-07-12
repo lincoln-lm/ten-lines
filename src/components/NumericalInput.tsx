@@ -49,7 +49,7 @@ function NumericalInput({
     );
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let { value } = event.target;
+        let { value, selectionStart, selectionEnd } = event.target;
         while (value.charAt(0) === "0") {
             value = value.substring(1);
         }
@@ -57,6 +57,10 @@ function NumericalInput({
             value = "0";
         }
         onChange(event, { isValid: getError(value) === "", value });
+        window.requestAnimationFrame(() => {
+            event.target.selectionStart = selectionStart;
+            event.target.selectionEnd = selectionEnd;
+        });
     };
 
     return (
