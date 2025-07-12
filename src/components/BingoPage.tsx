@@ -127,7 +127,7 @@ function SpriteImage({
             shiny ? "s" : ""
         }${gender == 1 ? "f" : ""}${species.toString().padStart(3, "0")}${
             form ? "-" + form : ""
-        }.png?raw=true`
+        }.gif?raw=true`
     );
     return (
         <Box
@@ -142,7 +142,7 @@ function SpriteImage({
                         shiny ? "s" : ""
                     }${species.toString().padStart(3, "0")}${
                         form ? "-" + form : ""
-                    }.png?raw=true`
+                    }.gif?raw=true`
                 )
             }
         />
