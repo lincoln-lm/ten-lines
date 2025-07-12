@@ -51,7 +51,11 @@ function WildEncounterSelector({
             setWildLocations(wildLocations);
             onChange(
                 wildCategory,
-                wildLocations.length > 0 ? wildLocations[0] : 0,
+                wildLocations.contains(wildLocation)
+                    ? wildLocation
+                    : wildLocations.length > 0
+                    ? wildLocations[0]
+                    : 0,
                 wildPokemon,
                 wildLead,
                 shouldFilterPokemon

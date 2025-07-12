@@ -31,8 +31,16 @@ function StaticEncounterSelector({
             setStaticTemplates(staticTemplates);
             onChange(
                 staticCategory,
-                staticTemplates.length > 0 ? staticTemplates[0].index : 0
+                staticTemplates.any(
+                    (template: StaticTemplateDisplayInfo) =>
+                        template.index == staticPokemon
+                )
+                    ? staticPokemon
+                    : staticTemplates.length > 0
+                    ? staticTemplates[0].index
+                    : 0
             );
+            console.log(staticTemplates);
         };
         fetchStaticTemplates();
     }, [staticCategory, game]);
