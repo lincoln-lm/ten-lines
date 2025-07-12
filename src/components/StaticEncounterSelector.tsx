@@ -31,7 +31,7 @@ function StaticEncounterSelector({
             setStaticTemplates(staticTemplates);
             onChange(
                 staticCategory,
-                staticTemplates.any(
+                staticTemplates.some(
                     (template: StaticTemplateDisplayInfo) =>
                         template.index == staticPokemon
                 )
