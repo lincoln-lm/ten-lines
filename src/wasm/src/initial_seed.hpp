@@ -85,7 +85,7 @@ struct HeldButtonOffset
     s16 offset;
 };
 
-static const std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_OFFSETS = {
+static inline std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_OFFSETS = {
     {"fr",
      {
          {'a', "startup_select", -1},

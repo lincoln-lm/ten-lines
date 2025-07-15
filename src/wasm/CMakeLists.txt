@@ -23,10 +23,13 @@ execute_process(
 )
 
 add_executable(ten_lines
-    src/ten_lines.cpp
-    src/initial_seed.cpp
     src/calibration.cpp
+    src/fetch_util.cpp
+    src/initial_seed.cpp
+    src/iv_calc.cpp
+    src/pokefinder_glue.cpp
     src/searcher.cpp
+
     src/generated/ten_lines_precalc.cpp
 )
 

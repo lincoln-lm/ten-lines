@@ -24,8 +24,8 @@ import RangeInput from "./RangeInput";
 import { proxy } from "comlink";
 import CalibrationTable from "./CalibrationTable";
 import {
-    type CalibrationState,
-    type CalibrationWildState,
+    type ExtendedGeneratorState,
+    type ExtendedWildGeneratorState,
     type FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import React from "react";
@@ -172,7 +172,7 @@ export default function CalibrationForm({
     const isFRLGE = isFRLG || game.startsWith("e_");
 
     const [rows, setRows] = useState<
-        CalibrationState[] | CalibrationWildState[]
+        ExtendedGeneratorState[] | ExtendedWildGeneratorState[]
     >([]);
     const [searching, setSearching] = useState(false);
 
@@ -301,7 +301,7 @@ export default function CalibrationForm({
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
-                    proxy((results: CalibrationState[]) => {
+                    proxy((results: ExtendedGeneratorState[]) => {
                         setRows((rows) => {
                             if (rows.length > 1000 || results.length === 0) {
                                 return rows;
@@ -329,7 +329,7 @@ export default function CalibrationForm({
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
                     ivRanges,
-                    proxy((results: CalibrationWildState[]) => {
+                    proxy((results: ExtendedWildGeneratorState[]) => {
                         setRows((rows) => {
                             if (rows.length > 1000 || results.length === 0) {
                                 return rows;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import React from "react";
-import type { StaticTemplateDisplayInfo } from "../tenLines/generated";
+import type { EnumeratedStaticTemplate3 } from "../tenLines/generated";
 import fetchTenLines, { Game } from "../tenLines";
 import { MenuItem, TextField } from "@mui/material";
 import { GAMES_EN, getNameEn } from "../tenLines/resources";
@@ -17,7 +17,7 @@ function StaticEncounterSelector({
     game?: number;
 }) {
     const [staticTemplates, setStaticTemplates] = useState<
-        StaticTemplateDisplayInfo[]
+        EnumeratedStaticTemplate3[]
     >([]);
 
     useEffect(() => {
@@ -26,13 +26,13 @@ function StaticEncounterSelector({
             const staticTemplates = (
                 await tenLines.get_static_template_info(staticCategory)
             ).filter(
-                (template: StaticTemplateDisplayInfo) => template.version & game
+                (template: EnumeratedStaticTemplate3) => template.version & game
             );
             setStaticTemplates(staticTemplates);
             onChange(
                 staticCategory,
                 staticTemplates.some(
-                    (template: StaticTemplateDisplayInfo) =>
+                    (template: EnumeratedStaticTemplate3) =>
                         template.index == staticPokemon
                 )
                     ? staticPokemon
@@ -40,7 +40,6 @@ function StaticEncounterSelector({
                     ? staticTemplates[0].index
                     : 0
             );
-            console.log(staticTemplates);
         };
         fetchStaticTemplates();
     }, [staticCategory, game]);

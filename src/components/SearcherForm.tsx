@@ -6,8 +6,8 @@ import fetchTenLines, { SEED_IDENTIFIER_TO_GAME } from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import { proxy } from "comlink";
 import {
-    type G3SearcherState,
-    type G3WildSearcherState,
+    type ExtendedSearcherState,
+    type ExtendedWildSearcherState,
 } from "../tenLines/generated";
 import React from "react";
 import { NATURES_EN } from "../tenLines/resources";
@@ -87,7 +87,7 @@ export default function CalibrationForm({
     const { game, trainerID, secretID, setSearcherURLState } =
         useSearcherURLState();
 
-    const [rows, setRows] = useState<G3SearcherState[]>([]);
+    const [rows, setRows] = useState<ExtendedSearcherState[]>([]);
     const [searching, setSearching] = useState(false);
 
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
@@ -121,7 +121,7 @@ export default function CalibrationForm({
                     searcherFormState.shininess,
                     searcherFormState.nature,
                     ivRanges,
-                    proxy((results: G3SearcherState[]) => {
+                    proxy((results: ExtendedSearcherState[]) => {
                         setRows((rows) => {
                             if (rows.length > 1000 || results.length === 0) {
                                 return rows;
@@ -144,7 +144,7 @@ export default function CalibrationForm({
                     searcherFormState.shininess,
                     searcherFormState.nature,
                     ivRanges,
-                    proxy((results: G3WildSearcherState[]) => {
+                    proxy((results: ExtendedWildSearcherState[]) => {
                         setRows((rows) => {
                             if (rows.length > 1000 || results.length === 0) {
                                 return rows;

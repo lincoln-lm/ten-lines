@@ -2,8 +2,8 @@ import { Box, Button } from "@mui/material";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type {
-    CalibrationState,
-    CalibrationWildState,
+    ExtendedGeneratorState,
+    ExtendedWildGeneratorState,
     FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import fetchTenLines, { hexSeed, SEED_IDENTIFIER_TO_GAME } from "../tenLines";
@@ -33,7 +33,9 @@ export async function fetchBingo(
     calibrationFormState: CalibrationFormState,
     setBingoBoard: React.Dispatch<
         React.SetStateAction<
-            CalibrationState[][] | CalibrationWildState[][] | undefined
+            | ExtendedGeneratorState[][]
+            | ExtendedWildGeneratorState[][]
+            | undefined
         >
     >,
     setBingoCounters: React.Dispatch<
@@ -41,13 +43,12 @@ export async function fetchBingo(
     >
 ) {
     const tenLines = await fetchTenLines();
-    const bingo_board: CalibrationState[][] = [];
+    const bingo_board: ExtendedGeneratorState[][] = [];
     const bingo_counters: number[][] = [];
     setBingoBoard(bingo_board);
     setBingoCounters(bingo_counters);
     const doneCallback = () => {};
-    const resultCallback = (results: CalibrationState[]) => {
-        console.log(results);
+    const resultCallback = (results: ExtendedGeneratorState[]) => {
         setBingoBoard((last_bingo_board) => {
             const new_bingo_board = [...(last_bingo_board ?? [])];
             new_bingo_board.push(results);

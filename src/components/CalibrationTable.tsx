@@ -8,8 +8,8 @@ import TableRow from "@mui/material/TableRow";
 import { memo } from "react";
 import { frameToMS, hexSeed } from "../tenLines";
 import type {
-    CalibrationState,
-    CalibrationWildState,
+    ExtendedGeneratorState,
+    ExtendedWildGeneratorState,
     FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import {
@@ -27,7 +27,7 @@ const CalibrationTable = memo(function CalibrationTable({
     isStatic,
     isTeachyTVMode,
 }: {
-    rows: CalibrationState[] | CalibrationWildState[];
+    rows: ExtendedGeneratorState[] | ExtendedWildGeneratorState[];
     target: FRLGContiguousSeedEntry;
     gameConsole: string;
     isStatic: boolean;
@@ -93,20 +93,24 @@ const CalibrationTable = memo(function CalibrationTable({
                                 {!isStatic && (
                                     <TableCell>
                                         {
-                                            (row as CalibrationWildState)
+                                            (row as ExtendedWildGeneratorState)
                                                 .encounterSlot
                                         }
                                         :{" "}
                                         {getNameEn(
-                                            (row as CalibrationWildState)
+                                            (row as ExtendedWildGeneratorState)
                                                 .species,
-                                            (row as CalibrationWildState).form
+                                            (row as ExtendedWildGeneratorState)
+                                                .form
                                         )}
                                     </TableCell>
                                 )}
                                 {!isStatic && (
                                     <TableCell>
-                                        {(row as CalibrationWildState).level}
+                                        {
+                                            (row as ExtendedWildGeneratorState)
+                                                .level
+                                        }
                                     </TableCell>
                                 )}
                                 <TableCell>{hexSeed(row.pid, 32)}</TableCell>

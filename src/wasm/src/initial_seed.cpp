@@ -1,9 +1,10 @@
-
 #include <emscripten/bind.h>
 #include <emscripten.h>
 #include <Core/RNG/LCRNG.hpp>
 #include <vector>
+#include <string>
 #include "initial_seed.hpp"
+#include "util.hpp"
 #include "generated/ten_lines_precalc.hpp"
 
 u32 find_closest_initial_seed_index(u32 target_seed)
@@ -31,26 +32,37 @@ u32 find_closest_initial_seed_index(u32 target_seed)
     return 0;
 }
 
-void painting_seeds(u32 target_seed, u16 result_count, emscripten::val callback)
+void painting_seeds(
+    u32 target_seed,
+    u16 result_count,
+    emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
 {
+    emscripten::typed_array<InitialSeedResult> results;
     u32 distance_from_base = PokeRNG::distance(0, target_seed);
     u32 result_index = find_closest_initial_seed_index(target_seed);
-    auto results = emscripten::val::array();
     for (u32 i = 0; i < result_count; i++)
     {
         auto [offset_advances, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
-        results.call<void>("push", emscripten::val(InitialSeedResult{
-                                       .advances = offset_advances + distance_from_base,
-                                       .seedFrame = seed,
-                                       .key = "",
-                                       .initialSeed = seed,
-                                   }));
+        results.push_back(InitialSeedResult{
+            .advances = offset_advances + distance_from_base,
+            .seedFrame = seed,
+            .key = "",
+            .initialSeed = seed,
+        });
     }
-    callback(results);
+    results_callback(results);
 }
 
-void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32 ttv_frames_out, emscripten::val seed_data, emscripten::val callback)
+void frlg_seeds(
+    u32 target_seed,
+    u16 result_count,
+    std::string game_version,
+    u32 ttv_frames_out,
+    emscripten::val seed_data,
+    emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
 {
+    emscripten::typed_array<InitialSeedResult> results;
+
     std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);
     FRLGSeedDataStore seed_store(seed_data_vector);
     auto frlg_seed_map = seed_store.seed_map;
@@ -58,7 +70,6 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32
 
     u32 distance_from_base = PokeRNG::distance(0, target_seed);
     u32 result_index = find_closest_initial_seed_index(target_seed);
-    auto results = emscripten::val::array();
     for (u32 i = 0, valid_results = 0; valid_results < result_count; i++)
     {
         auto [offset_advances, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
@@ -88,12 +99,12 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32
                 valid_results++;
                 u16 frame = entry.seedFrame;
                 const char *key = entry.key;
-                results.call<void>("push", emscripten::val(InitialSeedResult{
-                                               .advances = advances,
-                                               .seedFrame = frame,
-                                               .key = std::string(key) + "_" + held_button_offset.held_button,
-                                               .initialSeed = seed,
-                                           }));
+                results.push_back(InitialSeedResult{
+                    .advances = advances,
+                    .seedFrame = frame,
+                    .key = std::string(key) + "_" + held_button_offset.held_button,
+                    .initialSeed = seed,
+                });
                 if (valid_results >= result_count)
                 {
                     break;
@@ -105,10 +116,14 @@ void frlg_seeds(u32 target_seed, u16 result_count, std::string game_version, u32
             }
         }
     }
-    callback(results);
+    results_callback(results);
 }
 
-emscripten::val get_contiguous_seed_list(emscripten::val seed_data, std::string setting_key, std::string game_version, std::string held_button)
+emscripten::typed_array<FRLGContiguousSeedEntry> get_contiguous_seed_list(
+    emscripten::val seed_data,
+    std::string setting_key,
+    std::string game_version,
+    std::string held_button)
 {
     std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);
     FRLGSeedDataStore seed_data_store(seed_data_vector);
@@ -116,25 +131,25 @@ emscripten::val get_contiguous_seed_list(emscripten::val seed_data, std::string 
     const auto &offsets = HELD_BUTTON_OFFSETS.at(game_version);
     auto held_button_offset = std::find_if(offsets.begin(), offsets.end(), [&](const HeldButtonOffset &held_button_offset)
                                            { return held_button_offset.held_button == held_button; });
-    emscripten::val entries = emscripten::val::array();
+    emscripten::typed_array<FRLGContiguousSeedEntry> entries;
     if (held_button_offset == offsets.end())
     {
         return entries;
     }
     for (auto &seed : contiguous_seeds)
     {
-        entries.call<void>("push", emscripten::val(FRLGContiguousSeedEntry{
-                                       .seedFrame = seed.seedFrame,
-                                       .initialSeed = static_cast<u16>(seed.initialSeed + held_button_offset->offset),
-                                   }));
+        entries.push_back(FRLGContiguousSeedEntry{
+            .seedFrame = seed.seedFrame,
+            .initialSeed = static_cast<u16>(seed.initialSeed + held_button_offset->offset),
+        });
     }
     return entries;
 }
 EMSCRIPTEN_BINDINGS(initial_seed)
 {
-    emscripten::function("ten_lines_painting", &painting_seeds);
-    emscripten::function("ten_lines_frlg", &frlg_seeds);
-    emscripten::function("get_contiguous_seed_list", &get_contiguous_seed_list);
+    emscripten::smart_function("ten_lines_painting", &painting_seeds);
+    emscripten::smart_function("ten_lines_frlg", &frlg_seeds);
+    emscripten::smart_function("get_contiguous_seed_list", &get_contiguous_seed_list);
 
     emscripten::value_object<FRLGContiguousSeedEntry>("FRLGContiguousSeedEntry")
         .field("seedFrame", &FRLGContiguousSeedEntry::seedFrame)

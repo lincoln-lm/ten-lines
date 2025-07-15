@@ -8,8 +8,8 @@ import TableRow from "@mui/material/TableRow";
 import { memo } from "react";
 import { hexSeed } from "../tenLines";
 import type {
-    G3SearcherState,
-    G3WildSearcherState,
+    ExtendedSearcherState,
+    ExtendedWildSearcherState,
 } from "../tenLines/generated";
 import {
     ABILITIES_EN,
@@ -25,13 +25,13 @@ const SearcherTable = memo(function SearcherTable({
     rows,
     isStatic,
 }: {
-    rows: G3SearcherState[] | G3WildSearcherState[];
+    rows: ExtendedSearcherState[] | ExtendedWildSearcherState[];
     isStatic: boolean;
 }) {
     const [_, setSearchParams] = useSearchParams();
 
     function openInInitialSeed(
-        row: G3SearcherState | G3WildSearcherState,
+        row: ExtendedSearcherState | ExtendedWildSearcherState,
         isAuxClick: boolean
     ) {
         setSearchParams((previous) => {
@@ -75,20 +75,24 @@ const SearcherTable = memo(function SearcherTable({
                                 {!isStatic && (
                                     <TableCell>
                                         {
-                                            (row as G3WildSearcherState)
+                                            (row as ExtendedWildSearcherState)
                                                 .encounterSlot
                                         }
                                         :{" "}
                                         {getNameEn(
-                                            (row as G3WildSearcherState)
+                                            (row as ExtendedWildSearcherState)
                                                 .species,
-                                            (row as G3WildSearcherState).form
+                                            (row as ExtendedWildSearcherState)
+                                                .form
                                         )}
                                     </TableCell>
                                 )}
                                 {!isStatic && (
                                     <TableCell>
-                                        {(row as G3WildSearcherState).level}
+                                        {
+                                            (row as ExtendedWildSearcherState)
+                                                .level
+                                        }
                                     </TableCell>
                                 )}
                                 <TableCell>{hexSeed(row.pid, 32)}</TableCell>
