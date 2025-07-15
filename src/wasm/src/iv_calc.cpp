@@ -48,7 +48,11 @@ std::array<IVRange, 6> calc_ivs(emscripten::typed_array<emscripten::typed_array<
     return ranges;
 }
 
-emscripten::typed_array<IVRange> calc_ivs_static(int category, int template_index, emscripten::val stats, u8 nature)
+emscripten::typed_array<IVRange> calc_ivs_static(
+    int category,
+    int template_index,
+    emscripten::typed_array<emscripten::typed_array<u16>> stats,
+    u8 nature)
 {
     const StaticTemplate3 *static_template = Encounters3::getStaticEncounter(category, template_index);
     const PersonalInfo *info = static_template->getInfo();
@@ -56,7 +60,11 @@ emscripten::typed_array<IVRange> calc_ivs_static(int category, int template_inde
     return calc_ivs(stats, baseStats, nature);
 }
 
-emscripten::typed_array<IVRange> calc_ivs_generic(u16 species, u8 form, emscripten::val stats, u8 nature)
+emscripten::typed_array<IVRange> calc_ivs_generic(
+    u16 species,
+    u8 form,
+    emscripten::typed_array<emscripten::typed_array<u16>> stats,
+    u8 nature)
 {
     const PersonalInfo *info = PersonalLoader::getPersonal(Game::Gen3, species, form);
     const std::array<u8, 6> baseStats = info->getStats();

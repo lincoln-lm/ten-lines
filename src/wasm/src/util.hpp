@@ -205,9 +205,21 @@ namespace emscripten
     public:
         typed_array() : val(emscripten::val::array()) {};
         typed_array(emscripten::val v) : val(v) {};
-        typed_array(std::vector<T> v) : val(v) {};
+        typed_array(std::vector<T> v) : val(emscripten::val::array())
+        {
+            for (std::size_t i = 0; i < v.size(); i++)
+            {
+                push_back(v[i]);
+            };
+        };
         template <std::size_t N>
-        typed_array(std::array<T, N> v) : val(v){};
+        typed_array(std::array<T, N> v) : val(emscripten::val::array())
+        {
+            for (std::size_t i = 0; i < N; i++)
+            {
+                push_back(v[i]);
+            }
+        };
         void push_back(T v) { this->call<void>("push", emscripten::val(v)); };
         T operator[](int i)
         {
