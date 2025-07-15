@@ -16,7 +16,10 @@ struct IVRange
     u8 max;
 };
 
-std::array<IVRange, 6> calc_ivs(emscripten::typed_array<emscripten::typed_array<u16>> stats, std::array<u8, 6> baseStats, u8 nature)
+std::array<IVRange, 6> calc_ivs(
+    emscripten::typed_array<emscripten::typed_array<u16>> stats,
+    std::array<u8, 6> baseStats,
+    u8 nature)
 {
     std::vector<u8> levels;
     std::vector<std::array<u16, 6>> parsed_stats;
