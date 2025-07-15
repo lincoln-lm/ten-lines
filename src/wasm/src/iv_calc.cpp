@@ -16,16 +16,16 @@ struct IVRange
     u8 max;
 };
 
-std::array<IVRange, 6> calc_ivs(emscripten::val stats, std::array<u8, 6> baseStats, u8 nature)
+std::array<IVRange, 6> calc_ivs(emscripten::typed_array<emscripten::typed_array<u16>> stats, std::array<u8, 6> baseStats, u8 nature)
 {
     std::vector<u8> levels;
     std::vector<std::array<u16, 6>> parsed_stats;
 
-    for (int i = 0; i < stats["length"].as<int>(); i++)
+    for (int i = 0; i < stats.size(); i++)
     {
-        emscripten::val entry = stats[i];
-        levels.push_back(entry[0].as<u8>());
-        parsed_stats.push_back(std::array<u16, 6>{entry[1].as<u16>(), entry[2].as<u16>(), entry[3].as<u16>(), entry[4].as<u16>(), entry[5].as<u16>(), entry[6].as<u16>()});
+        emscripten::typed_array<u16> entry = stats[i];
+        levels.push_back(static_cast<u8>(entry[0]));
+        parsed_stats.push_back(std::array<u16, 6>{entry[1], entry[2], entry[3], entry[4], entry[5], entry[6]});
     }
 
     std::array<std::vector<u8>, 6> all_possible_ivs = IVChecker::calculateIVRange(baseStats, parsed_stats, levels, nature, 255, 255);
@@ -50,8 +50,8 @@ std::array<IVRange, 6> calc_ivs(emscripten::val stats, std::array<u8, 6> baseSta
 
 emscripten::typed_array<IVRange> calc_ivs_static(int category, int template_index, emscripten::val stats, u8 nature)
 {
-    const StaticTemplate3 *tmplate = Encounters3::getStaticEncounter(category, template_index);
-    const PersonalInfo *info = tmplate->getInfo();
+    const StaticTemplate3 *static_template = Encounters3::getStaticEncounter(category, template_index);
+    const PersonalInfo *info = static_template->getInfo();
     const std::array<u8, 6> baseStats = info->getStats();
     return calc_ivs(stats, baseStats, nature);
 }
