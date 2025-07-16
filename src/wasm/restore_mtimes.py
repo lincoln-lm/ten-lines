@@ -11,6 +11,9 @@ if __name__ == "__main__":
         with open(sys.argv[1] + "/mtimes.json", "r", encoding="utf-8") as f:
             mtimes = json.load(f)
 
+        for key, value in mtimes.items():
+            print(f"mtime for {key}: {value}")
+
         for header in glob.glob(
             sys.argv[1] + "/lib/PokeFinder/Source/Core/Resources/*.hpp"
         ):
