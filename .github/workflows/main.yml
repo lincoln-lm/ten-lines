@@ -36,6 +36,7 @@ jobs:
               with:
                   path: |
                       ${{ github.workspace }}/src/wasm/build
+                      ${{ github.workspace }}/src/wasm/lib/PokeFinder/Source/Core/Resources/*.hpp
                       ${{ github.workspace }}/src/wasm/src/generated
                   key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ github.head_ref }}-${{ github.run_id }}
                   restore-keys: |
