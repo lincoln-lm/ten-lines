@@ -11,7 +11,6 @@ import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
 import type { CalibrationFormState } from "./CalibrationForm";
 import { proxy } from "comlink";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { parse } from "path";
 
 export function useBingoBoard() {
     const [bingoBoard, setBingoBoard] = useLocalStorage("bingo-board", []);
