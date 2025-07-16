@@ -15,6 +15,7 @@ if __name__ == "__main__":
         with open(header, "rb") as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
         mtimes[file_hash] = os.path.getmtime(header)
+        print(f"storing mtime for {header}: {mtimes[file_hash]}")
 
     with open(sys.argv[1] + "/mtimes.json", "w+", encoding="utf-8") as f:
         json.dump(mtimes, f)
