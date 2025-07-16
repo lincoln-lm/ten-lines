@@ -229,7 +229,8 @@ export default function CalibrationForm({
         !seedLeewayIsValid ||
         !advancesRangeIsValid ||
         (isTeachyTVMode && !ttvAdvancesRangeIsValid) ||
-        !ivRangesAreValid;
+        !ivRangesAreValid ||
+        !offsetIsValid;
 
     useEffect(() => {
         const fetchSeedList = async () => {
@@ -298,7 +299,7 @@ export default function CalibrationForm({
                     searchSeeds,
                     advancesRange,
                     ttvAdvancesRange,
-                    offset,
+                    parseInt(offset),
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.staticCategory,
@@ -322,7 +323,7 @@ export default function CalibrationForm({
                     searchSeeds,
                     advancesRange,
                     ttvAdvancesRange,
-                    offset,
+                    parseInt(offset),
                     parseInt(trainerID),
                     parseInt(secretID),
                     SEED_IDENTIFIER_TO_GAME[game],
