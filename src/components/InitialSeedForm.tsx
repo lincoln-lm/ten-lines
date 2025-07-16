@@ -13,11 +13,13 @@ import TeachyTVEntry from "./TeachyTVEntry";
 export interface InitialSeedFormState {
     targetSeedIsValid: boolean;
     countIsValid: boolean;
+    offsetIsValid: boolean;
 }
 
 export interface InitialSeedURLState {
     targetSeed: string;
     count: string;
+    offset: string;
     game: string;
     gameConsole: string;
     teachyTVMode: string;
@@ -28,6 +30,7 @@ function useInitialSeedURLState() {
     const [searchParams, setSearchParams] = useSearchParams();
     const targetSeed = searchParams.get("targetSeed") || "DEADBEEF";
     const count = searchParams.get("count") || "10";
+    const offset = searchParams.get("offset") || "0";
     const game = searchParams.get("game") || "r_painting";
     const gameConsole = searchParams.get("gameConsole") || "GBA";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
@@ -43,6 +46,7 @@ function useInitialSeedURLState() {
     return {
         targetSeed,
         count,
+        offset,
         game,
         gameConsole,
         teachyTVMode,
@@ -62,10 +66,12 @@ export default function TenLinesForm({
         useState<InitialSeedFormState>({
             targetSeedIsValid: true,
             countIsValid: true,
+            offsetIsValid: true,
         });
     const {
         targetSeed,
         count,
+        offset,
         game,
         gameConsole,
         teachyTVMode,
@@ -75,7 +81,8 @@ export default function TenLinesForm({
     const [data, setData] = useState<InitialSeedResult[]>([]);
     const isNotSubmittable =
         !initialSeedFormState.targetSeedIsValid ||
-        !initialSeedFormState.countIsValid;
+        !initialSeedFormState.countIsValid ||
+        !initialSeedFormState.offsetIsValid;
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (isNotSubmittable) return;
@@ -85,6 +92,7 @@ export default function TenLinesForm({
                 lib.ten_lines_painting(
                     parseInt(targetSeed, 16),
                     parseInt(count, 10),
+                    parseInt(offset, 10),
                     proxy(setData)
                 );
             } else {
@@ -92,6 +100,7 @@ export default function TenLinesForm({
                     lib.ten_lines_frlg(
                         parseInt(targetSeed, 16),
                         parseInt(count, 10),
+                        parseInt(offset, 10),
                         game,
                         isTeachyTVMode
                             ? parseInt(teachyTVRegularOut, 10) || 0
@@ -147,6 +156,22 @@ export default function TenLinesForm({
                     }));
                 }}
                 value={count}
+            ></NumericalInput>
+            <NumericalInput
+                label="Offset"
+                name="offset"
+                minimumValue={0}
+                maximumValue={4294967295}
+                onChange={(_, value) => {
+                    setInitialSeedURLState({
+                        offset: value.value,
+                    });
+                    setInitialSeedFormState((data) => ({
+                        ...data,
+                        offsetIsValid: value.isValid,
+                    }));
+                }}
+                value={offset}
             ></NumericalInput>
             <TextField
                 label="Game"

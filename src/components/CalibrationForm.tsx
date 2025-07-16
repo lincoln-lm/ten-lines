@@ -65,6 +65,7 @@ export interface CalibrationURLState {
     advancesMax: string;
     ttvAdvancesMin: string;
     ttvAdvancesMax: string;
+    offset: string;
     trainerID: string;
     secretID: string;
     teachyTVMode: string;
@@ -82,6 +83,7 @@ function useCalibrationURLState() {
     const advancesMax = searchParams.get("advancesMax") || "100";
     const ttvAdvancesMin = searchParams.get("ttvAdvancesMin") || "0";
     const ttvAdvancesMax = searchParams.get("ttvAdvancesMax") || "100";
+    const offset = searchParams.get("offset") || "0";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
@@ -107,6 +109,7 @@ function useCalibrationURLState() {
         advancesMax,
         ttvAdvancesMin,
         ttvAdvancesMax,
+        offset,
         trainerID,
         secretID,
         teachyTVMode,
@@ -156,6 +159,7 @@ export default function CalibrationForm({
         advancesMax,
         ttvAdvancesMin,
         ttvAdvancesMax,
+        offset,
         trainerID,
         secretID,
         teachyTVMode,
@@ -193,6 +197,7 @@ export default function CalibrationForm({
         ? [parseInt(ttvAdvancesMin, 10), parseInt(ttvAdvancesMax, 10)]
         : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
+    const [offsetIsValid, setOffsetIsValid] = useState(true);
     const ivRanges =
         calibrationFormState.nature == -1
             ? [
@@ -293,6 +298,7 @@ export default function CalibrationForm({
                     searchSeeds,
                     advancesRange,
                     ttvAdvancesRange,
+                    offset,
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.staticCategory,
@@ -316,6 +322,7 @@ export default function CalibrationForm({
                     searchSeeds,
                     advancesRange,
                     ttvAdvancesRange,
+                    offset,
                     parseInt(trainerID),
                     parseInt(secretID),
                     SEED_IDENTIFIER_TO_GAME[game],
@@ -593,6 +600,19 @@ export default function CalibrationForm({
                 minimumValue={0}
                 maximumValue={999999}
             />
+            <NumericalInput
+                label="Offset"
+                name="offset"
+                minimumValue={0}
+                maximumValue={4294967295}
+                onChange={(_, value) => {
+                    setCalibrationURLState({
+                        offset: value.value,
+                    });
+                    setOffsetIsValid(value.isValid);
+                }}
+                value={offset}
+            ></NumericalInput>
             {isTeachyTVMode && (
                 <RangeInput
                     label="TeachyTV Advances"
@@ -833,6 +853,7 @@ export default function CalibrationForm({
                         fetchBingo(
                             searchSeeds,
                             advancesRange,
+                            offset,
                             isStatic,
                             trainerID,
                             secretID,

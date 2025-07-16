@@ -35,8 +35,10 @@ u32 find_closest_initial_seed_index(u32 target_seed)
 void painting_seeds(
     u32 target_seed,
     u16 result_count,
+    u32 offset,
     emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
 {
+    target_seed = PokeRNG(target_seed, -offset).getSeed();
     emscripten::typed_array<InitialSeedResult> results;
     u32 distance_from_base = PokeRNG::distance(0, target_seed);
     u32 result_index = find_closest_initial_seed_index(target_seed);
@@ -56,11 +58,13 @@ void painting_seeds(
 void frlg_seeds(
     u32 target_seed,
     u16 result_count,
+    u32 offset,
     std::string game_version,
     u32 ttv_frames_out,
     emscripten::val seed_data,
     emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
 {
+    target_seed = PokeRNG(target_seed, -offset).getSeed();
     emscripten::typed_array<InitialSeedResult> results;
 
     std::vector<u8> seed_data_vector = emscripten::convertJSArrayToNumberVector<u8>(seed_data);

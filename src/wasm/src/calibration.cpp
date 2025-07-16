@@ -24,8 +24,9 @@
 
 // these events are only accessible in RSE so they are always calculated without ttv
 emscripten::typed_array<ExtendedGeneratorState> generate_blisy_events(
-    emscripten::typed_range<u32> advances_range,
     emscripten::typed_array<FRLGContiguousSeedEntry> seeds,
+    emscripten::typed_range<u32> advances_range,
+    u32 offset,
     u32 template_index,
     Profile3 profile,
     StateFilter filter)
@@ -40,7 +41,7 @@ emscripten::typed_array<ExtendedGeneratorState> generate_blisy_events(
         u16 seed = entry.initialSeed;
         u16 seed_frame = entry.seedFrame;
         // these events pull the current rng state and use it to immediately generate the pokemon following the GC method
-        PokeRNG rng(seed, initial_advances);
+        PokeRNG rng(seed, initial_advances + offset);
         for (u32 cnt = 0; cnt <= max_advances; cnt++, rng.next())
         {
             GameCubeGenerator generator(0, 0, 0, static_template->getSpecie() == 385 ? Method::Channel : Method::XDColo, false, profile, filter);
@@ -60,6 +61,7 @@ void check_seeds_static(
     emscripten::typed_array<FRLGContiguousSeedEntry> seeds,
     emscripten::typed_range<u32> advances_range,
     emscripten::typed_range<u32> ttv_advances_range,
+    u32 offset,
     u16 trainer_id,
     u16 secret_id,
     int category,
@@ -85,7 +87,7 @@ void check_seeds_static(
     searching_callback(true);
     if (category == BlisyEvents::CATEGORY)
     {
-        result_callback(generate_blisy_events(advances_range, seeds, template_index, profile, filter));
+        result_callback(generate_blisy_events(seeds, advances_range, offset, template_index, profile, filter));
         searching_callback(false);
         return;
     }
@@ -116,7 +118,7 @@ void check_seeds_static(
             StaticGenerator3 generator(
                 starting_advances + ttv_advances * 313,
                 max_advances,
-                0,
+                offset,
                 method,
                 static_template,
                 profile,
@@ -136,6 +138,7 @@ void check_seeds_wild(
     emscripten::typed_array<FRLGContiguousSeedEntry> seeds,
     emscripten::typed_range<u32> advances_range,
     emscripten::typed_range<u32> ttv_advances_range,
+    u32 offset,
     u16 trainer_id,
     u16 secret_id,
     Game game,
@@ -186,7 +189,7 @@ void check_seeds_wild(
             WildGenerator3 generator(
                 starting_advances + ttv_advances * 313,
                 max_advances,
-                0,
+                offset,
                 method,
                 lead,
                 false,
