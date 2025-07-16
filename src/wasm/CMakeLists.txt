@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 
 project(wasm_library)
 
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/store_mtimes.py ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/PokeFinder/CMake")
 add_subdirectory(lib/PokeFinder/Source/Core)
 
@@ -16,7 +22,9 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/restore_mtimes.py ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 execute_process(
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_ten_lines_precalc.py ${CMAKE_CURRENT_SOURCE_DIR}
