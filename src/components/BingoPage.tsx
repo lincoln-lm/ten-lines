@@ -11,6 +11,7 @@ import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
 import type { CalibrationFormState } from "./CalibrationForm";
 import { proxy } from "comlink";
 import useLocalStorage from "../hooks/useLocalStorage";
+import { parse } from "path";
 
 export function useBingoBoard() {
     const [bingoBoard, setBingoBoard] = useLocalStorage("bingo-board", []);
@@ -26,7 +27,7 @@ export function getBingoActive() {
 export async function fetchBingo(
     searchSeeds: FRLGContiguousSeedEntry[],
     advancesRange: number[],
-    offset: number,
+    offset: string,
     isStatic: boolean,
     trainerID: string,
     secretID: string,
@@ -66,7 +67,7 @@ export async function fetchBingo(
             searchSeeds,
             advancesRange,
             [0, 0],
-            offset,
+            parseInt(offset),
             parseInt(trainerID),
             parseInt(secretID),
             calibrationFormState.staticCategory,
@@ -90,7 +91,7 @@ export async function fetchBingo(
             searchSeeds,
             advancesRange,
             [0, 0],
-            offset,
+            parseInt(offset),
             parseInt(trainerID),
             parseInt(secretID),
             SEED_IDENTIFIER_TO_GAME[game],
