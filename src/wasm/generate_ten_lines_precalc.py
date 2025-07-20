@@ -99,7 +99,7 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    lg_eng_seeds = SeedDataStore(starting_frame=4062 // 2 - 45, frame_size=1)
+    lg_eng_seeds = SeedDataStore(starting_frame=4062 // 2, frame_size=1)
     for i, row in enumerate(sheet_csv):
         if i == 0:
             continue
