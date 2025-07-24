@@ -39,6 +39,7 @@ emscripten::typed_array<ExtendedSearcherState> search_blisy_events(
 }
 
 void search_seeds_static(
+    Game game,
     u16 trainer_id,
     u16 secret_id,
     int category,
@@ -54,7 +55,7 @@ void search_seeds_static(
     std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
 
     StateFilter filter = build_static_filter(shininess, nature, iv_ranges);
-    Profile3 profile = build_profile(trainer_id, secret_id);
+    Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
     if (category == BlisyEvents::CATEGORY)
@@ -82,9 +83,9 @@ void search_seeds_static(
 }
 
 void search_seeds_wild(
+    Game game,
     u16 trainer_id,
     u16 secret_id,
-    Game game,
     Encounter encounter_category,
     u16 location,
     int pokemon,
@@ -110,7 +111,7 @@ void search_seeds_wild(
 
     EncounterArea3 encounter_area = get_encounter_area(encounter_category, location, game);
     WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, iv_ranges);
-    Profile3 profile = build_profile(trainer_id, secret_id);
+    Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
 

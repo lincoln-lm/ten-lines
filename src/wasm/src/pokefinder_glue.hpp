@@ -81,9 +81,9 @@ inline WildStateFilter build_wild_filter(
     return WildStateFilter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers, slots);
 }
 
-inline Profile3 build_profile(u16 trainer_id, u16 secret_id)
+inline Profile3 build_profile(Game game, u16 trainer_id, u16 secret_id)
 {
-    return Profile3("", Game::FireRed, trainer_id, secret_id, false);
+    return Profile3("", game, trainer_id, secret_id, false);
 }
 
 class ExtendedGeneratorState : public GeneratorState

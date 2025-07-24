@@ -113,6 +113,7 @@ export default function CalibrationForm({
             setSearching(true);
             if (isStatic) {
                 await tenLines.search_seeds_static(
+                    SEED_IDENTIFIER_TO_GAME[game],
                     parseInt(trainerID),
                     parseInt(secretID),
                     searcherFormState.staticCategory,
@@ -133,9 +134,9 @@ export default function CalibrationForm({
                 );
             } else {
                 await tenLines.search_seeds_wild(
+                    SEED_IDENTIFIER_TO_GAME[game],
                     parseInt(trainerID),
                     parseInt(secretID),
-                    SEED_IDENTIFIER_TO_GAME[game],
                     searcherFormState.wildCategory,
                     searcherFormState.wildLocation,
                     searcherFormState.wildPokemon,
