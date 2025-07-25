@@ -188,7 +188,6 @@ export default function CalibrationForm({
     const advancesRange = advancesRangeIsValid
         ? [parseInt(advancesMin, 10), parseInt(advancesMax, 10)]
         : [0, 0];
-    const [advancesRangeIsLeeway, setAdvancesRangeIsLeeway] = useState(false);
     const isTeachyTVMode = teachyTVMode === "true" && isFRLG;
     const [ttvAdvancesRangeIsValid, setTTVAdvancesRangeIsValid] =
         useState(true);
@@ -197,8 +196,6 @@ export default function CalibrationForm({
         : ttvAdvancesRangeIsValid
         ? [parseInt(ttvAdvancesMin, 10), parseInt(ttvAdvancesMax, 10)]
         : [0, 0];
-    const [ttvAdvancesRangeIsLeeway, setTTVAdvancesRangeIsLeeway] =
-        useState(false);
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const [offsetIsValid, setOffsetIsValid] = useState(true);
     const ivRanges =
@@ -600,13 +597,10 @@ export default function CalibrationForm({
                         advancesMax: value.value[1],
                     });
                     setAdvancesRangeIsValid(value.isValid);
-                    setAdvancesRangeIsLeeway(value.isLeewayWindow);
                 }}
                 value={[advancesMin, advancesMax]}
                 minimumValue={0}
                 maximumValue={999999}
-                isLeewayWindow={advancesRangeIsLeeway}
-                leewayWindowButton
             />
             <NumericalInput
                 label="Offset"
@@ -631,13 +625,10 @@ export default function CalibrationForm({
                             ttvAdvancesMax: value.value[1],
                         });
                         setTTVAdvancesRangeIsValid(value.isValid);
-                        setTTVAdvancesRangeIsLeeway(value.isLeewayWindow);
                     }}
                     value={[ttvAdvancesMin, ttvAdvancesMax]}
                     minimumValue={0}
                     maximumValue={999999}
-                    isLeewayWindow={ttvAdvancesRangeIsLeeway}
-                    leewayWindowButton
                 />
             )}
             {isFRLG && (
