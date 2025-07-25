@@ -19,7 +19,7 @@ const darkTheme = createTheme({
 
 function TenLinesPages() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const currentPage = parseInt(searchParams.get("page") || "0") || 0;
+    const currentPage = parseInt(searchParams.get("page") || "0") ?? 0;
     const bingoActive = getBingoActive();
 
     const pages = [

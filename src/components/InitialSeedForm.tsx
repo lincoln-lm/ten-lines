@@ -103,7 +103,7 @@ export default function TenLinesForm({
                         parseInt(offset, 10),
                         game,
                         isTeachyTVMode
-                            ? parseInt(teachyTVRegularOut, 10) || 0
+                            ? parseInt(teachyTVRegularOut, 10) ?? 0
                             : 0,
                         data,
                         proxy(setData)
@@ -240,7 +240,7 @@ export default function TenLinesForm({
                 isFRLG={isFRLG}
                 gameConsole={gameConsole}
                 isTeachyTVMode={isTeachyTVMode}
-                teachyTVRegularOut={parseInt(teachyTVRegularOut, 10) || 0}
+                teachyTVRegularOut={parseInt(teachyTVRegularOut, 10) ?? 0}
             />
         </Box>
     );

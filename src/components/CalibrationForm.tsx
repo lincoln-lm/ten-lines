@@ -88,7 +88,7 @@ function useCalibrationURLState() {
     const secretID = searchParams.get("secretID") || "0";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
     const targetSeedValue =
-        parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) || 0xdead;
+        parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) ?? 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
         setSearchParams((prev) => {
             for (const [key, value] of Object.entries(state)) {
