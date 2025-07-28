@@ -70,7 +70,7 @@ void check_seeds_static(
     Method method,
     u8 shininess,
     int nature,
-    int gender,
+    u8 gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges,
     emscripten::callback<void(emscripten::typed_array<ExtendedGeneratorState>)> result_callback,
     emscripten::callback<void(bool)> searching_callback)
@@ -151,7 +151,7 @@ void check_seeds_wild(
     Lead lead,
     u8 shininess,
     int nature,
-    int gender,
+    u8 gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges,
     emscripten::callback<void(emscripten::typed_array<ExtendedWildGeneratorState>)> result_callback,
     emscripten::callback<void(bool)> searching_callback)

@@ -25,7 +25,7 @@ inline EncounterArea3 get_encounter_area(
 inline StateFilter build_static_filter(
     u8 shininess,
     int nature,
-    int gender,
+    u8 gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
 
@@ -35,10 +35,6 @@ inline StateFilter build_static_filter(
     {
         natures.fill(false);
         natures[nature] = true;
-    }
-    if (gender == -1)
-    {
-        gender = 255;
     }
 
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
@@ -55,7 +51,7 @@ inline WildStateFilter build_wild_filter(
     int pokemon,
     u8 shininess,
     int nature,
-    int gender,
+    u8 gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
@@ -70,10 +66,6 @@ inline WildStateFilter build_wild_filter(
     {
         natures.fill(false);
         natures[nature] = true;
-    }
-    if (gender == -1)
-    {
-        gender = 255;
     }
 
     std::array<bool, 12> slots;

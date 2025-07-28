@@ -371,7 +371,7 @@ export default function CalibrationForm({
                 select
                 fullWidth
             >
-                <MenuItem value="-1">Any</MenuItem>
+                <MenuItem value="255">Any</MenuItem>
                 {GENDERS_EN.slice(0, 2).map((gender, index) => (
                     <MenuItem key={index} value={index}>
                         {gender}
