@@ -24,11 +24,19 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 execute_process(
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/restore_mtimes.py ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE exit_code
 )
+if(NOT exit_code EQUAL 0)
+    message(FATAL_ERROR "Failed to restore mtimes: ${exit_code}")
+endif()
 
 execute_process(
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_ten_lines_precalc.py ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE exit_code
 )
+if(NOT exit_code EQUAL 0)
+    message(FATAL_ERROR "Failed to generate ten lines precalc: ${exit_code}")
+endif()
 
 add_executable(ten_lines
     src/calibration.cpp
