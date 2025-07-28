@@ -10,7 +10,7 @@ import {
     type ExtendedWildSearcherState,
 } from "../tenLines/generated";
 import React from "react";
-import { NATURES_EN } from "../tenLines/resources";
+import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
 import StaticEncounterSelector from "./StaticEncounterSelector";
 import { useSearchParams } from "react-router-dom";
@@ -20,6 +20,7 @@ import SearcherTable from "./SearcherTable";
 export interface SearcherFormState {
     shininess: number;
     nature: number;
+    gender: number;
     ivRangeStrings: [string, string][];
     staticCategory: number;
     staticPokemon: number;
@@ -68,6 +69,7 @@ export default function CalibrationForm({
         useState<SearcherFormState>({
             shininess: 255,
             nature: -1,
+            gender: -1,
             ivRangeStrings: [
                 ["0", "31"],
                 ["0", "31"],
@@ -121,6 +123,7 @@ export default function CalibrationForm({
                     searcherFormState.method,
                     searcherFormState.shininess,
                     searcherFormState.nature,
+                    searcherFormState.gender,
                     ivRanges,
                     proxy((results: ExtendedSearcherState[]) => {
                         setRows((rows) => {
@@ -144,6 +147,7 @@ export default function CalibrationForm({
                     searcherFormState.wildLead,
                     searcherFormState.shininess,
                     searcherFormState.nature,
+                    searcherFormState.gender,
                     ivRanges,
                     proxy((results: ExtendedWildSearcherState[]) => {
                         setRows((rows) => {
@@ -344,6 +348,27 @@ export default function CalibrationForm({
                 {NATURES_EN.map((nature, index) => (
                     <MenuItem key={index} value={index}>
                         {nature}
+                    </MenuItem>
+                ))}
+            </TextField>
+            <TextField
+                label="Gender"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setSearcherFormState((data) => ({
+                        ...data,
+                        gender: parseInt(event.target.value),
+                    }));
+                }}
+                value={searcherFormState.gender}
+                select
+                fullWidth
+            >
+                <MenuItem value="-1">Any</MenuItem>
+                {GENDERS_EN.slice(0, 2).map((gender, index) => (
+                    <MenuItem key={index} value={index}>
+                        {gender}
                     </MenuItem>
                 ))}
             </TextField>

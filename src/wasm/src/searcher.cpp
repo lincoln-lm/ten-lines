@@ -47,6 +47,7 @@ void search_seeds_static(
     Method method,
     u8 shininess,
     int nature,
+    int gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges,
     emscripten::callback<void(emscripten::typed_array<ExtendedSearcherState>)> result_callback,
     emscripten::callback<void(bool)> searching_callback)
@@ -54,7 +55,7 @@ void search_seeds_static(
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
     std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
 
-    StateFilter filter = build_static_filter(shininess, nature, iv_ranges);
+    StateFilter filter = build_static_filter(shininess, nature, gender, iv_ranges);
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
@@ -93,6 +94,7 @@ void search_seeds_wild(
     Lead lead,
     u8 shininess,
     int nature,
+    int gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges,
     emscripten::callback<void(emscripten::typed_array<ExtendedWildSearcherState>)> result_callback,
     emscripten::callback<void(bool)> searching_callback)
@@ -110,7 +112,7 @@ void search_seeds_wild(
     std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
 
     EncounterArea3 encounter_area = get_encounter_area(encounter_category, location, game);
-    WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, iv_ranges);
+    WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, gender, iv_ranges);
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);

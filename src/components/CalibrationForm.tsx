@@ -29,7 +29,7 @@ import {
     type FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import React from "react";
-import { NATURES_EN } from "../tenLines/resources";
+import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
 import IvCalculator from "./IvCalculator";
 import StaticEncounterSelector from "./StaticEncounterSelector";
@@ -41,6 +41,7 @@ export interface CalibrationFormState {
     seedLeewayString: string;
     shininess: number;
     nature: number;
+    gender: number;
     ivRangeStrings: [string, string][];
     ivCalculatorText: string;
     staticCategory: number;
@@ -129,6 +130,7 @@ export default function CalibrationForm({
             seedLeewayString: "20",
             shininess: 255,
             nature: -1,
+            gender: -1,
             ivRangeStrings: [
                 ["0", "31"],
                 ["0", "31"],
@@ -308,6 +310,7 @@ export default function CalibrationForm({
                     calibrationFormState.method,
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
+                    calibrationFormState.gender,
                     ivRanges,
                     proxy((results: ExtendedGeneratorState[]) => {
                         setRows((rows) => {
@@ -337,6 +340,7 @@ export default function CalibrationForm({
                     calibrationFormState.wildLead,
                     calibrationFormState.shininess,
                     calibrationFormState.nature,
+                    calibrationFormState.gender,
                     ivRanges,
                     proxy((results: ExtendedWildGeneratorState[]) => {
                         setRows((rows) => {
@@ -782,6 +786,27 @@ export default function CalibrationForm({
                 {NATURES_EN.map((nature, index) => (
                     <MenuItem key={index} value={index}>
                         {nature}
+                    </MenuItem>
+                ))}
+            </TextField>
+            <TextField
+                label="Gender"
+                margin="normal"
+                style={{ textAlign: "left" }}
+                onChange={(event) => {
+                    setCalibrationFormState((data) => ({
+                        ...data,
+                        gender: parseInt(event.target.value),
+                    }));
+                }}
+                value={calibrationFormState.gender}
+                select
+                fullWidth
+            >
+                <MenuItem value="-1">Any</MenuItem>
+                {GENDERS_EN.slice(0, 2).map((gender, index) => (
+                    <MenuItem key={index} value={index}>
+                        {gender}
                     </MenuItem>
                 ))}
             </TextField>

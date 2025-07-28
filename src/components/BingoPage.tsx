@@ -75,6 +75,7 @@ export async function fetchBingo(
             calibrationFormState.method,
             255,
             -1,
+            -1,
             [
                 [0, 31],
                 [0, 31],
@@ -97,6 +98,7 @@ export async function fetchBingo(
             parseInt(secretID),
             calibrationFormState.wildCategory,
             calibrationFormState.wildLocation,
+            -1,
             -1,
             calibrationFormState.method,
             calibrationFormState.wildLead,

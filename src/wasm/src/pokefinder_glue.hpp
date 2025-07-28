@@ -24,6 +24,7 @@ inline EncounterArea3 get_encounter_area(
 inline StateFilter build_static_filter(
     u8 shininess,
     int nature,
+    int gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
 
@@ -34,6 +35,10 @@ inline StateFilter build_static_filter(
         natures.fill(false);
         natures[nature] = true;
     }
+    if (gender == -1)
+    {
+        gender = 255;
+    }
 
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
     std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
@@ -41,7 +46,7 @@ inline StateFilter build_static_filter(
     std::array<bool, 16> powers;
     powers.fill(true);
 
-    return StateFilter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
+    return StateFilter(gender, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
 }
 
 inline WildStateFilter build_wild_filter(
@@ -49,6 +54,7 @@ inline WildStateFilter build_wild_filter(
     int pokemon,
     u8 shininess,
     int nature,
+    int gender,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
@@ -63,6 +69,10 @@ inline WildStateFilter build_wild_filter(
     {
         natures.fill(false);
         natures[nature] = true;
+    }
+    if (gender == -1)
+    {
+        gender = 255;
     }
 
     std::array<bool, 12> slots;
@@ -78,7 +88,7 @@ inline WildStateFilter build_wild_filter(
         }
     }
 
-    return WildStateFilter(255, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers, slots);
+    return WildStateFilter(gender, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers, slots);
 }
 
 inline Profile3 build_profile(Game game, u16 trainer_id, u16 secret_id)
