@@ -9,6 +9,7 @@
 #include <Core/Gen3/Encounters3.hpp>
 #include <Core/Parents/PersonalInfo.hpp>
 #include "util.hpp"
+#include "blisy_events.hpp"
 
 struct IVRange
 {
@@ -57,7 +58,7 @@ emscripten::typed_array<IVRange> calc_ivs_static(
     emscripten::typed_array<emscripten::typed_array<u16>> stats,
     u8 nature)
 {
-    const StaticTemplate3 *static_template = Encounters3::getStaticEncounter(category, template_index);
+    const StaticTemplate3 *static_template = category == BlisyEvents::CATEGORY ? BlisyEvents::get_template(template_index) : Encounters3::getStaticEncounter(category, template_index);
     const PersonalInfo *info = static_template->getInfo();
     const std::array<u8, 6> baseStats = info->getStats();
     return calc_ivs(stats, baseStats, nature);
