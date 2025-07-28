@@ -74,7 +74,7 @@ export default function CalibrationForm({
         useState<SearcherFormState>({
             shininess: 255,
             nature: -1,
-            gender: -1,
+            gender: 255,
             ivRangeStrings: [
                 ["0", "31"],
                 ["0", "31"],
