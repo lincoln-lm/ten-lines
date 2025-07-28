@@ -15,6 +15,14 @@ export const Game = {
     Gen3: (1 << 0) | (1 << 1) | (1 << 2) | ((1 << 3) | (1 << 4)),
 } as const;
 
+export const STATIC_1 = 1;
+export const STATIC_2 = 3;
+export const STATIC_4 = 4;
+export const WILD_1 = STATIC_1 + 4;
+export const WILD_2 = STATIC_2 + 4;
+export const WILD_4 = STATIC_4 + 4;
+export const COMBINED_WILD_METHOD = (1 | 2 | 4) + 4;
+
 let TenLines: Remote<MainModule> | null = null;
 
 const fetchTenLines: () => Promise<Remote<MainModule>> = async () => {

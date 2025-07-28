@@ -2,7 +2,12 @@ import { useState } from "react";
 
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 
-import fetchTenLines, { SEED_IDENTIFIER_TO_GAME } from "../tenLines";
+import fetchTenLines, {
+    COMBINED_WILD_METHOD,
+    SEED_IDENTIFIER_TO_GAME,
+    STATIC_2,
+    STATIC_4,
+} from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import { proxy } from "comlink";
 import {
@@ -10,7 +15,7 @@ import {
     type ExtendedWildSearcherState,
 } from "../tenLines/generated";
 import React from "react";
-import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
+import { GENDERS_EN, METHODS_EN, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
 import StaticEncounterSelector from "./StaticEncounterSelector";
 import { useSearchParams } from "react-router-dom";
@@ -164,7 +169,7 @@ export default function CalibrationForm({
         submit();
     };
 
-    const isStatic = searcherFormState.method <= 4;
+    const isStatic = searcherFormState.method <= STATIC_4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
     const isFRLGE = isFRLG || game.startsWith("e_");
 
@@ -263,12 +268,13 @@ export default function CalibrationForm({
                 select
                 fullWidth
             >
-                <MenuItem value="1">Static 1</MenuItem>
-                {/* <MenuItem value="3">Static 2</MenuItem> */}
-                <MenuItem value="4">Static 4</MenuItem>
-                <MenuItem value="5">Wild 1</MenuItem>
-                <MenuItem value="7">Wild 2</MenuItem>
-                <MenuItem value="8">Wild 4</MenuItem>
+                {Object.entries(METHODS_EN)
+                    .filter(([value, _name]) => parseInt(value) != STATIC_2)
+                    .map(([value, name], index) => (
+                        <MenuItem key={index} value={parseInt(value)}>
+                            {name}
+                        </MenuItem>
+                    ))}
             </TextField>
             {isStatic && (
                 <StaticEncounterSelector
@@ -391,7 +397,13 @@ export default function CalibrationForm({
             >
                 {searching ? "Searching..." : "Submit"}
             </Button>
-            <SearcherTable rows={rows} isStatic={isStatic} />
+            <SearcherTable
+                rows={rows}
+                isStatic={isStatic}
+                isMultiMethod={
+                    searcherFormState.method === COMBINED_WILD_METHOD
+                }
+            />
         </Box>
     );
 }

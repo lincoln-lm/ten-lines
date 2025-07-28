@@ -16,6 +16,7 @@ import {
     ABILITIES_EN,
     GENDERS_EN,
     getNameEn,
+    METHODS_EN,
     NATURES_EN,
     SHININESS_EN,
 } from "../tenLines/resources";
@@ -25,12 +26,14 @@ const CalibrationTable = memo(function CalibrationTable({
     target,
     gameConsole,
     isStatic,
+    isMultiMethod,
     isTeachyTVMode,
 }: {
     rows: ExtendedGeneratorState[] | ExtendedWildGeneratorState[];
     target: FRLGContiguousSeedEntry;
     gameConsole: string;
     isStatic: boolean;
+    isMultiMethod: boolean;
     isTeachyTVMode: boolean;
 }) {
     return (
@@ -40,6 +43,7 @@ const CalibrationTable = memo(function CalibrationTable({
                     <TableRow>
                         <TableCell>Seed</TableCell>
                         <TableCell>Advances</TableCell>
+                        {isMultiMethod && <TableCell>Method</TableCell>}
                         {isTeachyTVMode && (
                             <TableCell>Final A Press Frame</TableCell>
                         )}
@@ -80,6 +84,17 @@ const CalibrationTable = memo(function CalibrationTable({
                                     ms)
                                 </TableCell>
                                 <TableCell>{row.advances}</TableCell>
+                                {isMultiMethod && (
+                                    <TableCell>
+                                        {
+                                            METHODS_EN[
+                                                (
+                                                    row as ExtendedWildGeneratorState
+                                                ).method
+                                            ]
+                                        }
+                                    </TableCell>
+                                )}
                                 {isTeachyTVMode && (
                                     <TableCell>
                                         {row.advances -

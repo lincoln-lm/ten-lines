@@ -163,6 +163,7 @@ void check_seeds_wild(
 
     // wild methods are +4 from static methods
     method = Method(static_cast<std::underlying_type_t<Method>>(method) - 4);
+    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method>{Method::Method1, Method::Method2, Method::Method4} : std::vector<Method>{method};
 
     // leads are only available in Emerald
     if (game != Game::Emerald)
@@ -189,20 +190,23 @@ void check_seeds_wild(
             u32 ending_advances = ending_final_frame > ttv_advances ? ending_final_frame - ttv_advances : 0;
             u32 max_advances = ending_advances - starting_advances;
 
-            WildGenerator3 generator(
-                starting_advances + ttv_advances * 313,
-                max_advances,
-                offset,
-                method,
-                lead,
-                false,
-                encounter_area,
-                profile,
-                filter);
-            auto generator_results = generator.generate(seed);
-            for (auto &generator_result : generator_results)
+            for (Method m : methods)
             {
-                results.push_back(ExtendedWildGeneratorState(seed, seed_frame, ttv_advances, generator_result));
+                WildGenerator3 generator(
+                    starting_advances + ttv_advances * 313,
+                    max_advances,
+                    offset,
+                    m,
+                    lead,
+                    false,
+                    encounter_area,
+                    profile,
+                    filter);
+                auto generator_results = generator.generate(seed);
+                for (auto &generator_result : generator_results)
+                {
+                    results.push_back(ExtendedWildGeneratorState(seed, seed_frame, ttv_advances, m, generator_result));
+                }
             }
             result_callback(results);
         }

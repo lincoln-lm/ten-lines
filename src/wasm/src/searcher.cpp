@@ -116,17 +116,20 @@ void search_seeds_wild(
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
-
-    WildSearcher3 searcher(method, lead, false, encounter_area, profile, filter);
-    searcher.startSearch(min_ivs, max_ivs);
-
     emscripten::typed_array<ExtendedWildSearcherState> results;
-    auto search_results = searcher.getResults();
 
-    for (auto &result : search_results)
+    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method>{Method::Method1, Method::Method2, Method::Method4} : std::vector<Method>{method};
+    for (Method m : methods)
     {
-        results.push_back(result);
+        WildSearcher3 searcher(m, lead, false, encounter_area, profile, filter);
+        searcher.startSearch(min_ivs, max_ivs);
+        auto search_results = searcher.getResults();
+        for (auto &result : search_results)
+        {
+            results.push_back(ExtendedWildSearcherState(m, result));
+        }
     }
+
     result_callback(results);
 
     searching_callback(false);

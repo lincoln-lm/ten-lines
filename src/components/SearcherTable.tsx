@@ -15,6 +15,7 @@ import {
     ABILITIES_EN,
     GENDERS_EN,
     getNameEn,
+    METHODS_EN,
     NATURES_EN,
     SHININESS_EN,
 } from "../tenLines/resources";
@@ -24,9 +25,11 @@ import { Button } from "@mui/material";
 const SearcherTable = memo(function SearcherTable({
     rows,
     isStatic,
+    isMultiMethod,
 }: {
     rows: ExtendedSearcherState[] | ExtendedWildSearcherState[];
     isStatic: boolean;
+    isMultiMethod: boolean;
 }) {
     const [_, setSearchParams] = useSearchParams();
 
@@ -51,6 +54,7 @@ const SearcherTable = memo(function SearcherTable({
                 <TableHead>
                     <TableRow>
                         <TableCell>Seed</TableCell>
+                        {isMultiMethod && <TableCell>Method</TableCell>}
                         {!isStatic && <TableCell>Slot</TableCell>}
                         {!isStatic && <TableCell>Level</TableCell>}
                         <TableCell>PID</TableCell>
@@ -72,6 +76,17 @@ const SearcherTable = memo(function SearcherTable({
                         return (
                             <TableRow key={index}>
                                 <TableCell>{hexSeed(row.seed, 32)}</TableCell>
+                                {isMultiMethod && (
+                                    <TableCell>
+                                        {
+                                            METHODS_EN[
+                                                (
+                                                    row as ExtendedWildSearcherState
+                                                ).method
+                                            ]
+                                        }
+                                    </TableCell>
+                                )}
                                 {!isStatic && (
                                     <TableCell>
                                         {

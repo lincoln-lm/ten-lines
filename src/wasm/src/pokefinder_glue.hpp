@@ -9,6 +9,7 @@
 #include <Core/Parents/Filters/StateFilter.hpp>
 #include <Core/Parents/States/State.hpp>
 #include <Core/Parents/States/WildState.hpp>
+#include <Core/Enum/Method.hpp>
 #include "util.hpp"
 
 inline EncounterArea3 get_encounter_area(
@@ -121,7 +122,10 @@ public:
 class ExtendedWildGeneratorState : public WildGeneratorState
 {
 public:
-    ExtendedWildGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, const WildGeneratorState &state) : WildGeneratorState(state), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances) {}
+    ExtendedWildGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, Method method, const WildGeneratorState &state) : WildGeneratorState(state), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances)
+    {
+        this->method = static_cast<std::underlying_type_t<Method>>(method) + 4;
+    }
 
     using WildGeneratorState::ability;
     using WildGeneratorState::abilityIndex;
@@ -140,6 +144,7 @@ public:
     u16 initialSeed;
     u16 seedFrame;
     u32 ttvAdvances;
+    int method;
 };
 
 class EnumeratedStaticTemplate3 : public StaticTemplate3
@@ -174,7 +179,10 @@ public:
 class ExtendedWildSearcherState : public WildSearcherState
 {
 public:
-    ExtendedWildSearcherState(const WildSearcherState &state) : WildSearcherState(state) {}
+    ExtendedWildSearcherState(Method method, const WildSearcherState &state) : WildSearcherState(state)
+    {
+        this->method = static_cast<std::underlying_type_t<Method>>(method) + 4;
+    }
 
     using WildSearcherState::ability;
     using WildSearcherState::abilityIndex;
@@ -188,4 +196,6 @@ public:
     using WildSearcherState::seed;
     using WildSearcherState::shiny;
     using WildSearcherState::specie;
+
+    int method;
 };

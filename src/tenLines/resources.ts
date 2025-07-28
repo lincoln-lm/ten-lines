@@ -5,7 +5,16 @@ import forms_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/f
 import frlg_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/frlg_en.txt?raw";
 import rs_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/rs_en.txt?raw";
 import e_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/e_en.txt?raw";
-import { Game } from ".";
+import {
+    COMBINED_WILD_METHOD,
+    Game,
+    STATIC_1,
+    STATIC_2,
+    STATIC_4,
+    WILD_1,
+    WILD_2,
+    WILD_4,
+} from ".";
 
 const parseMap = (text: string) => {
     return Object.fromEntries(parseList(text).map((line) => line.split(",")));
@@ -15,6 +24,15 @@ const parseList = (text: string) => {
     return text.split("\n").map((line) => line.trim());
 };
 
+export const METHODS_EN: Record<number, string> = {
+    [STATIC_1]: "Static 1",
+    [STATIC_2]: "Static 2",
+    [STATIC_4]: "Static 4",
+    [WILD_1]: "Wild 1",
+    [WILD_2]: "Wild 2",
+    [WILD_4]: "Wild 4",
+    [COMBINED_WILD_METHOD]: "All Wild Methods",
+};
 export const GENDERS_EN = ["♂", "♀", "-"];
 export const SHININESS_EN = ["No", "Star", "Square"];
 export const NATURES_EN = parseList(natures_en_txt);

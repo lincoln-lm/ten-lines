@@ -14,10 +14,13 @@ import {
 } from "@mui/material";
 
 import fetchTenLines, {
+    COMBINED_WILD_METHOD,
     fetchSeedData,
     frameToMS,
     hexSeed,
     SEED_IDENTIFIER_TO_GAME,
+    STATIC_2,
+    STATIC_4,
 } from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import RangeInput from "./RangeInput";
@@ -29,7 +32,7 @@ import {
     type FRLGContiguousSeedEntry,
 } from "../tenLines/generated";
 import React from "react";
-import { GENDERS_EN, NATURES_EN } from "../tenLines/resources";
+import { GENDERS_EN, METHODS_EN, NATURES_EN } from "../tenLines/resources";
 import IvEntry from "./IvEntry";
 import IvCalculator from "./IvCalculator";
 import StaticEncounterSelector from "./StaticEncounterSelector";
@@ -173,7 +176,7 @@ export default function CalibrationForm({
 
     const bingoActive = getBingoActive();
 
-    const isStatic = calibrationFormState.method <= 4;
+    const isStatic = calibrationFormState.method <= STATIC_4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
     const isFRLGE = isFRLG || game.startsWith("e_");
 
@@ -700,12 +703,13 @@ export default function CalibrationForm({
                 select
                 fullWidth
             >
-                <MenuItem value="1">Static 1</MenuItem>
-                {/* <MenuItem value="3">Static 2</MenuItem> */}
-                <MenuItem value="4">Static 4</MenuItem>
-                <MenuItem value="5">Wild 1</MenuItem>
-                <MenuItem value="7">Wild 2</MenuItem>
-                <MenuItem value="8">Wild 4</MenuItem>
+                {Object.entries(METHODS_EN)
+                    .filter(([value, _name]) => parseInt(value) != STATIC_2)
+                    .map(([value, name], index) => (
+                        <MenuItem key={index} value={parseInt(value)}>
+                            {name}
+                        </MenuItem>
+                    ))}
             </TextField>
             {isStatic && (
                 <StaticEncounterSelector
@@ -912,6 +916,9 @@ export default function CalibrationForm({
                 gameConsole={gameConsole}
                 isStatic={isStatic}
                 isTeachyTVMode={isTeachyTVMode}
+                isMultiMethod={
+                    calibrationFormState.method == COMBINED_WILD_METHOD
+                }
             />
         </Box>
     );

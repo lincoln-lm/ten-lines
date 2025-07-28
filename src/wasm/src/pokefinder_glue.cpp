@@ -61,7 +61,8 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("encounterSlot", &ExtendedWildGeneratorState::encounterSlot)
         .field("species", &ExtendedWildGeneratorState::specie)
         .field("form", &ExtendedWildGeneratorState::form)
-        .field("level", &ExtendedWildGeneratorState::level);
+        .field("level", &ExtendedWildGeneratorState::level)
+        .field("method", &ExtendedWildGeneratorState::method);
 
     emscripten::value_immutable_unconstructable<ExtendedSearcherState>("ExtendedSearcherState")
         .field("seed", &ExtendedSearcherState::seed)
@@ -85,5 +86,6 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("encounterSlot", &ExtendedWildSearcherState::encounterSlot)
         .field("species", &ExtendedWildSearcherState::specie)
         .field("form", &ExtendedWildSearcherState::form)
-        .field("level", &ExtendedWildSearcherState::level);
+        .field("level", &ExtendedWildSearcherState::level)
+        .field("method", &ExtendedWildSearcherState::method);
 }
