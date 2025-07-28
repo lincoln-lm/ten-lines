@@ -1,3 +1,4 @@
+import types_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/powers_en.txt?raw";
 import natures_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/natures_en.txt?raw";
 import abilities_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/abilities_en.txt?raw";
 import species_en_txt from "../wasm/lib/PokeFinder/Source/Core/Resources/i18n/en/species_en.txt?raw";
@@ -44,6 +45,7 @@ export const FORMS_EN = Object.fromEntries(
         return [`${species}-${form}`, name];
     })
 );
+export const TYPES_EN = parseList(types_en_txt);
 export const FRLG_LOCATIONS_EN = parseMap(frlg_en_txt);
 export const RS_LOCATIONS_EN = parseMap(rs_en_txt);
 export const E_LOCATIONS_EN = parseMap(e_en_txt);

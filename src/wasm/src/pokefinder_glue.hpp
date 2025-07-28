@@ -26,6 +26,7 @@ inline StateFilter build_static_filter(
     u8 shininess,
     int nature,
     u8 gender,
+    int hidden_power,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
 
@@ -42,6 +43,11 @@ inline StateFilter build_static_filter(
 
     std::array<bool, 16> powers;
     powers.fill(true);
+    if (hidden_power != -1)
+    {
+        powers.fill(false);
+        powers[hidden_power] = true;
+    }
 
     return StateFilter(gender, 255, shininess, 0, 255, 0, 255, false, min_ivs, max_ivs, natures, powers);
 }
@@ -52,13 +58,11 @@ inline WildStateFilter build_wild_filter(
     u8 shininess,
     int nature,
     u8 gender,
+    int hidden_power,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
     std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
     std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
-
-    std::array<bool, 16> powers;
-    powers.fill(true);
 
     std::array<bool, 25> natures;
     natures.fill(true);
@@ -66,6 +70,14 @@ inline WildStateFilter build_wild_filter(
     {
         natures.fill(false);
         natures[nature] = true;
+    }
+
+    std::array<bool, 16> powers;
+    powers.fill(true);
+    if (hidden_power != -1)
+    {
+        powers.fill(false);
+        powers[hidden_power] = true;
     }
 
     std::array<bool, 12> slots;
@@ -98,6 +110,8 @@ public:
     using GeneratorState::abilityIndex;
     using GeneratorState::advances;
     using GeneratorState::gender;
+    using GeneratorState::hiddenPower;
+    using GeneratorState::hiddenPowerStrength;
     using GeneratorState::ivs;
     using GeneratorState::nature;
     using GeneratorState::pid;
@@ -125,6 +139,8 @@ public:
     using WildGeneratorState::encounterSlot;
     using WildGeneratorState::form;
     using WildGeneratorState::gender;
+    using WildGeneratorState::hiddenPower;
+    using WildGeneratorState::hiddenPowerStrength;
     using WildGeneratorState::ivs;
     using WildGeneratorState::level;
     using WildGeneratorState::nature;
@@ -161,6 +177,8 @@ public:
     using SearcherState::ability;
     using SearcherState::abilityIndex;
     using SearcherState::gender;
+    using SearcherState::hiddenPower;
+    using SearcherState::hiddenPowerStrength;
     using SearcherState::ivs;
     using SearcherState::nature;
     using SearcherState::pid;
@@ -181,6 +199,8 @@ public:
     using WildSearcherState::encounterSlot;
     using WildSearcherState::form;
     using WildSearcherState::gender;
+    using WildSearcherState::hiddenPower;
+    using WildSearcherState::hiddenPowerStrength;
     using WildSearcherState::ivs;
     using WildSearcherState::level;
     using WildSearcherState::nature;

@@ -83,7 +83,7 @@ void check_seeds_static(
     u32 initial_ttv_advances = ttv_advances_range.min();
     u32 ending_ttv_advances = std::min(ttv_advances_range.max(), ending_final_frame);
 
-    StateFilter filter = build_static_filter(shininess, nature, gender, iv_ranges);
+    StateFilter filter = build_static_filter(shininess, nature, gender, -1, iv_ranges);
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
@@ -172,7 +172,7 @@ void check_seeds_wild(
     }
 
     EncounterArea3 encounter_area = get_encounter_area(encounter_category, location, game);
-    WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, gender, iv_ranges);
+    WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, gender, -1, iv_ranges);
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);

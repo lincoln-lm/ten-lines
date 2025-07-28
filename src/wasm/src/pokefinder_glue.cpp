@@ -43,7 +43,9 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("stats", &ExtendedGeneratorState::stats)
         .field("shiny", &ExtendedGeneratorState::shiny)
         .field("species", &ExtendedGeneratorState::species)
-        .field("form", &ExtendedGeneratorState::form);
+        .field("form", &ExtendedGeneratorState::form)
+        .field("hiddenPower", &ExtendedGeneratorState::hiddenPower)
+        .field("hiddenPowerStrength", &ExtendedGeneratorState::hiddenPowerStrength);
 
     emscripten::value_immutable_unconstructable<ExtendedWildGeneratorState>("ExtendedWildGeneratorState")
         .field("initialSeed", &ExtendedWildGeneratorState::initialSeed)
@@ -62,7 +64,9 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("species", &ExtendedWildGeneratorState::specie)
         .field("form", &ExtendedWildGeneratorState::form)
         .field("level", &ExtendedWildGeneratorState::level)
-        .field("method", &ExtendedWildGeneratorState::method);
+        .field("method", &ExtendedWildGeneratorState::method)
+        .field("hiddenPower", &ExtendedWildGeneratorState::hiddenPower)
+        .field("hiddenPowerStrength", &ExtendedWildGeneratorState::hiddenPowerStrength);
 
     emscripten::value_immutable_unconstructable<ExtendedSearcherState>("ExtendedSearcherState")
         .field("seed", &ExtendedSearcherState::seed)
@@ -72,7 +76,9 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("abilityIndex", &ExtendedSearcherState::abilityIndex)
         .field("gender", &ExtendedSearcherState::gender)
         .field("ivs", &ExtendedSearcherState::ivs)
-        .field("shiny", &ExtendedSearcherState::shiny);
+        .field("shiny", &ExtendedSearcherState::shiny)
+        .field("hiddenPower", &ExtendedSearcherState::hiddenPower)
+        .field("hiddenPowerStrength", &ExtendedSearcherState::hiddenPowerStrength);
 
     emscripten::value_immutable_unconstructable<ExtendedWildSearcherState>("ExtendedWildSearcherState")
         .field("seed", &ExtendedWildSearcherState::seed)
@@ -87,5 +93,7 @@ EMSCRIPTEN_BINDINGS(pokefinder_glue)
         .field("species", &ExtendedWildSearcherState::specie)
         .field("form", &ExtendedWildSearcherState::form)
         .field("level", &ExtendedWildSearcherState::level)
-        .field("method", &ExtendedWildSearcherState::method);
+        .field("method", &ExtendedWildSearcherState::method)
+        .field("hiddenPower", &ExtendedWildSearcherState::hiddenPower)
+        .field("hiddenPowerStrength", &ExtendedWildSearcherState::hiddenPowerStrength);
 }

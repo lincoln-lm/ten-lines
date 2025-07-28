@@ -18,6 +18,7 @@ import {
     METHODS_EN,
     NATURES_EN,
     SHININESS_EN,
+    TYPES_EN,
 } from "../tenLines/resources";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@mui/material";
@@ -62,6 +63,8 @@ const SearcherTable = memo(function SearcherTable({
                         <TableCell>Nature</TableCell>
                         <TableCell>Ability</TableCell>
                         <TableCell>IVs</TableCell>
+                        <TableCell>Hidden</TableCell>
+                        <TableCell>Power</TableCell>
                         <TableCell>Gender</TableCell>
                         <TableCell>Open In Initial Seed</TableCell>
                     </TableRow>
@@ -118,6 +121,10 @@ const SearcherTable = memo(function SearcherTable({
                                     {ABILITIES_EN[row.abilityIndex - 1]}
                                 </TableCell>
                                 <TableCell>{row.ivs.join("/")}</TableCell>
+                                <TableCell>
+                                    {TYPES_EN[row.hiddenPower]}
+                                </TableCell>
+                                <TableCell>{row.hiddenPowerStrength}</TableCell>
                                 <TableCell>{GENDERS_EN[row.gender]}</TableCell>
 
                                 <TableCell>
