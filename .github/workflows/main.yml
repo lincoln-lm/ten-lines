@@ -46,7 +46,7 @@ jobs:
             - name: Setup emsdk
               uses: lincoln-lm/setup-emsdk@main
               with:
-                  version: 4.0.10
+                  version: 4.0.11
                   actions-cache-folder: "emsdk-cache"
             - name: Verify
               run: emcc -v

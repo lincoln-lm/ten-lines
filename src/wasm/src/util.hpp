@@ -194,10 +194,7 @@ namespace emscripten
         {
             using namespace internal;
 
-            return internalCall<EM_METHOD_CALLER_KIND::FUNCTION, val>(
-                       _emval_call,
-                       sanitizeValue(std::forward<Args>(args))...)
-                .template as<ReturnType>();
+            return internalCall<EM_INVOKER_KIND::FUNCTION, WithPolicies<>, val>(as_handle(), nullptr, sanitizeValue(std::forward<Args>(args))...).template as<ReturnType>();
         }
     };
 
