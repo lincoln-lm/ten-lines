@@ -25,3 +25,4 @@ generated
 *.njsproj
 *.sln
 *.sw?
+.clangd
