@@ -1,6 +1,5 @@
 #pragma once
 #include <array>
-#include <string>
 #include <Core/Gen3/StaticTemplate3.hpp>
 #include <Core/Enum/Game.hpp>
 #include <Core/Enum/Shiny.hpp>

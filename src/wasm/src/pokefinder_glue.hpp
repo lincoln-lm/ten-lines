@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <Core/Gen3/EncounterArea3.hpp>

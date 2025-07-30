@@ -1,7 +1,4 @@
-#include <string>
-#include <iostream>
 #include <vector>
-#include <array>
 #include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
