@@ -1,5 +1,7 @@
 #pragma once
 
+#include <emscripten.h>
+#include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <array>
 #include <type_traits>
