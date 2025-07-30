@@ -1,54 +1,39 @@
-# React + TypeScript + Vite
+[![](public/icon-180x180.png)](https://lincoln-lm.github.io/ten-lines/)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## [Ten Lines](https://lincoln-lm.github.io/ten-lines/): A Suite of Tools for RNG Manipulation in Generation 3
 
-Currently, two official plugins are available:
+**_Ten Lines_** (name inspired by an old script by Shao that finds initial seeds "in like 10 lines") aims to provide tools to facilitate retail rng manipulation in the 3rd generation of Pok&eacute;mon games.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+-   Direct incorporation of farmed seed lists for FireRed/LeafGreen (live updated every new build)
+-   Searcher tab for finding targets
+-   Initial Seed tab for finding potential initial seeds for a particular target (both RSE painting and FRLG initial seed manip)
+-   Gen-3-Seed-Assistant-like calibration tab with builtin IV calculation.
+-   Support for [blisy's e-reader events](https://www.youtube.com/watch?v=fgX36SAeTwQ)
+-   Progressive Web App for use offline
+-   (Hopefully) mobile-friendly UI
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Contribution
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Welcome!
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Building and Running Locally (see [main.yml](.github/workflows/main.yml) & [package.json](package.json))
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+To build & run locally:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+1. [Install emsdk](https://emscripten.org/docs/getting_started/downloads.html)
+1. Clone the repository: `git clone --recursive https://github.com/lincoln-lm/ten-lines.git`
+1. Enter project directory: `cd ten-lines`
+1. Install python dependencies `pip install -r src/wasm/requirements.txt`
+    - On a system with an externally managed environment, install these in a virtualenv
+1. Install TS dependencies: `npm install`
+1. Build WebAssembly library: `emcmake cmake -S src/wasm -B src/wasm/build && cmake --build src/wasm/build`
+1. Build the project: `npx tsc -b && npx vite build`
+1. Start the development server: `npx vite`
+
+## Powered by
+
+-   Static site hosting by GitHub
+-   Static site built via [Vite](https://vite.dev/) & [React](https://react.dev/)
+-   Processing is done in-browser via an [emscripten](https://emscripten.org/)-compiled [WebAssembly module](src/wasm/) that makes use of [PokeFinderCore](https://github.com/Admiral-Fish/PokeFinder)
