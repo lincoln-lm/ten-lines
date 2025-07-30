@@ -1,12 +1,12 @@
-#include <vector>
+#include "blisy_events.hpp"
+#include "util.hpp"
+#include <Core/Gen3/EncounterArea3.hpp>
+#include <Core/Gen3/Encounters3.hpp>
+#include <Core/Global.hpp>
 #include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
-#include <Core/Global.hpp>
-#include <Core/Gen3/Encounters3.hpp>
-#include <Core/Gen3/EncounterArea3.hpp>
-#include "util.hpp"
-#include "blisy_events.hpp"
+#include <vector>
 
 emscripten::typed_array<u16> get_wild_locations(u32 game, u8 encounter_category)
 {
@@ -14,8 +14,7 @@ emscripten::typed_array<u16> get_wild_locations(u32 game, u8 encounter_category)
     std::vector<EncounterArea3> encounter_areas = Encounters3::getEncounters(Encounter(encounter_category), settings, Game(game));
     std::vector<u16> locs;
     std::transform(encounter_areas.begin(), encounter_areas.end(), std::back_inserter(locs),
-                   [](const EncounterArea3 &area)
-                   { return area.getLocation(); });
+        [](const EncounterArea3& area) { return area.getLocation(); });
     return locs;
 }
 
@@ -29,17 +28,15 @@ emscripten::typed_array<u16> get_area_species(u32 game, u8 encounter_category, u
 
 emscripten::typed_array<EnumeratedStaticTemplate3> get_static_template_info(int category)
 {
-    if (category == BlisyEvents::CATEGORY)
-    {
+    if (category == BlisyEvents::CATEGORY) {
         return BlisyEvents::get_template_info();
     }
 
     int size;
-    const StaticTemplate3 *templates = Encounters3::getStaticEncounters(category, &size);
+    const StaticTemplate3* templates = Encounters3::getStaticEncounters(category, &size);
     emscripten::typed_array<EnumeratedStaticTemplate3> array;
 
-    for (int i = 0; i < size; i++)
-    {
+    for (int i = 0; i < size; i++) {
         array.push_back(EnumeratedStaticTemplate3(i, templates[i]));
     }
     return array;

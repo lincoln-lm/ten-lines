@@ -1,15 +1,15 @@
 #pragma once
-#include <emscripten.h>
-#include <emscripten/bind.h>
+#include "util.hpp"
+#include <Core/Enum/Method.hpp>
 #include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/Encounters3.hpp>
-#include <Core/Gen3/StaticTemplate3.hpp>
 #include <Core/Gen3/Profile3.hpp>
+#include <Core/Gen3/StaticTemplate3.hpp>
 #include <Core/Parents/Filters/StateFilter.hpp>
 #include <Core/Parents/States/State.hpp>
 #include <Core/Parents/States/WildState.hpp>
-#include <Core/Enum/Method.hpp>
-#include "util.hpp"
+#include <emscripten.h>
+#include <emscripten/bind.h>
 
 inline EncounterArea3 get_encounter_area(
     Encounter encounter_category,
@@ -31,19 +31,17 @@ inline StateFilter build_static_filter(
 
     std::array<bool, 25> natures;
     natures.fill(true);
-    if (nature != -1)
-    {
+    if (nature != -1) {
         natures.fill(false);
         natures[nature] = true;
     }
 
-    std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
-    std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
+    std::array<u8, 6> min_ivs = { iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min() };
+    std::array<u8, 6> max_ivs = { iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max() };
 
     std::array<bool, 16> powers;
     powers.fill(true);
-    if (hidden_power != -1)
-    {
+    if (hidden_power != -1) {
         powers.fill(false);
         powers[hidden_power] = true;
     }
@@ -60,33 +58,29 @@ inline WildStateFilter build_wild_filter(
     int hidden_power,
     emscripten::typed_array<emscripten::typed_range<u8>> iv_ranges)
 {
-    std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
-    std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
+    std::array<u8, 6> min_ivs = { iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min() };
+    std::array<u8, 6> max_ivs = { iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max() };
 
     std::array<bool, 25> natures;
     natures.fill(true);
-    if (nature != -1)
-    {
+    if (nature != -1) {
         natures.fill(false);
         natures[nature] = true;
     }
 
     std::array<bool, 16> powers;
     powers.fill(true);
-    if (hidden_power != -1)
-    {
+    if (hidden_power != -1) {
         powers.fill(false);
         powers[hidden_power] = true;
     }
 
     std::array<bool, 12> slots;
     slots.fill(true);
-    if (pokemon != -1)
-    {
+    if (pokemon != -1) {
         u16 species = pokemon & 0x7ff;
         u8 form = pokemon >> 11;
-        for (int i = 0; i < 12; i++)
-        {
+        for (int i = 0; i < 12; i++) {
             auto slot = encounter_area.getPokemon(i);
             slots[i] = slot.getSpecie() == species && slot.getForm() == form;
         }
@@ -100,10 +94,17 @@ inline Profile3 build_profile(Game game, u16 trainer_id, u16 secret_id)
     return Profile3("", game, trainer_id, secret_id, false);
 }
 
-class ExtendedGeneratorState : public GeneratorState
-{
+class ExtendedGeneratorState : public GeneratorState {
 public:
-    ExtendedGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, u16 species, u8 form, const GeneratorState &state) : GeneratorState(state), species(species), form(form), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances) {}
+    ExtendedGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, u16 species, u8 form, const GeneratorState& state)
+        : GeneratorState(state)
+        , species(species)
+        , form(form)
+        , initialSeed(initial_seed)
+        , seedFrame(seed_frame)
+        , ttvAdvances(ttv_advances)
+    {
+    }
 
     using GeneratorState::ability;
     using GeneratorState::abilityIndex;
@@ -124,10 +125,13 @@ public:
     u32 ttvAdvances;
 };
 
-class ExtendedWildGeneratorState : public WildGeneratorState
-{
+class ExtendedWildGeneratorState : public WildGeneratorState {
 public:
-    ExtendedWildGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, Method method, const WildGeneratorState &state) : WildGeneratorState(state), initialSeed(initial_seed), seedFrame(seed_frame), ttvAdvances(ttv_advances)
+    ExtendedWildGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, Method method, const WildGeneratorState& state)
+        : WildGeneratorState(state)
+        , initialSeed(initial_seed)
+        , seedFrame(seed_frame)
+        , ttvAdvances(ttv_advances)
     {
         this->method = static_cast<std::underlying_type_t<Method>>(method) + 4;
     }
@@ -154,10 +158,13 @@ public:
     int method;
 };
 
-class EnumeratedStaticTemplate3 : public StaticTemplate3
-{
+class EnumeratedStaticTemplate3 : public StaticTemplate3 {
 public:
-    EnumeratedStaticTemplate3(int index, StaticTemplate3 template3) : StaticTemplate3(template3), index(index) {}
+    EnumeratedStaticTemplate3(int index, StaticTemplate3 template3)
+        : StaticTemplate3(template3)
+        , index(index)
+    {
+    }
 
     int index;
 
@@ -168,10 +175,12 @@ public:
     using StaticTemplate3::version;
 };
 
-class ExtendedSearcherState : public SearcherState
-{
+class ExtendedSearcherState : public SearcherState {
 public:
-    ExtendedSearcherState(const SearcherState &state) : SearcherState(state) {}
+    ExtendedSearcherState(const SearcherState& state)
+        : SearcherState(state)
+    {
+    }
 
     using SearcherState::ability;
     using SearcherState::abilityIndex;
@@ -185,10 +194,10 @@ public:
     using SearcherState::shiny;
 };
 
-class ExtendedWildSearcherState : public WildSearcherState
-{
+class ExtendedWildSearcherState : public WildSearcherState {
 public:
-    ExtendedWildSearcherState(Method method, const WildSearcherState &state) : WildSearcherState(state)
+    ExtendedWildSearcherState(Method method, const WildSearcherState& state)
+        : WildSearcherState(state)
     {
         this->method = static_cast<std::underlying_type_t<Method>>(method) + 4;
     }

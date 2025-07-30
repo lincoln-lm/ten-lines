@@ -1,23 +1,23 @@
-#include <vector>
-#include <algorithm>
-#include <emscripten.h>
-#include <emscripten/bind.h>
-#include <Core/Gen3/Generators/StaticGenerator3.hpp>
-#include <Core/Gen3/Generators/WildGenerator3.hpp>
-#include <Core/Gen3/Generators/GameCubeGenerator.hpp>
-#include <Core/Gen3/Encounters3.hpp>
-#include <Core/Gen3/EncounterArea3.hpp>
-#include <Core/Gen3/StaticTemplate3.hpp>
-#include <Core/Gen3/Profile3.hpp>
-#include <Core/Enum/Method.hpp>
-#include <Core/Enum/Game.hpp>
-#include <Core/Enum/Shiny.hpp>
-#include <Core/Enum/Lead.hpp>
-#include <Core/Parents/Filters/StateFilter.hpp>
+#include "blisy_events.hpp"
 #include "initial_seed.hpp"
 #include "pokefinder_glue.hpp"
 #include "util.hpp"
-#include "blisy_events.hpp"
+#include <Core/Enum/Game.hpp>
+#include <Core/Enum/Lead.hpp>
+#include <Core/Enum/Method.hpp>
+#include <Core/Enum/Shiny.hpp>
+#include <Core/Gen3/EncounterArea3.hpp>
+#include <Core/Gen3/Encounters3.hpp>
+#include <Core/Gen3/Generators/GameCubeGenerator.hpp>
+#include <Core/Gen3/Generators/StaticGenerator3.hpp>
+#include <Core/Gen3/Generators/WildGenerator3.hpp>
+#include <Core/Gen3/Profile3.hpp>
+#include <Core/Gen3/StaticTemplate3.hpp>
+#include <Core/Parents/Filters/StateFilter.hpp>
+#include <algorithm>
+#include <emscripten.h>
+#include <emscripten/bind.h>
+#include <vector>
 
 // these events are only accessible in RSE so they are always calculated without ttv
 emscripten::typed_array<ExtendedGeneratorState> generate_blisy_events(
@@ -31,20 +31,17 @@ emscripten::typed_array<ExtendedGeneratorState> generate_blisy_events(
     emscripten::typed_array<ExtendedGeneratorState> results;
     u32 initial_advances = advances_range.min();
     u32 max_advances = advances_range.max() - advances_range.min();
-    const StaticTemplate3 *static_template = BlisyEvents::get_template(template_index);
-    for (int i = 0; i < seeds.size(); i++)
-    {
+    const StaticTemplate3* static_template = BlisyEvents::get_template(template_index);
+    for (int i = 0; i < seeds.size(); i++) {
         FRLGContiguousSeedEntry entry = seeds[i];
         u16 seed = entry.initialSeed;
         u16 seed_frame = entry.seedFrame;
         // these events pull the current rng state and use it to immediately generate the pokemon following the GC method
         PokeRNG rng(seed, initial_advances + offset);
-        for (u32 cnt = 0; cnt <= max_advances; cnt++, rng.next())
-        {
+        for (u32 cnt = 0; cnt <= max_advances; cnt++, rng.next()) {
             GameCubeGenerator generator(0, 0, 0, static_template->getSpecie() == 385 ? Method::Channel : Method::XDColo, false, profile, filter);
             auto generator_results = generator.generate(rng.getSeed(), static_template);
-            for (auto &generator_result : generator_results)
-            {
+            for (auto& generator_result : generator_results) {
                 ExtendedGeneratorState current_result(seed, seed_frame, 0, static_template->getSpecie(), static_template->getForm(), generator_result);
                 current_result.advances = cnt + initial_advances;
                 results.push_back(current_result);
@@ -84,8 +81,7 @@ void check_seeds_static(
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
-    if (category == BlisyEvents::CATEGORY)
-    {
+    if (category == BlisyEvents::CATEGORY) {
         result_callback(generate_blisy_events(seeds, advances_range, offset, template_index, profile, filter));
         searching_callback(false);
         return;
@@ -95,15 +91,13 @@ void check_seeds_static(
     u16 species = static_template.getSpecie();
     u8 form = static_template.getForm();
 
-    for (int i = 0; i < seeds.size(); i++)
-    {
+    for (int i = 0; i < seeds.size(); i++) {
         emscripten::typed_array<ExtendedGeneratorState> results;
         FRLGContiguousSeedEntry entry = seeds[i];
 
         u16 seed = entry.initialSeed;
         u16 seed_frame = entry.seedFrame;
-        for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++)
-        {
+        for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++) {
             // final frame = frames spent in ttv + frames spent outside of ttv
             // for the sake of timing, = ttv advances + regular advances
             // (if ttv mode is off, ttv advances are always 0 and regular advances = final frame)
@@ -123,8 +117,7 @@ void check_seeds_static(
                 profile,
                 filter);
             auto generator_results = generator.generate(seed);
-            for (auto &generator_result : generator_results)
-            {
+            for (auto& generator_result : generator_results) {
                 results.push_back(ExtendedGeneratorState(seed, seed_frame, ttv_advances, species, form, generator_result));
             }
         }
@@ -160,11 +153,10 @@ void check_seeds_wild(
 
     // wild methods are +4 from static methods
     method = Method(static_cast<std::underlying_type_t<Method>>(method) - 4);
-    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method>{Method::Method1, Method::Method2, Method::Method4} : std::vector<Method>{method};
+    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method> { Method::Method1, Method::Method2, Method::Method4 } : std::vector<Method> { method };
 
     // leads are only available in Emerald
-    if (game != Game::Emerald)
-    {
+    if (game != Game::Emerald) {
         lead = Lead::None;
     }
 
@@ -174,21 +166,18 @@ void check_seeds_wild(
 
     searching_callback(true);
 
-    for (int i = 0; i < seeds.size(); i++)
-    {
+    for (int i = 0; i < seeds.size(); i++) {
         emscripten::typed_array<ExtendedWildGeneratorState> results;
         FRLGContiguousSeedEntry entry = seeds[i];
 
         u16 seed = entry.initialSeed;
         u16 seed_frame = entry.seedFrame;
-        for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++)
-        {
+        for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++) {
             u32 starting_advances = starting_final_frame > ttv_advances ? starting_final_frame - ttv_advances : 0;
             u32 ending_advances = ending_final_frame > ttv_advances ? ending_final_frame - ttv_advances : 0;
             u32 max_advances = ending_advances - starting_advances;
 
-            for (Method m : methods)
-            {
+            for (Method m : methods) {
                 WildGenerator3 generator(
                     starting_advances + ttv_advances * 313,
                     max_advances,
@@ -200,8 +189,7 @@ void check_seeds_wild(
                     profile,
                     filter);
                 auto generator_results = generator.generate(seed);
-                for (auto &generator_result : generator_results)
-                {
+                for (auto& generator_result : generator_results) {
                     results.push_back(ExtendedWildGeneratorState(seed, seed_frame, ttv_advances, m, generator_result));
                 }
             }

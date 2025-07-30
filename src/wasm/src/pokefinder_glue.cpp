@@ -1,7 +1,7 @@
+#include "pokefinder_glue.hpp"
+#include "util.hpp"
 #include <emscripten.h>
 #include <emscripten/bind.h>
-#include "util.hpp"
-#include "pokefinder_glue.hpp"
 
 EMSCRIPTEN_BINDINGS(pokefinder_glue)
 {

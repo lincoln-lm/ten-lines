@@ -1,20 +1,20 @@
-#include <vector>
-#include <array>
-#include <emscripten.h>
-#include <emscripten/bind.h>
+#include "blisy_events.hpp"
+#include <Core/Enum/Game.hpp>
+#include <Core/Enum/Lead.hpp>
+#include <Core/Enum/Method.hpp>
+#include <Core/Enum/Shiny.hpp>
+#include <Core/Gen3/EncounterArea3.hpp>
+#include <Core/Gen3/Encounters3.hpp>
+#include <Core/Gen3/Profile3.hpp>
 #include <Core/Gen3/Searchers/GameCubeSearcher.hpp>
 #include <Core/Gen3/Searchers/StaticSearcher3.hpp>
 #include <Core/Gen3/Searchers/WildSearcher3.hpp>
-#include <Core/Gen3/Encounters3.hpp>
-#include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/StaticTemplate3.hpp>
-#include <Core/Gen3/Profile3.hpp>
-#include <Core/Enum/Method.hpp>
-#include <Core/Enum/Game.hpp>
-#include <Core/Enum/Shiny.hpp>
-#include <Core/Enum/Lead.hpp>
 #include <Core/Parents/Filters/StateFilter.hpp>
-#include "blisy_events.hpp"
+#include <array>
+#include <emscripten.h>
+#include <emscripten/bind.h>
+#include <vector>
 
 emscripten::typed_array<ExtendedSearcherState> search_blisy_events(
     u32 template_index,
@@ -24,13 +24,12 @@ emscripten::typed_array<ExtendedSearcherState> search_blisy_events(
     std::array<u8, 6> max_ivs)
 {
     emscripten::typed_array<ExtendedSearcherState> results;
-    const StaticTemplate3 *static_template = BlisyEvents::get_template(template_index);
+    const StaticTemplate3* static_template = BlisyEvents::get_template(template_index);
 
     GameCubeSearcher searcher(static_template->getSpecie() == 385 ? Method::Channel : Method::XDColo, false, profile, filter);
     searcher.startSearch(min_ivs, max_ivs, static_template);
     auto search_results = searcher.getResults();
-    for (auto &result : search_results)
-    {
+    for (auto& result : search_results) {
         results.push_back(result);
     }
     return results;
@@ -51,15 +50,14 @@ void search_seeds_static(
     emscripten::callback<void(emscripten::typed_array<ExtendedSearcherState>)> result_callback,
     emscripten::callback<void(bool)> searching_callback)
 {
-    std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
-    std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
+    std::array<u8, 6> min_ivs = { iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min() };
+    std::array<u8, 6> max_ivs = { iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max() };
 
     StateFilter filter = build_static_filter(shininess, nature, gender, hidden_power, iv_ranges);
     Profile3 profile = build_profile(game, trainer_id, secret_id);
 
     searching_callback(true);
-    if (category == BlisyEvents::CATEGORY)
-    {
+    if (category == BlisyEvents::CATEGORY) {
         result_callback(search_blisy_events(template_index, profile, filter, min_ivs, max_ivs));
         searching_callback(false);
         return;
@@ -73,8 +71,7 @@ void search_seeds_static(
     emscripten::typed_array<ExtendedSearcherState> results;
     auto search_results = searcher.getResults();
 
-    for (auto &result : search_results)
-    {
+    for (auto& result : search_results) {
         results.push_back(result);
     }
     result_callback(results);
@@ -103,13 +100,12 @@ void search_seeds_wild(
     method = Method(static_cast<std::underlying_type_t<Method>>(method) - 4);
 
     // leads are only available in Emerald
-    if (game != Game::Emerald)
-    {
+    if (game != Game::Emerald) {
         lead = Lead::None;
     }
 
-    std::array<u8, 6> min_ivs = {iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min()};
-    std::array<u8, 6> max_ivs = {iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max()};
+    std::array<u8, 6> min_ivs = { iv_ranges[0].min(), iv_ranges[1].min(), iv_ranges[2].min(), iv_ranges[3].min(), iv_ranges[4].min(), iv_ranges[5].min() };
+    std::array<u8, 6> max_ivs = { iv_ranges[0].max(), iv_ranges[1].max(), iv_ranges[2].max(), iv_ranges[3].max(), iv_ranges[4].max(), iv_ranges[5].max() };
 
     EncounterArea3 encounter_area = get_encounter_area(encounter_category, location, game);
     WildStateFilter filter = build_wild_filter(encounter_area, pokemon, shininess, nature, gender, hidden_power, iv_ranges);
@@ -118,14 +114,12 @@ void search_seeds_wild(
     searching_callback(true);
     emscripten::typed_array<ExtendedWildSearcherState> results;
 
-    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method>{Method::Method1, Method::Method2, Method::Method4} : std::vector<Method>{method};
-    for (Method m : methods)
-    {
+    auto methods = method == Method(1 | 2 | 4) ? std::vector<Method> { Method::Method1, Method::Method2, Method::Method4 } : std::vector<Method> { method };
+    for (Method m : methods) {
         WildSearcher3 searcher(m, lead, false, encounter_area, profile, filter);
         searcher.startSearch(min_ivs, max_ivs);
         auto search_results = searcher.getResults();
-        for (auto &result : search_results)
-        {
+        for (auto& result : search_results) {
             results.push_back(ExtendedWildSearcherState(m, result));
         }
     }
