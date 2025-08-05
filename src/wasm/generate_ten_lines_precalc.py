@@ -112,7 +112,6 @@ def pull_frlg_seeds():
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                seed = int(seed_str, 16)
                 lg_eng_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(3, "mono", "r", "a")
@@ -148,7 +147,6 @@ def pull_frlg_seeds():
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                seed = int(seed_str, 16)
                 fr_jpn_1_0_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
@@ -176,7 +174,6 @@ def pull_frlg_seeds():
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                seed = int(seed_str, 16)
                 fr_jpn_1_1_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
@@ -204,7 +201,6 @@ def pull_frlg_seeds():
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                seed = int(seed_str, 16)
                 lg_jpn_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(1, "mono", "r", "a")
@@ -267,7 +263,6 @@ def pull_frlg_seeds():
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
                     seed = 0x10000
-                seed = int(seed_str, 16)
                 lg_eng_mgba_seeds.add_seed(sound, button_mode, button, seed)
 
             add_seed(2, "mono", "r", "a")
