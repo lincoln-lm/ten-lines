@@ -39,6 +39,15 @@ class SeedDataStore:
             self.data[key] = []
         self.data[key].append(seed)
 
+    def add_str_seed(self, sound, button_mode, button, seed_str):
+        """Add a seed to the store from a string"""
+        if seed_str in ("", "-"):
+            seed_str = "10000"
+        seed = int(seed_str, 16)
+        if seed > 0xFFFF:
+            seed = 0x10000
+        self.add_seed(sound, button_mode, button, seed)
+
     def serialize(self):
         """Serialize the store to bytes"""
         data = bytes()
@@ -50,6 +59,11 @@ class SeedDataStore:
             for seed in seeds:
                 data += seed.to_bytes(3, "little")
         return data
+
+    def save(self, path):
+        """Save the store to a file"""
+        with open(path, "wb") as f:
+            f.write(self.serialize())
 
 
 def pull_frlg_seeds():
@@ -69,30 +83,20 @@ def pull_frlg_seeds():
         if i == 0:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                fr_eng_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(3, "stereo", "a", "a")
-            add_seed(7, "stereo", "h", "a")
-            add_seed(11, "stereo", "r", "a")
-            add_seed(15, "mono", "a", "a")
-            add_seed(19, "mono", "h", "a")
-            add_seed(23, "mono", "r", "a")
-            add_seed(27, "mono", "r", "start")
-            add_seed(31, "mono", "a", "start")
-            add_seed(35, "mono", "h", "start")
-            add_seed(39, "stereo", "h", "start")
-            add_seed(43, "stereo", "r", "start")
-            add_seed(47, "stereo", "a", "start")
-            add_seed(51, "stereo", "a", "l")
-            add_seed(55, "mono", "a", "l")
+            fr_eng_seeds.add_str_seed("stereo", "a", "a", row[3])
+            fr_eng_seeds.add_str_seed("stereo", "h", "a", row[7])
+            fr_eng_seeds.add_str_seed("stereo", "r", "a", row[11])
+            fr_eng_seeds.add_str_seed("mono", "a", "a", row[15])
+            fr_eng_seeds.add_str_seed("mono", "h", "a", row[19])
+            fr_eng_seeds.add_str_seed("mono", "r", "a", row[23])
+            fr_eng_seeds.add_str_seed("mono", "r", "start", row[27])
+            fr_eng_seeds.add_str_seed("mono", "a", "start", row[31])
+            fr_eng_seeds.add_str_seed("mono", "h", "start", row[35])
+            fr_eng_seeds.add_str_seed("stereo", "h", "start", row[39])
+            fr_eng_seeds.add_str_seed("stereo", "r", "start", row[43])
+            fr_eng_seeds.add_str_seed("stereo", "a", "start", row[47])
+            fr_eng_seeds.add_str_seed("stereo", "a", "l", row[51])
+            fr_eng_seeds.add_str_seed("mono", "a", "l", row[55])
 
     sheet_txt = requests.get(
         LG_ENG_SHEET,
@@ -104,30 +108,20 @@ def pull_frlg_seeds():
         if i == 0:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                lg_eng_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(3, "mono", "r", "a")
-            add_seed(4, "mono", "a", "a")
-            add_seed(5, "mono", "h", "a")
-            add_seed(6, "stereo", "r", "a")
-            add_seed(7, "stereo", "a", "a")
-            add_seed(8, "stereo", "h", "a")
-            add_seed(9, "mono", "r", "start")
-            add_seed(10, "mono", "a", "start")
-            add_seed(11, "mono", "h", "start")
-            add_seed(12, "stereo", "r", "start")
-            add_seed(13, "stereo", "a", "start")
-            add_seed(14, "stereo", "h", "start")
-            add_seed(15, "mono", "a", "l")
-            add_seed(16, "stereo", "a", "l")
+            lg_eng_seeds.add_str_seed("mono", "r", "a", row[3])
+            lg_eng_seeds.add_str_seed("mono", "a", "a", row[4])
+            lg_eng_seeds.add_str_seed("mono", "h", "a", row[5])
+            lg_eng_seeds.add_str_seed("stereo", "r", "a", row[6])
+            lg_eng_seeds.add_str_seed("stereo", "a", "a", row[7])
+            lg_eng_seeds.add_str_seed("stereo", "h", "a", row[8])
+            lg_eng_seeds.add_str_seed("mono", "r", "start", row[9])
+            lg_eng_seeds.add_str_seed("mono", "a", "start", row[10])
+            lg_eng_seeds.add_str_seed("mono", "h", "start", row[11])
+            lg_eng_seeds.add_str_seed("stereo", "r", "start", row[12])
+            lg_eng_seeds.add_str_seed("stereo", "a", "start", row[13])
+            lg_eng_seeds.add_str_seed("stereo", "h", "start", row[14])
+            lg_eng_seeds.add_str_seed("mono", "a", "l", row[15])
+            lg_eng_seeds.add_str_seed("stereo", "a", "l", row[16])
 
     sheet_txt = requests.get(
         FR_JPN_1_0_SHEET,
@@ -139,22 +133,12 @@ def pull_frlg_seeds():
         if i < 3:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                fr_jpn_1_0_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(1, "mono", "r", "a")
-            add_seed(2, "mono", "a", "a")
-            add_seed(3, "mono", "h", "a")
-            add_seed(4, "stereo", "r", "a")
-            add_seed(5, "stereo", "a", "a")
-            add_seed(6, "stereo", "h", "a")
+            fr_jpn_1_0_seeds.add_str_seed("mono", "r", "a", row[1])
+            fr_jpn_1_0_seeds.add_str_seed("mono", "a", "a", row[2])
+            fr_jpn_1_0_seeds.add_str_seed("mono", "h", "a", row[3])
+            fr_jpn_1_0_seeds.add_str_seed("stereo", "r", "a", row[4])
+            fr_jpn_1_0_seeds.add_str_seed("stereo", "a", "a", row[5])
+            fr_jpn_1_0_seeds.add_str_seed("stereo", "h", "a", row[6])
 
     sheet_txt = requests.get(
         FR_JPN_1_1_SHEET,
@@ -166,22 +150,12 @@ def pull_frlg_seeds():
         if i < 3:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                fr_jpn_1_1_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(1, "mono", "r", "a")
-            add_seed(2, "mono", "a", "a")
-            add_seed(3, "mono", "h", "a")
-            add_seed(4, "stereo", "r", "a")
-            add_seed(5, "stereo", "a", "a")
-            add_seed(6, "stereo", "h", "a")
+            fr_jpn_1_1_seeds.add_str_seed("mono", "r", "a", row[1])
+            fr_jpn_1_1_seeds.add_str_seed("mono", "a", "a", row[2])
+            fr_jpn_1_1_seeds.add_str_seed("mono", "h", "a", row[3])
+            fr_jpn_1_1_seeds.add_str_seed("stereo", "r", "a", row[4])
+            fr_jpn_1_1_seeds.add_str_seed("stereo", "a", "a", row[5])
+            fr_jpn_1_1_seeds.add_str_seed("stereo", "h", "a", row[6])
 
     sheet_txt = requests.get(
         LG_JPN_SHEET,
@@ -193,22 +167,12 @@ def pull_frlg_seeds():
         if i < 3:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                lg_jpn_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(1, "mono", "r", "a")
-            add_seed(2, "mono", "a", "a")
-            add_seed(3, "mono", "h", "a")
-            add_seed(4, "stereo", "r", "a")
-            add_seed(5, "stereo", "a", "a")
-            add_seed(6, "stereo", "h", "a")
+            lg_jpn_seeds.add_str_seed("mono", "r", "a", row[1])
+            lg_jpn_seeds.add_str_seed("mono", "a", "a", row[2])
+            lg_jpn_seeds.add_str_seed("mono", "h", "a", row[3])
+            lg_jpn_seeds.add_str_seed("stereo", "r", "a", row[4])
+            lg_jpn_seeds.add_str_seed("stereo", "a", "a", row[5])
+            lg_jpn_seeds.add_str_seed("stereo", "h", "a", row[6])
 
     sheet_txt = requests.get(
         FR_ENG_MGBA_SHEET,
@@ -220,30 +184,20 @@ def pull_frlg_seeds():
         if i < 2:
             continue
         if row[0]:
-
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                fr_eng_mgba_seeds.add_seed(sound, button_mode, button, seed)
-
-            add_seed(2, "mono", "r", "a")
-            add_seed(3, "mono", "a", "a")
-            add_seed(4, "mono", "h", "a")
-            add_seed(5, "stereo", "r", "a")
-            add_seed(6, "stereo", "a", "a")
-            add_seed(7, "stereo", "h", "a")
-            add_seed(8, "mono", "r", "start")
-            add_seed(9, "mono", "a", "start")
-            add_seed(10, "mono", "h", "start")
-            add_seed(11, "stereo", "r", "start")
-            add_seed(12, "stereo", "a", "start")
-            add_seed(13, "stereo", "h", "start")
-            add_seed(14, "mono", "a", "l")
-            add_seed(15, "stereo", "a", "l")
+            fr_eng_mgba_seeds.add_str_seed("mono", "r", "a", row[2])
+            fr_eng_mgba_seeds.add_str_seed("mono", "a", "a", row[3])
+            fr_eng_mgba_seeds.add_str_seed("mono", "h", "a", row[4])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "r", "a", row[5])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "a", "a", row[6])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "h", "a", row[7])
+            fr_eng_mgba_seeds.add_str_seed("mono", "r", "start", row[8])
+            fr_eng_mgba_seeds.add_str_seed("mono", "a", "start", row[9])
+            fr_eng_mgba_seeds.add_str_seed("mono", "h", "start", row[10])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "r", "start", row[11])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "a", "start", row[12])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "h", "start", row[13])
+            fr_eng_mgba_seeds.add_str_seed("mono", "a", "l", row[14])
+            fr_eng_mgba_seeds.add_str_seed("stereo", "a", "l", row[15])
 
     sheet_txt = requests.get(
         LG_ENG_MGBA_SHEET,
@@ -255,45 +209,29 @@ def pull_frlg_seeds():
         if i < 2:
             continue
         if row[0]:
+            lg_eng_mgba_seeds.add_str_seed("mono", "r", "a", row[2])
+            lg_eng_mgba_seeds.add_str_seed("mono", "a", "a", row[3])
+            lg_eng_mgba_seeds.add_str_seed("mono", "h", "a", row[4])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "r", "a", row[5])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "a", "a", row[6])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "h", "a", row[7])
+            lg_eng_mgba_seeds.add_str_seed("mono", "r", "start", row[8])
+            lg_eng_mgba_seeds.add_str_seed("mono", "a", "start", row[9])
+            lg_eng_mgba_seeds.add_str_seed("mono", "h", "start", row[10])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "r", "start", row[11])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "a", "start", row[12])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "h", "start", row[13])
+            lg_eng_mgba_seeds.add_str_seed("mono", "a", "l", row[14])
+            lg_eng_mgba_seeds.add_str_seed("stereo", "a", "l", row[15])
 
-            def add_seed(col, sound, button_mode, button):
-                seed_str = row[col]
-                if seed_str in ("", "-"):
-                    seed_str = "10000"
-                seed = int(seed_str, 16)
-                if seed > 0xFFFF:
-                    seed = 0x10000
-                lg_eng_mgba_seeds.add_seed(sound, button_mode, button, seed)
+    fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
+    lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")
+    fr_jpn_1_0_seeds.save(sys.argv[1] + "/src/generated/fr_jpn_1_0.bin")
+    fr_jpn_1_1_seeds.save(sys.argv[1] + "/src/generated/fr_jpn_1_1.bin")
+    lg_jpn_seeds.save(sys.argv[1] + "/src/generated/lg_jpn.bin")
+    fr_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/fr_eng_mgba.bin")
+    lg_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/lg_eng_mgba.bin")
 
-            add_seed(2, "mono", "r", "a")
-            add_seed(3, "mono", "a", "a")
-            add_seed(4, "mono", "h", "a")
-            add_seed(5, "stereo", "r", "a")
-            add_seed(6, "stereo", "a", "a")
-            add_seed(7, "stereo", "h", "a")
-            add_seed(8, "mono", "r", "start")
-            add_seed(9, "mono", "a", "start")
-            add_seed(10, "mono", "h", "start")
-            add_seed(11, "stereo", "r", "start")
-            add_seed(12, "stereo", "a", "start")
-            add_seed(13, "stereo", "h", "start")
-            add_seed(14, "mono", "a", "l")
-            add_seed(15, "stereo", "a", "l")
-
-    with open(sys.argv[1] + "/src/generated/fr_eng.bin", "wb") as f:
-        f.write(fr_eng_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/lg_eng.bin", "wb") as f:
-        f.write(lg_eng_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/fr_jpn_1_0.bin", "wb") as f:
-        f.write(fr_jpn_1_0_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/fr_jpn_1_1.bin", "wb") as f:
-        f.write(fr_jpn_1_1_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/lg_jpn.bin", "wb") as f:
-        f.write(lg_jpn_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/fr_eng_mgba.bin", "wb") as f:
-        f.write(fr_eng_mgba_seeds.serialize())
-    with open(sys.argv[1] + "/src/generated/lg_eng_mgba.bin", "wb") as f:
-        f.write(lg_eng_mgba_seeds.serialize())
     if os.path.exists(sys.argv[1] + "/../../public/"):
         os.makedirs(sys.argv[1] + "/../../public/generated", exist_ok=True)
         for file in glob.glob(sys.argv[1] + "/src/generated/*.bin"):
