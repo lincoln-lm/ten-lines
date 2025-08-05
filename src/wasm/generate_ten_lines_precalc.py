@@ -72,7 +72,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -107,7 +107,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -143,7 +143,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -171,7 +171,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -199,7 +199,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -227,7 +227,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
@@ -262,7 +262,7 @@ def pull_frlg_seeds():
 
             def add_seed(col, sound, button_mode, button):
                 seed_str = row[col]
-                if seed_str in ("", "-", "0"):
+                if seed_str in ("", "-"):
                     seed_str = "10000"
                 seed = int(seed_str, 16)
                 if seed > 0xFFFF:
