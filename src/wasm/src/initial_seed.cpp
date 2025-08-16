@@ -119,7 +119,8 @@ emscripten::typed_array<FRLGContiguousSeedEntry> get_contiguous_seed_list(
     FRLGSeedDataStore seed_data_store(seed_data_vector);
     std::vector<FRLGSeedEntry>& contiguous_seeds = seed_data_store.contiguous_seeds.at(setting_key);
     const auto& offsets = HELD_BUTTON_OFFSETS.at(game_version);
-    auto held_button_offset = std::find_if(offsets.begin(), offsets.end(), [&](const HeldButtonOffset& held_button_offset) { return held_button_offset.held_button == held_button; });
+    const char button_mode = *(strchr(setting_key.c_str(), '_') + 1);
+    auto held_button_offset = std::find_if(offsets.begin(), offsets.end(), [&](const HeldButtonOffset& held_button_offset) { return held_button_offset.held_button == held_button && held_button_offset.button_mode == button_mode; });
     emscripten::typed_array<FRLGContiguousSeedEntry> entries;
     if (held_button_offset == offsets.end()) {
         return entries;
