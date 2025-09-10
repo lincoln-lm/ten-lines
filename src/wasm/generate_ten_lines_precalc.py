@@ -12,7 +12,7 @@ import numpy as np
 
 BASE_SEED = 0
 
-FR_ENG_SHEET = "https://docs.google.com/spreadsheets/d/1Mf3F4kTvNEYyDGWKVmMSiar3Fwh1PLzWVXUvGx9YxfA/gviz/tq?tqx=out:csv&sheet=Fire%20Red%20Raw%20Seed%20Data"
+FR_ENG_SHEET = "https://docs.google.com/spreadsheets/d/1ZNchTvoCpHFVPBscEJZG3JaaqR41D8VVnbXb23fzc44/gviz/tq?tqx=out:csv&gid=0"
 LG_ENG_SHEET = "https://docs.google.com/spreadsheets/d/12TUcXGbLY_bBDfVsgWZKvqrX13U6XAATQZrYnzBKP6Y/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
 
 FR_JPN_1_0_SHEET = "https://docs.google.com/spreadsheets/d/1xSYuAuGSZQ4JbgQN262cfo80_A2CYko74bYGzl5ABTA/gviz/tq?tqx=out:csv&sheet=JPN%20Fire%20Red%201.0%20Seeds"
@@ -78,25 +78,25 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    fr_eng_seeds = SeedDataStore(starting_frame=4100 // 2 - 15, frame_size=2)
+    fr_eng_seeds = SeedDataStore(starting_frame=4062 // 2, frame_size=2)
     for i, row in enumerate(sheet_csv):
         if i == 0:
             continue
         if row[0]:
-            fr_eng_seeds.add_str_seed("stereo", "a", "a", row[3])
-            fr_eng_seeds.add_str_seed("stereo", "h", "a", row[7])
-            fr_eng_seeds.add_str_seed("stereo", "r", "a", row[11])
-            fr_eng_seeds.add_str_seed("mono", "a", "a", row[15])
-            fr_eng_seeds.add_str_seed("mono", "h", "a", row[19])
-            fr_eng_seeds.add_str_seed("mono", "r", "a", row[23])
-            fr_eng_seeds.add_str_seed("mono", "r", "start", row[27])
-            fr_eng_seeds.add_str_seed("mono", "a", "start", row[31])
-            fr_eng_seeds.add_str_seed("mono", "h", "start", row[35])
-            fr_eng_seeds.add_str_seed("stereo", "h", "start", row[39])
-            fr_eng_seeds.add_str_seed("stereo", "r", "start", row[43])
-            fr_eng_seeds.add_str_seed("stereo", "a", "start", row[47])
-            fr_eng_seeds.add_str_seed("stereo", "a", "l", row[51])
-            fr_eng_seeds.add_str_seed("mono", "a", "l", row[55])
+            fr_eng_seeds.add_str_seed("mono", "r", "a", row[3])
+            fr_eng_seeds.add_str_seed("mono", "a", "a", row[4])
+            fr_eng_seeds.add_str_seed("mono", "h", "a", row[5])
+            fr_eng_seeds.add_str_seed("stereo", "r", "a", row[6])
+            fr_eng_seeds.add_str_seed("stereo", "a", "a", row[7])
+            fr_eng_seeds.add_str_seed("stereo", "h", "a", row[8])
+            fr_eng_seeds.add_str_seed("mono", "r", "start", row[9])
+            fr_eng_seeds.add_str_seed("mono", "a", "start", row[10])
+            fr_eng_seeds.add_str_seed("mono", "h", "start", row[11])
+            fr_eng_seeds.add_str_seed("stereo", "r", "start", row[12])
+            fr_eng_seeds.add_str_seed("stereo", "a", "start", row[13])
+            fr_eng_seeds.add_str_seed("stereo", "h", "start", row[14])
+            fr_eng_seeds.add_str_seed("mono", "a", "l", row[15])
+            fr_eng_seeds.add_str_seed("stereo", "a", "l", row[16])
 
     sheet_txt = requests.get(
         LG_ENG_SHEET,
