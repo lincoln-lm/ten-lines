@@ -13,6 +13,7 @@ dev-dist
 dist-ssr
 build
 generated
+.cache
 *.local
 
 # Editor directories and files
