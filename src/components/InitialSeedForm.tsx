@@ -22,6 +22,7 @@ export interface InitialSeedURLState {
     offset: string;
     game: string;
     gameConsole: string;
+    allowSwitch: string;
     teachyTVMode: string;
     teachyTVRegularOut: string;
 }

@@ -46,6 +46,7 @@ export interface SearcherURLState {
     game: string;
     trainerID: string;
     secretID: string;
+    allowSwitch: string;
 }
 
 function useSearcherURLState() {
@@ -53,6 +54,7 @@ function useSearcherURLState() {
     const game = searchParams.get("game") || "r_painting";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
+    const allowSwitch = searchParams.get("allowSwitch") || "false";
     const setSearcherURLState = (state: Partial<SearcherURLState>) => {
         setSearchParams((prev) => {
             for (const [key, value] of Object.entries(state)) {
@@ -65,6 +67,7 @@ function useSearcherURLState() {
         game,
         trainerID,
         secretID,
+        allowSwitch,
         setSearcherURLState,
     };
 }
@@ -98,7 +101,7 @@ export default function CalibrationForm({
             wildLead: 255,
             method: 1,
         });
-    const { game, trainerID, secretID, setSearcherURLState } =
+    const { game, trainerID, secretID, allowSwitch, setSearcherURLState } =
         useSearcherURLState();
 
     const [rows, setRows] = useState<ExtendedSearcherState[]>([]);
@@ -107,9 +110,9 @@ export default function CalibrationForm({
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const ivRanges = ivRangesAreValid
         ? searcherFormState.ivRangeStrings.map((range) => [
-              parseInt(range[0], 10),
-              parseInt(range[1], 10),
-          ])
+            parseInt(range[0], 10),
+            parseInt(range[1], 10),
+        ])
         : [];
 
     const [trainerIDIsValid, setTrainerIDIsValid] = useState(true);
@@ -181,6 +184,7 @@ export default function CalibrationForm({
     const isStatic = searcherFormState.method <= STATIC_4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
     const isFRLGE = isFRLG || game.startsWith("e_");
+    const isSwitch = game.endsWith("nx");
 
     if (searcherFormState.staticCategory == 3 && !isFRLG) {
         searcherFormState.staticCategory = 0;
@@ -221,6 +225,7 @@ export default function CalibrationForm({
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
+                {allowSwitch != "false" && <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>}
                 <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
