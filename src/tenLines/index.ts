@@ -61,12 +61,10 @@ export const SEED_IDENTIFIER_TO_GAME: Record<string, number> = {
 const SEED_URLS: Record<string, string> = {
     fr: "generated/fr_eng.bin",
     fr_eu: "generated/fr_eng.bin",
-    // TODO:
     fr_nx: "generated/fr_eng_nx.bin",
     lg: "generated/lg_eng.bin",
     lg_eu: "generated/lg_eng.bin",
-    // TODO:
-    // lg_nx: "generated/lg_eng_nx.bin",
+    lg_nx: "generated/lg_eng_nx.bin",
     fr_jpn_1_0: "generated/fr_jpn_1_0.bin",
     fr_jpn_1_1: "generated/fr_jpn_1_1.bin",
     lg_jpn: "generated/lg_jpn.bin",

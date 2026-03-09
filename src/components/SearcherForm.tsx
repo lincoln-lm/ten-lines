@@ -229,6 +229,7 @@ export default function CalibrationForm({
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
+                {allowSwitch != "false" && <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>}
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             <Box sx={{ flexDirection: "row", display: "flex" }}>

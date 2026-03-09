@@ -23,6 +23,9 @@ LG_JPN_SHEET = "https://docs.google.com/spreadsheets/d/1LSRVD0_zK6vyd6ettUDfaCFJ
 FR_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1aWo6FAjkLIut5TIKior4_04PlGessxUJhE8YWz_nQwc/gviz/tq?tqx=out:csv&sheet=Fire%20Red%20Seeds"
 LG_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1YiQiII2v3AJK6RANMsQcBzVLk9dO6L99Zxt9FsCyKrI/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
 
+FR_ENG_NX_SHEET = "https://docs.google.com/spreadsheets/d/1mbn2-XAtmV7HZ1p4esgvUG710VX6FlfhN_HYL_zLJSk/gviz/tq?tqx=out:csv&sheet=FireRed%20Seeds"
+LG_ENG_NX_SHEET = "https://docs.google.com/spreadsheets/d/1mbn2-XAtmV7HZ1p4esgvUG710VX6FlfhN_HYL_zLJSk/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
+
 
 class SeedDataStore:
     """Binary format for list of seeds for a particular game"""
@@ -224,13 +227,31 @@ def pull_frlg_seeds():
             lg_eng_mgba_seeds.add_str_seed("mono", "a", "l", row[14])
             lg_eng_mgba_seeds.add_str_seed("stereo", "a", "l", row[15])
 
-    # TODO: actual seed sheet
-    fr_eng_nx_seeds = SeedDataStore(starting_frame=0, frame_size=1)
-    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "DEAD")
-    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "BEEF")
-    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "1234")
-    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "5678")
-    # lg_eng_nx_seeds = SeedDataStore(starting_frame=0, frame_size=1)
+    sheet_txt = requests.get(
+        FR_ENG_NX_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    fr_eng_nx_seeds = SeedDataStore(starting_frame=1821, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 2:
+            continue
+
+        if row[0]:
+            fr_eng_nx_seeds.add_str_seed("mono", "h", "a", row[1])
+
+    sheet_txt = requests.get(
+        LG_ENG_NX_SHEET,
+        timeout=15,
+    ).text
+    sheet_csv = csv.reader(sheet_txt.split("\n"))
+    lg_eng_nx_seeds = SeedDataStore(starting_frame=1854, frame_size=1)
+    for i, row in enumerate(sheet_csv):
+        if i < 2:
+            continue
+
+        if row[0]:
+            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[1])
 
     fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
     lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")
@@ -240,7 +261,7 @@ def pull_frlg_seeds():
     fr_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/fr_eng_mgba.bin")
     lg_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/lg_eng_mgba.bin")
     fr_eng_nx_seeds.save(sys.argv[1] + "/src/generated/fr_eng_nx.bin")
-    # lg_eng_nx_seeds.save(sys.argv[1] + "/src/generated/lg_eng_nx.bin")
+    lg_eng_nx_seeds.save(sys.argv[1] + "/src/generated/lg_eng_nx.bin")
 
     if os.path.exists(sys.argv[1] + "/../../public/"):
         os.makedirs(sys.argv[1] + "/../../public/generated", exist_ok=True)
