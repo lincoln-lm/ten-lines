@@ -184,7 +184,6 @@ export default function CalibrationForm({
     const isStatic = searcherFormState.method <= STATIC_4;
     const isFRLG = game.startsWith("fr") || game.startsWith("lg");
     const isFRLGE = isFRLG || game.startsWith("e_");
-    const isSwitch = game.endsWith("nx");
 
     if (searcherFormState.staticCategory == 3 && !isFRLG) {
         searcherFormState.staticCategory = 0;
