@@ -29,8 +29,6 @@ const InitialSeedTable = memo(function InitialSeedTable({
     teachyTVRegularOut: number;
 }) {
     const [_, setSearchParams] = useSearchParams();
-    // TODO: should this technically check the game instead of the console
-    const isSwitch = gameConsole.startsWith("NX");
     function humanizeSettings(settings: string | undefined) {
         if (!settings) return "";
         const [
@@ -146,10 +144,6 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 <TableBody>
                     {rows.map((row, index) => {
                         let visual_frame = row.advances;
-                        if (isSwitch) {
-                            // the switch games always advance twice a frame
-                            visual_frame = Math.round(row.advances / 2);
-                        }
                         let ttv_advances = 0;
                         if (isTeachyTVMode) {
                             // TODO: TTV on switch
