@@ -91,9 +91,9 @@ const SYSTEM_TIMING_DATA: Record<
     GBP: { frame_rate: 16777216 / 280896, offset_ms: 200 },
     NDS: { frame_rate: 16756991 / 280896, offset_ms: 788 },
     "3DS": { frame_rate: 16756991 / 280896, offset_ms: 1558 },
-    // TODO:
-    NX: { frame_rate: 16756991 / 280896, offset_ms: 0 },
-    NX2: { frame_rate: 16756991 / 280896, offset_ms: 0 },
+
+    NX: { frame_rate: 16777216 / 280896, offset_ms: 0 },
+    NX2: { frame_rate: 16777216 / 280896, offset_ms: -750 },
 };
 
 export function frameToMS(frame: number, system: string) {
