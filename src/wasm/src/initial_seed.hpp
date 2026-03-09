@@ -227,4 +227,22 @@ static inline std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_O
 
             { 'r', "none", 0 },
         } },
+
+    { "fr_nx",
+        {
+            { 'a', "none", 0 },
+
+            { 'h', "none", 0 },
+
+            { 'r', "none", 0 },
+        } },
+
+    { "lg_nx",
+        {
+            { 'a', "none", 0 },
+
+            { 'h', "none", 0 },
+
+            { 'r', "none", 0 },
+        } },
 };

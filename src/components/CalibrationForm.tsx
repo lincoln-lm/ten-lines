@@ -16,6 +16,7 @@ import {
 import fetchTenLines, {
     COMBINED_WILD_METHOD,
     fetchSeedData,
+    fixGameConsole,
     frameToMS,
     hexSeed,
     SEED_IDENTIFIER_TO_GAME,
@@ -82,7 +83,7 @@ function useCalibrationURLState() {
     const buttonMode = searchParams.get("buttonMode") || "a";
     const button = searchParams.get("button") || "a";
     const heldButton = searchParams.get("heldButton") || "none";
-    const gameConsole = searchParams.get("gameConsole") || "GBA";
+    const gameConsole = fixGameConsole(game, searchParams.get("gameConsole") || "GBA");
     const advancesMin = searchParams.get("advancesMin") || "0";
     const advancesMax = searchParams.get("advancesMax") || "100";
     const ttvAdvancesMin = searchParams.get("ttvAdvancesMin") || "0";
@@ -199,26 +200,26 @@ export default function CalibrationForm({
     const ttvAdvancesRange = !isTeachyTVMode
         ? [0, 0]
         : ttvAdvancesRangeIsValid
-        ? [parseInt(ttvAdvancesMin, 10), parseInt(ttvAdvancesMax, 10)]
-        : [0, 0];
+            ? [parseInt(ttvAdvancesMin, 10), parseInt(ttvAdvancesMax, 10)]
+            : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const [offsetIsValid, setOffsetIsValid] = useState(true);
     const ivRanges =
         calibrationFormState.nature == -1
             ? [
-                  [0, 31],
-                  [0, 31],
-                  [0, 31],
-                  [0, 31],
-                  [0, 31],
-                  [0, 31],
-              ]
+                [0, 31],
+                [0, 31],
+                [0, 31],
+                [0, 31],
+                [0, 31],
+                [0, 31],
+            ]
             : ivRangesAreValid
-            ? calibrationFormState.ivRangeStrings.map((range) => [
-                  parseInt(range[0], 10),
-                  parseInt(range[1], 10),
-              ])
-            : [];
+                ? calibrationFormState.ivRangeStrings.map((range) => [
+                    parseInt(range[0], 10),
+                    parseInt(range[1], 10),
+                ])
+                : [];
 
     const [trainerIDIsValid, setTrainerIDIsValid] = useState(true);
     const [secretIDIsValid, setSecretIDIsValid] = useState(true);
@@ -267,7 +268,7 @@ export default function CalibrationForm({
                     targetInitialSeed: hexSeed(
                         seedList.length > 0
                             ? seedList[Math.min(51, seedList.length - 1)]
-                                  .initialSeed
+                                .initialSeed
                             : 0xdead,
                         16
                     ),

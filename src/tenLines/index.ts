@@ -47,8 +47,10 @@ export const SEED_IDENTIFIER_TO_GAME: Record<string, number> = {
     e_painting: Game.Emerald,
     fr: Game.FireRed,
     fr_eu: Game.FireRed,
+    fr_nx: Game.FireRed,
     lg: Game.LeafGreen,
     lg_eu: Game.LeafGreen,
+    lg_nx: Game.LeafGreen,
     fr_jpn_1_0: Game.FireRed,
     fr_jpn_1_1: Game.FireRed,
     lg_jpn: Game.LeafGreen,
@@ -59,8 +61,12 @@ export const SEED_IDENTIFIER_TO_GAME: Record<string, number> = {
 const SEED_URLS: Record<string, string> = {
     fr: "generated/fr_eng.bin",
     fr_eu: "generated/fr_eng.bin",
+    // TODO:
+    fr_nx: "generated/fr_eng_nx.bin",
     lg: "generated/lg_eng.bin",
     lg_eu: "generated/lg_eng.bin",
+    // TODO:
+    // lg_nx: "generated/lg_eng_nx.bin",
     fr_jpn_1_0: "generated/fr_jpn_1_0.bin",
     fr_jpn_1_1: "generated/fr_jpn_1_1.bin",
     lg_jpn: "generated/lg_jpn.bin",
@@ -85,6 +91,9 @@ const SYSTEM_TIMING_DATA: Record<
     GBP: { frame_rate: 16777216 / 280896, offset_ms: 200 },
     NDS: { frame_rate: 16756991 / 280896, offset_ms: 788 },
     "3DS": { frame_rate: 16756991 / 280896, offset_ms: 1558 },
+    // TODO:
+    NX: { frame_rate: 16756991 / 280896, offset_ms: 0 },
+    NX2: { frame_rate: 16756991 / 280896, offset_ms: 0 },
 };
 
 export function frameToMS(frame: number, system: string) {
@@ -114,6 +123,17 @@ export function hexSeed(seed: number, bits: number) {
         .toString(16)
         .toUpperCase()
         .padStart(Math.ceil(bits) / 4, "0");
+}
+
+
+export function fixGameConsole(game: string, console: string) {
+    if (game.endsWith("nx") && !console.startsWith("NX")) {
+        return "NX";
+    }
+    if (!game.endsWith("nx") && console.startsWith("NX")) {
+        return "GBA";
+    }
+    return console;
 }
 
 export default fetchTenLines;

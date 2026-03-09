@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 
-import fetchTenLines, { fetchSeedData, hexSeed } from "../tenLines";
+import fetchTenLines, { fetchSeedData, fixGameConsole, hexSeed } from "../tenLines";
 import NumericalInput from "./NumericalInput";
 import InitialSeedTable from "./InitialSeedTable";
 import type { InitialSeedResult } from "../tenLines/generated";
@@ -32,7 +32,8 @@ function useInitialSeedURLState() {
     const count = searchParams.get("count") || "10";
     const offset = searchParams.get("offset") || "0";
     const game = searchParams.get("game") || "r_painting";
-    const gameConsole = searchParams.get("gameConsole") || "GBA";
+    const gameConsole = fixGameConsole(game, searchParams.get("gameConsole") || "GBA");
+    const allowSwitch = searchParams.get("allowSwitch") || "false";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
     const teachyTVRegularOut = searchParams.get("teachyTVRegularOut") || "3600";
     const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
@@ -49,6 +50,7 @@ function useInitialSeedURLState() {
         offset,
         game,
         gameConsole,
+        allowSwitch,
         teachyTVMode,
         teachyTVRegularOut,
         setInitialSeedURLState,
@@ -74,6 +76,7 @@ export default function TenLinesForm({
         offset,
         game,
         gameConsole,
+        allowSwitch,
         teachyTVMode,
         teachyTVRegularOut,
         setInitialSeedURLState,
@@ -114,6 +117,7 @@ export default function TenLinesForm({
     };
 
     const isFRLG = !game.endsWith("painting");
+    const isSwitch = game.endsWith("nx");
     const isTeachyTVMode = teachyTVMode === "true" && isFRLG;
 
     if (hidden) {
@@ -180,6 +184,7 @@ export default function TenLinesForm({
                 onChange={(event) => {
                     setInitialSeedURLState({ game: event.target.value });
                     setData([]);
+                    setInitialSeedURLState({ gameConsole: fixGameConsole(event.target.value, gameConsole) });
                 }}
                 value={game}
                 select
@@ -192,10 +197,12 @@ export default function TenLinesForm({
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
+                {allowSwitch != "false" && <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>}
                 <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
+                {/* <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem> */}
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             <TextField
@@ -203,16 +210,24 @@ export default function TenLinesForm({
                 margin="normal"
                 style={{ textAlign: "left" }}
                 onChange={(event) => {
-                    setInitialSeedURLState({ gameConsole: event.target.value });
+                    setInitialSeedURLState({ gameConsole: fixGameConsole(game, event.target.value) });
                 }}
                 value={gameConsole}
                 select
                 fullWidth
             >
-                <MenuItem value="GBA">Game Boy Advance</MenuItem>
-                <MenuItem value="GBP">Game Boy Player</MenuItem>
-                <MenuItem value="NDS">Nintendo DS</MenuItem>
-                <MenuItem value="3DS">Nintendo 3DS (open_agb_firm)</MenuItem>
+                {isSwitch ? [
+                    <MenuItem value="NX">Nintendo Switch 1</MenuItem>,
+                    <MenuItem value="NX2">Nintendo Switch 2</MenuItem>
+                ]
+                    :
+                    [
+                        <MenuItem value="GBA">Game Boy Advance</MenuItem>,
+                        <MenuItem value="GBP">Game Boy Player</MenuItem>,
+                        <MenuItem value="NDS">Nintendo DS</MenuItem>,
+                        <MenuItem value="3DS">Nintendo 3DS (open_agb_firm)</MenuItem>,
+                    ]
+                }
             </TextField>
             {isFRLG && (
                 <TeachyTVEntry

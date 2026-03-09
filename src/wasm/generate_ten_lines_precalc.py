@@ -224,6 +224,14 @@ def pull_frlg_seeds():
             lg_eng_mgba_seeds.add_str_seed("mono", "a", "l", row[14])
             lg_eng_mgba_seeds.add_str_seed("stereo", "a", "l", row[15])
 
+    # TODO: actual seed sheet
+    fr_eng_nx_seeds = SeedDataStore(starting_frame=0, frame_size=1)
+    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "DEAD")
+    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "BEEF")
+    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "1234")
+    fr_eng_nx_seeds.add_str_seed("mono", "h", "a", "5678")
+    # lg_eng_nx_seeds = SeedDataStore(starting_frame=0, frame_size=1)
+
     fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
     lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")
     fr_jpn_1_0_seeds.save(sys.argv[1] + "/src/generated/fr_jpn_1_0.bin")
@@ -231,6 +239,8 @@ def pull_frlg_seeds():
     lg_jpn_seeds.save(sys.argv[1] + "/src/generated/lg_jpn.bin")
     fr_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/fr_eng_mgba.bin")
     lg_eng_mgba_seeds.save(sys.argv[1] + "/src/generated/lg_eng_mgba.bin")
+    fr_eng_nx_seeds.save(sys.argv[1] + "/src/generated/fr_eng_nx.bin")
+    # lg_eng_nx_seeds.save(sys.argv[1] + "/src/generated/lg_eng_nx.bin")
 
     if os.path.exists(sys.argv[1] + "/../../public/"):
         os.makedirs(sys.argv[1] + "/../../public/generated", exist_ok=True)
