@@ -29,6 +29,8 @@ const CalibrationTable = memo(function CalibrationTable({
     isStatic,
     isMultiMethod,
     isTeachyTVMode,
+    isSwitch,
+    overworldFrames
 }: {
     rows: ExtendedGeneratorState[] | ExtendedWildGeneratorState[];
     target: FRLGContiguousSeedEntry;
@@ -36,6 +38,8 @@ const CalibrationTable = memo(function CalibrationTable({
     isStatic: boolean;
     isMultiMethod: boolean;
     isTeachyTVMode: boolean;
+    isSwitch: boolean;
+    overworldFrames: number;
 }) {
     return (
         <TableContainer component={Paper}>
@@ -50,6 +54,9 @@ const CalibrationTable = memo(function CalibrationTable({
                         )}
                         {isTeachyTVMode && (
                             <TableCell>TeachyTV Advances</TableCell>
+                        )}
+                        {isSwitch && (
+                            <TableCell>Continue Screen Frames</TableCell>
                         )}
                         {!isStatic && <TableCell>Slot</TableCell>}
                         {!isStatic && <TableCell>Level</TableCell>}
@@ -91,9 +98,9 @@ const CalibrationTable = memo(function CalibrationTable({
                                     <TableCell>
                                         {
                                             METHODS_EN[
-                                                (
-                                                    row as ExtendedWildGeneratorState
-                                                ).method
+                                            (
+                                                row as ExtendedWildGeneratorState
+                                            ).method
                                             ]
                                         }
                                     </TableCell>
@@ -107,6 +114,12 @@ const CalibrationTable = memo(function CalibrationTable({
                                 )}
                                 {isTeachyTVMode && (
                                     <TableCell>{row.ttvAdvances}</TableCell>
+                                )}
+                                {isSwitch && (
+                                    <TableCell>
+                                        {/* the overworld advances 2x2 in the switch games */}
+                                        {row.advances - overworldFrames * 2}
+                                    </TableCell>
                                 )}
                                 {!isStatic && (
                                     <TableCell>

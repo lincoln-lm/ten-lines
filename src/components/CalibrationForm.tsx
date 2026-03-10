@@ -72,6 +72,7 @@ export interface CalibrationURLState {
     ttvAdvancesMin: string;
     ttvAdvancesMax: string;
     offset: string;
+    overworldFrames: string;
     trainerID: string;
     secretID: string;
     teachyTVMode: string;
@@ -91,9 +92,10 @@ function useCalibrationURLState() {
     const ttvAdvancesMin = searchParams.get("ttvAdvancesMin") || "0";
     const ttvAdvancesMax = searchParams.get("ttvAdvancesMax") || "100";
     const offset = searchParams.get("offset") || "0";
+    const overworldFrames = gameConsole.startsWith("NX") ? searchParams.get("overworldFrames") || "600" : "0";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
-    const teachyTVMode = searchParams.get("teachyTVMode") || "false";
+    const teachyTVMode = !gameConsole.startsWith("NX") ? searchParams.get("teachyTVMode") || "false" : "false";
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) ?? 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
@@ -118,6 +120,7 @@ function useCalibrationURLState() {
         ttvAdvancesMin,
         ttvAdvancesMax,
         offset,
+        overworldFrames,
         trainerID,
         secretID,
         teachyTVMode,
@@ -170,6 +173,7 @@ export default function CalibrationForm({
         ttvAdvancesMin,
         ttvAdvancesMax,
         offset,
+        overworldFrames,
         trainerID,
         secretID,
         teachyTVMode,
@@ -209,6 +213,7 @@ export default function CalibrationForm({
             : [0, 0];
     const [ivRangesAreValid, setIvRangesAreValid] = useState(true);
     const [offsetIsValid, setOffsetIsValid] = useState(true);
+    const [overworldFramesIsValid, setOverworldFramesIsValid] = useState(true);
     const ivRanges =
         calibrationFormState.nature == -1
             ? [
@@ -241,7 +246,8 @@ export default function CalibrationForm({
         !advancesRangeIsValid ||
         (isTeachyTVMode && !ttvAdvancesRangeIsValid) ||
         !ivRangesAreValid ||
-        !offsetIsValid;
+        !offsetIsValid ||
+        !overworldFramesIsValid;
 
     useEffect(() => {
         const fetchSeedList = async () => {
@@ -653,7 +659,20 @@ export default function CalibrationForm({
                     maximumValue={999999}
                 />
             )}
-            {isFRLG && (
+            {isSwitch && (<NumericalInput
+                label="Required Overworld Frames"
+                name="overworldFrames"
+                minimumValue={0}
+                maximumValue={4294967295}
+                onChange={(_, value) => {
+                    setCalibrationURLState({
+                        overworldFrames: value.value,
+                    });
+                    setOverworldFramesIsValid(value.isValid);
+                }}
+                value={overworldFrames}
+            ></NumericalInput>)}
+            {isFRLG && !isSwitch && (
                 <FormControlLabel
                     control={
                         <Checkbox
@@ -931,6 +950,8 @@ export default function CalibrationForm({
                 gameConsole={gameConsole}
                 isStatic={isStatic}
                 isTeachyTVMode={isTeachyTVMode}
+                isSwitch={isSwitch}
+                overworldFrames={overworldFramesIsValid ? parseInt(overworldFrames) : 0}
                 isMultiMethod={
                     calibrationFormState.method == COMBINED_WILD_METHOD
                 }
