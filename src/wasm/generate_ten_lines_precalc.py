@@ -24,7 +24,7 @@ FR_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1aWo6FAjkLIut5TIKior
 LG_ENG_MGBA_SHEET = "https://docs.google.com/spreadsheets/d/1YiQiII2v3AJK6RANMsQcBzVLk9dO6L99Zxt9FsCyKrI/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
 
 FR_ENG_NX_SHEET = "https://docs.google.com/spreadsheets/d/1mbn2-XAtmV7HZ1p4esgvUG710VX6FlfhN_HYL_zLJSk/gviz/tq?tqx=out:csv&sheet=FireRed%20Seeds"
-LG_ENG_NX_SHEET = "https://docs.google.com/spreadsheets/d/1mbn2-XAtmV7HZ1p4esgvUG710VX6FlfhN_HYL_zLJSk/gviz/tq?tqx=out:csv&sheet=Leaf%20Green%20Seeds"
+LG_ENG_NX_SHEET = "https://docs.google.com/spreadsheets/d/1mbn2-XAtmV7HZ1p4esgvUG710VX6FlfhN_HYL_zLJSk/gviz/tq?tqx=out:csv&sheet=LeafGreen%20Seeds"
 
 
 class SeedDataStore:
@@ -238,7 +238,7 @@ def pull_frlg_seeds():
             continue
 
         if row[0]:
-            fr_eng_nx_seeds.add_str_seed("mono", "h", "a", row[1])
+            fr_eng_nx_seeds.add_str_seed("mono", "h", "a", row[2])
 
     sheet_txt = requests.get(
         LG_ENG_NX_SHEET,
@@ -251,7 +251,8 @@ def pull_frlg_seeds():
             continue
 
         if row[0]:
-            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[1])
+            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[2])
+            lg_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[3])
 
     fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
     lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")
