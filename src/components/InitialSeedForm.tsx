@@ -22,7 +22,6 @@ export interface InitialSeedURLState {
     offset: string;
     game: string;
     gameConsole: string;
-    allowSwitch: string;
     teachyTVMode: string;
     teachyTVRegularOut: string;
 }
@@ -34,7 +33,6 @@ function useInitialSeedURLState() {
     const offset = searchParams.get("offset") || "0";
     const game = searchParams.get("game") || "r_painting";
     const gameConsole = fixGameConsole(game, searchParams.get("gameConsole") || "GBA");
-    const allowSwitch = searchParams.get("allowSwitch") || "false";
     const teachyTVMode = searchParams.get("teachyTVMode") || "false";
     const teachyTVRegularOut = searchParams.get("teachyTVRegularOut") || "3600";
     const setInitialSeedURLState = (state: Partial<InitialSeedURLState>) => {
@@ -51,7 +49,6 @@ function useInitialSeedURLState() {
         offset,
         game,
         gameConsole,
-        allowSwitch,
         teachyTVMode,
         teachyTVRegularOut,
         setInitialSeedURLState,
@@ -77,7 +74,6 @@ export default function TenLinesForm({
         offset,
         game,
         gameConsole,
-        allowSwitch,
         teachyTVMode,
         teachyTVRegularOut,
         setInitialSeedURLState,
@@ -198,12 +194,12 @@ export default function TenLinesForm({
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
-                {allowSwitch != "false" && <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>}
+                <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>
                 <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
-                {allowSwitch != "false" && <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>}
+                <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             <TextField

@@ -65,7 +65,6 @@ export interface CalibrationURLState {
     button: string;
     heldButton: string;
     gameConsole: string;
-    allowSwitch: string;
     targetInitialSeed: string;
     advancesMin: string;
     advancesMax: string;
@@ -86,7 +85,6 @@ function useCalibrationURLState() {
     const button = searchParams.get("button") || "a";
     const heldButton = searchParams.get("heldButton") || "none";
     const gameConsole = fixGameConsole(game, searchParams.get("gameConsole") || "GBA");
-    const allowSwitch = searchParams.get("allowSwitch") || "false";
     const advancesMin = searchParams.get("advancesMin") || "0";
     const advancesMax = searchParams.get("advancesMax") || "100";
     const ttvAdvancesMin = searchParams.get("ttvAdvancesMin") || "0";
@@ -113,7 +111,6 @@ function useCalibrationURLState() {
         button,
         heldButton,
         gameConsole,
-        allowSwitch,
         targetSeedValue,
         advancesMin,
         advancesMax,
@@ -166,7 +163,6 @@ export default function CalibrationForm({
         button,
         heldButton,
         gameConsole,
-        allowSwitch,
         targetSeedValue,
         advancesMin,
         advancesMax,
@@ -418,12 +414,12 @@ export default function CalibrationForm({
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
-                {allowSwitch != "false" && <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>}
+                <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>
                 <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
-                {allowSwitch != "false" && <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>}
+                <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             {isFRLG && (
