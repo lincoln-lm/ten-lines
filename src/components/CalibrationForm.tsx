@@ -624,7 +624,7 @@ export default function CalibrationForm({
                 }}
                 value={[advancesMin, advancesMax]}
                 minimumValue={0}
-                maximumValue={999999}
+                maximumValue={4294967295}
             />
             <NumericalInput
                 label="Offset"
@@ -652,7 +652,7 @@ export default function CalibrationForm({
                     }}
                     value={[ttvAdvancesMin, ttvAdvancesMax]}
                     minimumValue={0}
-                    maximumValue={999999}
+                    maximumValue={4294967295}
                 />
             )}
             {isSwitch && (<NumericalInput
