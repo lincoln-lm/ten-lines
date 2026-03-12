@@ -173,14 +173,19 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                     {row.seedFrame + visual_frame}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs
-                                        .duration(
-                                            frameToMS(
-                                                row.seedFrame + visual_frame,
-                                                gameConsole
+                                    {(() => {
+                                        const duration = dayjs
+                                            .duration(
+                                                frameToMS(
+                                                    row.seedFrame + visual_frame,
+                                                    gameConsole
+                                                )
                                             )
-                                        )
-                                        .format("HH:mm:ss.SSS")}
+                                        if (duration.days() > 0) {
+                                            return `${Math.floor(duration.asHours())}:${duration.format("mm:ss.SSS")}`
+                                        }
+                                        return duration.format("HH:mm:ss.SSS")
+                                    })()}
                                 </TableCell>
                                 <TableCell>
                                     {/* so only the actual number gets selected on double click */}
