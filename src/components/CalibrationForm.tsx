@@ -414,12 +414,12 @@ export default function CalibrationForm({
                 <MenuItem value="fr_eu">FireRed (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_jpn_1_0">FireRed (JPN) (1.0)</MenuItem>
                 <MenuItem value="fr_jpn_1_1">FireRed (JPN) (1.1)</MenuItem>
-                <MenuItem value="fr_nx">Switch FireRed (ENG)</MenuItem>
+                <MenuItem value="fr_nx">Switch FireRed (ENG/SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="fr_mgba">FireRed (ENG) (MGBA 10.5)</MenuItem>
                 <MenuItem value="lg">LeafGreen (ENG)</MenuItem>
                 <MenuItem value="lg_eu">LeafGreen (SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_jpn">LeafGreen (JPN)</MenuItem>
-                <MenuItem value="lg_nx">Switch LeafGreen (ENG)</MenuItem>
+                <MenuItem value="lg_nx">Switch LeafGreen (ENG/SPA/FRE/ITA/GER)</MenuItem>
                 <MenuItem value="lg_mgba">LeafGreen (ENG) (MGBA 10.5)</MenuItem>
             </TextField>
             {isFRLG && (
