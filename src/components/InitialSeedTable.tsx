@@ -57,7 +57,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
             h: "Help",
             r: "LR",
         };
-        return `${humanizedTerms[sound]} | ${humanizedButtonModes[buttonMode]} | Button: ${humanizedTerms[active_button]} |  Held: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
+        return `${humanizedTerms[sound]} | ${humanizedButtonModes[buttonMode]} | Seed Button: ${humanizedTerms[active_button]} | Extra Button: ${humanizedTerms[held_button_modifier]} ${humanizedTerms[held_button]}`;
     }
 
     function openInCalibration(row: InitialSeedResult, isAuxClick: boolean) {

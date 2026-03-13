@@ -458,7 +458,7 @@ export default function CalibrationForm({
                         <MenuItem value="r">LR</MenuItem>
                     </TextField>
                     <TextField
-                        label="A Button"
+                        label="Seed Button"
                         margin="normal"
                         style={{ textAlign: "left" }}
                         onChange={(event) =>
@@ -475,7 +475,7 @@ export default function CalibrationForm({
                         <MenuItem value="l">L (L=A)</MenuItem>
                     </TextField>
                     <TextField
-                        label="Held Button"
+                        label="Extra Button"
                         margin="normal"
                         style={{ textAlign: "left" }}
                         onChange={(event) =>
