@@ -234,7 +234,7 @@ def pull_frlg_seeds():
     sheet_csv = csv.reader(sheet_txt.split("\n"))
     fr_eng_nx_seeds = SeedDataStore(starting_frame=1821, frame_size=1)
     for i, row in enumerate(sheet_csv):
-        if i < 2:
+        if i < 1:
             continue
 
         if row[0]:
@@ -245,9 +245,9 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    lg_eng_nx_seeds = SeedDataStore(starting_frame=1854, frame_size=1)
+    lg_eng_nx_seeds = SeedDataStore(starting_frame=1821, frame_size=1)
     for i, row in enumerate(sheet_csv):
-        if i < 2:
+        if i < 1:
             continue
 
         if row[0]:
