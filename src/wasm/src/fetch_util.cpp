@@ -1,4 +1,5 @@
 #include "blisy_events.hpp"
+#include "pokefinder_glue.hpp"
 #include "util.hpp"
 #include <Core/Gen3/EncounterArea3.hpp>
 #include <Core/Gen3/Encounters3.hpp>
@@ -26,6 +27,14 @@ emscripten::typed_array<u16> get_area_species(u32 game, u8 encounter_category, u
     return area.getUniqueSpecies();
 }
 
+emscripten::typed_array<u8> get_level_range(u32 game, u8 encounter_category, u16 location, int pokemon)
+{
+    auto area = get_encounter_area(Encounter(encounter_category), location, Game(game));
+    u16 species = pokemon & 0x7ff;
+    auto [min_level, max_level] = area.getLevelRange(species);
+    return std::array<u8, 2> { min_level, max_level };
+}
+
 emscripten::typed_array<EnumeratedStaticTemplate3> get_static_template_info(int category)
 {
     if (category == BlisyEvents::CATEGORY) {
@@ -46,5 +55,6 @@ EMSCRIPTEN_BINDINGS(fetch_util)
 {
     emscripten::smart_function("get_wild_locations", &get_wild_locations);
     emscripten::smart_function("get_area_species", &get_area_species);
+    emscripten::smart_function("get_level_range", &get_level_range);
     emscripten::smart_function("get_static_template_info", &get_static_template_info);
 }

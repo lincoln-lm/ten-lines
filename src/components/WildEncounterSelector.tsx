@@ -16,6 +16,7 @@ function WildEncounterSelector({
     wildLocation,
     wildPokemon,
     wildLead,
+    wildLevel,
     shouldFilterPokemon,
     onChange,
     game = Game.Gen3,
@@ -26,13 +27,15 @@ function WildEncounterSelector({
     wildLocation: number;
     wildPokemon: number;
     wildLead: number;
+    wildLevel: number;
     shouldFilterPokemon: boolean;
     onChange: (
         wildCategory: number,
         wildLocation: number,
         wildPokemon: number,
         wildLead: number,
-        shouldFilterPokemon: boolean
+        shouldFilterPokemon: boolean,
+        wildLevel: number
     ) => void;
     game?: number;
     allowAnyPokemon?: boolean;
@@ -40,6 +43,7 @@ function WildEncounterSelector({
 }) {
     const [wildLocations, setWildLocations] = useState<number[]>([]);
     const [areaSpecies, setAreaSpecies] = useState<number[]>([]);
+    const [levelRange, setLevelRange] = useState<[number, number] | null>(null);
 
     useEffect(() => {
         const fetchWildLocations = async () => {
@@ -58,7 +62,8 @@ function WildEncounterSelector({
                     : 0,
                 wildPokemon,
                 wildLead,
-                shouldFilterPokemon
+                shouldFilterPokemon,
+                -1
             );
         };
         fetchWildLocations();
@@ -82,11 +87,30 @@ function WildEncounterSelector({
                     ? areaSpecies[0]
                     : 0,
                 wildLead,
-                shouldFilterPokemon
+                shouldFilterPokemon,
+                -1
             );
         };
         fetchAreaSpecies();
     }, [game, wildCategory, wildLocation]);
+
+    useEffect(() => {
+        if (wildPokemon === -1) {
+            setLevelRange(null);
+            return;
+        }
+        const fetchLevelRange = async () => {
+            const tenLines = await fetchTenLines();
+            const range = await tenLines.get_level_range(
+                game,
+                wildCategory,
+                wildLocation,
+                wildPokemon
+            );
+            setLevelRange([range[0], range[1]]);
+        };
+        fetchLevelRange();
+    }, [game, wildCategory, wildLocation, wildPokemon]);
 
     const isEmerald = (game & Game.Emerald) == Game.Emerald;
 
@@ -102,7 +126,8 @@ function WildEncounterSelector({
                         wildLocation,
                         wildPokemon,
                         wildLead,
-                        shouldFilterPokemon
+                        shouldFilterPokemon,
+                        -1
                     );
                 }}
                 value={wildCategory}
@@ -124,7 +149,8 @@ function WildEncounterSelector({
                         newValue,
                         wildPokemon,
                         wildLead,
-                        shouldFilterPokemon
+                        shouldFilterPokemon,
+                        -1
                     );
                 }}
                 getOptionLabel={(option) =>
@@ -150,7 +176,8 @@ function WildEncounterSelector({
                             wildLocation,
                             parseInt(event.target.value),
                             wildLead,
-                            shouldFilterPokemon
+                            shouldFilterPokemon,
+                            -1
                         );
                     }}
                     value={wildPokemon}
@@ -176,7 +203,8 @@ function WildEncounterSelector({
                                         wildLocation,
                                         wildPokemon,
                                         wildLead,
-                                        event.target.checked
+                                        event.target.checked,
+                                        wildLevel
                                     );
                                 }}
                             />
@@ -188,6 +216,36 @@ function WildEncounterSelector({
                     />
                 )}
             </Box>
+            {levelRange && levelRange[0] <= levelRange[1] && (
+                <TextField
+                    label="Level"
+                    margin="normal"
+                    style={{ textAlign: "left" }}
+                    onChange={(event) => {
+                        onChange(
+                            wildCategory,
+                            wildLocation,
+                            wildPokemon,
+                            wildLead,
+                            shouldFilterPokemon,
+                            parseInt(event.target.value)
+                        );
+                    }}
+                    value={wildLevel}
+                    select
+                    fullWidth
+                >
+                    <MenuItem value="-1">Any</MenuItem>
+                    {Array.from(
+                        { length: levelRange[1] - levelRange[0] + 1 },
+                        (_, i) => levelRange[0] + i
+                    ).map((level) => (
+                        <MenuItem key={level} value={level}>
+                            {level}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
             {isEmerald && (
                 <TextField
                     label="Lead"
@@ -199,7 +257,8 @@ function WildEncounterSelector({
                             wildLocation,
                             wildPokemon,
                             parseInt(event.target.value),
-                            shouldFilterPokemon
+                            shouldFilterPokemon,
+                            wildLevel
                         );
                     }}
                     value={wildLead}
