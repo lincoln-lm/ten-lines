@@ -103,11 +103,13 @@ export function frameToMS(frame: number, system: string) {
 
 export function teachyTVConversion(
     advances: number,
-    minimum_advances_out: number
+    minimum_advances_out: number,
+    wireless_adapter: boolean
 ) {
+    const base_advances = wireless_adapter ? 314 : 313;
     const target_advances_via_ttv = advances - minimum_advances_out;
-    const ttv_advances = Math.floor(target_advances_via_ttv / 313);
-    const actual_advances_via_ttv = ttv_advances * 313;
+    const ttv_advances = Math.floor(target_advances_via_ttv / base_advances);
+    const actual_advances_via_ttv = ttv_advances * base_advances;
     const regular_advances = advances - actual_advances_via_ttv;
 
     return {

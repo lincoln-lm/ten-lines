@@ -108,8 +108,8 @@ const CalibrationTable = memo(function CalibrationTable({
                                 {isTeachyTVMode && (
                                     <TableCell>
                                         {row.advances -
-                                            row.ttvAdvances * 313 +
-                                            row.ttvAdvances}
+                                            row.ttvAdvances * (isSwitch ? 314 : 313) +
+                                            row.ttvAdvances - (isSwitch ? overworldFrames : 0)}
                                     </TableCell>
                                 )}
                                 {isTeachyTVMode && (
@@ -118,7 +118,7 @@ const CalibrationTable = memo(function CalibrationTable({
                                 {isSwitch && (
                                     <TableCell>
                                         {/* the overworld advances 2x2 in the switch games */}
-                                        {row.advances - overworldFrames * 2}
+                                        {row.advances - overworldFrames * 2 - (isTeachyTVMode ? row.ttvAdvances * 313 : 0)}
                                     </TableCell>
                                 )}
                                 {!isStatic && (

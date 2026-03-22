@@ -93,7 +93,7 @@ function useCalibrationURLState() {
     const overworldFrames = gameConsole.startsWith("NX") ? searchParams.get("overworldFrames") || "600" : "0";
     const trainerID = searchParams.get("trainerID") || "0";
     const secretID = searchParams.get("secretID") || "0";
-    const teachyTVMode = !gameConsole.startsWith("NX") ? searchParams.get("teachyTVMode") || "false" : "false";
+    const teachyTVMode = searchParams.get("teachyTVMode") || "false";
     const targetSeedValue =
         parseInt(searchParams.get("targetInitialSeed") || "DEAD", 16) ?? 0xdead;
     const setCalibrationURLState = (state: Partial<CalibrationURLState>) => {
@@ -668,7 +668,7 @@ export default function CalibrationForm({
                 }}
                 value={overworldFrames}
             ></NumericalInput>)}
-            {isFRLG && !isSwitch && (
+            {isFRLG && (
                 <FormControlLabel
                     control={
                         <Checkbox
