@@ -109,7 +109,7 @@ void check_seeds_static(
             u32 max_advances = ending_advances - starting_advances;
 
             // ttv advances cause 313 regular advances, unless using wireless adapter (then it's 314)
-	    u32 ttv_base_advances = wireless_adapter ? 314 : 313;
+            u32 ttv_base_advances = wireless_adapter ? 314 : 313;
             StaticGenerator3 generator(
                 starting_advances + ttv_advances * ttv_base_advances,
                 max_advances,
@@ -181,7 +181,7 @@ void check_seeds_wild(
             u32 max_advances = ending_advances - starting_advances;
 
             // ttv advances cause 313 regular advances, unless using wireless adapter (then it's 314)
-	    u32 ttv_base_advances = wireless_adapter ? 314 : 313;
+            u32 ttv_base_advances = wireless_adapter ? 314 : 313;
             for (Method m : methods) {
                 WildGenerator3 generator(
                     starting_advances + ttv_advances * ttv_base_advances,

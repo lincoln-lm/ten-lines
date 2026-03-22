@@ -68,7 +68,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 const ttv = teachyTVConversion(
                     row.advances,
                     teachyTVRegularOut,
-		    gameConsole.startsWith("NX")
+                    gameConsole.startsWith("NX")
                 );
                 params.set(
                     "advancesMin",
@@ -151,7 +151,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                             const ttv = teachyTVConversion(
                                 row.advances,
                                 teachyTVRegularOut,
-				gameConsole.startsWith("NX")
+                                gameConsole.startsWith("NX")
                             );
                             ttv_advances = ttv.ttv_advances;
                             visual_frame = ttv_advances + ttv.regular_advances;
