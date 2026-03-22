@@ -109,7 +109,7 @@ const CalibrationTable = memo(function CalibrationTable({
                                     <TableCell>
                                         {row.advances -
                                             row.ttvAdvances * (isSwitch ? 314 : 313) +
-                                            row.ttvAdvances}
+					    row.ttvAdvances}
                                     </TableCell>
                                 )}
                                 {isTeachyTVMode && (

@@ -314,6 +314,7 @@ export default function CalibrationForm({
                     ttvAdvancesRange,
                     parseInt(offset),
                     SEED_IDENTIFIER_TO_GAME[game],
+                    gameConsole.startsWith("NX"),
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.staticCategory,
@@ -340,6 +341,7 @@ export default function CalibrationForm({
                     ttvAdvancesRange,
                     parseInt(offset),
                     SEED_IDENTIFIER_TO_GAME[game],
+		    gameConsole.startsWith("NX"),
                     parseInt(trainerID),
                     parseInt(secretID),
                     calibrationFormState.wildCategory,
@@ -914,6 +916,7 @@ export default function CalibrationForm({
                         fetchBingo(
                             searchSeeds,
                             advancesRange,
+			    ttvAdvancesRange,
                             offset,
                             isStatic,
                             trainerID,

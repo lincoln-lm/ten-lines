@@ -26,6 +26,7 @@ export function getBingoActive() {
 export async function fetchBingo(
     searchSeeds: FRLGContiguousSeedEntry[],
     advancesRange: number[],
+    ttvAdvancesRange: number[],
     offset: string,
     isStatic: boolean,
     trainerID: string,
@@ -65,9 +66,10 @@ export async function fetchBingo(
         await tenLines.check_seeds_static(
             searchSeeds,
             advancesRange,
-            [0, 0],
+            ttvAdvancesRange,
             parseInt(offset),
             SEED_IDENTIFIER_TO_GAME[game],
+	    game.endsWith("nx"),
             parseInt(trainerID),
             parseInt(secretID),
             calibrationFormState.staticCategory,
@@ -91,9 +93,10 @@ export async function fetchBingo(
         await tenLines.check_seeds_wild(
             searchSeeds,
             advancesRange,
-            [0, 0],
+            ttvAdvancesRange,
             parseInt(offset),
             SEED_IDENTIFIER_TO_GAME[game],
+	    game.endsWith("nx"),
             parseInt(trainerID),
             parseInt(secretID),
             calibrationFormState.wildCategory,

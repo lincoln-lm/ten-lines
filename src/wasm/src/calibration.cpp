@@ -57,6 +57,7 @@ void check_seeds_static(
     emscripten::typed_range<u32> ttv_advances_range,
     u32 offset,
     Game game,
+    bool wireless_adapter,
     u16 trainer_id,
     u16 secret_id,
     int category,
@@ -107,9 +108,10 @@ void check_seeds_static(
             u32 ending_advances = ending_final_frame > ttv_advances ? ending_final_frame - ttv_advances : 0;
             u32 max_advances = ending_advances - starting_advances;
 
-            // ttv advances cause 313 regular advances
+            // ttv advances cause 313 regular advances, unless using wireless adapter (then it's 314)
+	    u32 ttv_base_advances = wireless_adapter ? 314 : 313;
             StaticGenerator3 generator(
-                starting_advances + ttv_advances * 313,
+                starting_advances + ttv_advances * ttv_base_advances,
                 max_advances,
                 offset,
                 method,
@@ -132,6 +134,7 @@ void check_seeds_wild(
     emscripten::typed_range<u32> ttv_advances_range,
     u32 offset,
     Game game,
+    bool wireless_adapter,
     u16 trainer_id,
     u16 secret_id,
     Encounter encounter_category,
@@ -177,9 +180,11 @@ void check_seeds_wild(
             u32 ending_advances = ending_final_frame > ttv_advances ? ending_final_frame - ttv_advances : 0;
             u32 max_advances = ending_advances - starting_advances;
 
+            // ttv advances cause 313 regular advances, unless using wireless adapter (then it's 314)
+	    u32 ttv_base_advances = wireless_adapter ? 314 : 313;
             for (Method m : methods) {
                 WildGenerator3 generator(
-                    starting_advances + ttv_advances * 313,
+                    starting_advances + ttv_advances * ttv_base_advances,
                     max_advances,
                     offset,
                     m,
