@@ -107,10 +107,10 @@ export function teachyTVConversion(
     wireless_adapter: boolean
 ) {
     const base_advances = wireless_adapter ? 314 : 313;
-    const target_advances_via_ttv = advances - minimum_advances_out;
+    const target_advances_via_ttv = advances - minimum_advances_out * (wireless_adapter ? 2 : 1);
     const ttv_advances = Math.floor(target_advances_via_ttv / base_advances);
     const actual_advances_via_ttv = ttv_advances * base_advances;
-    const regular_advances = advances - actual_advances_via_ttv;
+    const regular_advances = advances - actual_advances_via_ttv - (wireless_adapter ? minimum_advances_out : 0);
 
     return {
         ttv_advances,

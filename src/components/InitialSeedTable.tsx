@@ -79,7 +79,8 @@ const InitialSeedTable = memo(function InitialSeedTable({
                 );
                 params.set(
                     "advancesMax",
-                    (ttv.regular_advances + ttv.ttv_advances + 15).toString()
+                    // SWITCH: Continue-screen proofing: give some leeway to the maxAdvances to allow the system to show 
+                    (ttv.regular_advances + ttv.ttv_advances + (gameConsole.startsWith("NX") ? 500 : 15)).toString()
                 );
                 params.set(
                     "ttvAdvancesMin",
@@ -89,6 +90,12 @@ const InitialSeedTable = memo(function InitialSeedTable({
                     "ttvAdvancesMax",
                     (ttv.ttv_advances + 15).toString()
                 );
+                if (gameConsole.startsWith("NX")) {
+                    params.set(
+                        "overworldFrames",
+                        (ttv.ttv_advances + teachyTVRegularOut).toString()
+                    )
+                }
             } else {
                 params.set(
                     "advancesMin",

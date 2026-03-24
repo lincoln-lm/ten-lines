@@ -54,6 +54,7 @@ void frlg_seeds(
     u16 result_count,
     u32 offset,
     std::string game_version,
+    bool is_switch,
     u32 ttv_frames_out,
     emscripten::val seed_data,
     emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
@@ -68,12 +69,13 @@ void frlg_seeds(
 
     u32 distance_from_base = PokeRNG::distance(0, target_seed);
     u32 result_index = find_closest_initial_seed_index(target_seed);
+    u32 ttv_out = ttv_frames_out * (is_switch ? 1 : 1);
     for (u32 i = 0, valid_results = 0; valid_results < result_count; i++) {
         auto [offset_advances, seed] = sorted_initial_seeds[(result_index + i) % sorted_initial_seeds.size()];
         u32 advances = offset_advances + distance_from_base;
         // if the advances required to reach this seed are less than the required frames in the overworld
         // then the target is unreachable
-        if (advances < ttv_frames_out) {
+        if (advances < ttv_out) {
             continue;
         }
         for (auto& held_button_offset : held_button_offsets) {
