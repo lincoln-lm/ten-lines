@@ -102,7 +102,6 @@ export default function TenLinesForm({
                         parseInt(count, 10),
                         parseInt(offset, 10),
                         game,
-                        isSwitch,
                         isTeachyTVMode
                             ? parseInt(teachyTVRegularOut, 10) ?? 0
                             : 0,

@@ -54,7 +54,6 @@ void frlg_seeds(
     u16 result_count,
     u32 offset,
     std::string game_version,
-    bool is_switch,
     u32 ttv_frames_out,
     emscripten::val seed_data,
     emscripten::callback<void(emscripten::typed_array<InitialSeedResult>)> results_callback)
