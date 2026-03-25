@@ -251,7 +251,7 @@ export default function CalibrationForm({
                 setSeedList(
                     [...Array(0x10000).keys()].map((seed) => ({
                         initialSeed: seed,
-                        seedFrame: seed,
+                        seedTime: seed * 16,
                     }))
                 );
                 return;
@@ -293,7 +293,7 @@ export default function CalibrationForm({
 
     const targetSeed: FRLGContiguousSeedEntry =
         targetSeedIndex === -1
-            ? { initialSeed: 0xdead, seedFrame: 0 }
+            ? { initialSeed: 0xdead, seedTime: 0 }
             : seedList[targetSeedIndex];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -540,7 +540,7 @@ export default function CalibrationForm({
                 getOptionLabel={(item_) => {
                     const item = item_ as FRLGContiguousSeedEntry;
                     return `${hexSeed(item.initialSeed, 16)} (${frameToMS(
-                        item.seedFrame,
+                        item.seedTime / 16,
                         gameConsole
                     )}ms)`;
                 }}

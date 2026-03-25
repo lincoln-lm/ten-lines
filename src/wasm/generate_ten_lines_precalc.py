@@ -69,6 +69,31 @@ class SeedDataStore:
             f.write(self.serialize())
 
 
+class NXSeedDataStore(SeedDataStore):
+    """Binary format for list of seeds for a particular game on switch"""
+
+    def __init__(self):
+        super().__init__(0, 0)
+        self.seed_times = []
+
+    def add_seed_time_str(self, seed_time_str: str):
+        """Add a seed time to the store from a string"""
+        self.seed_times.append(int(seed_time_str))
+
+    def serialize(self):
+        """Serialize the store to bytes"""
+        data = bytes()
+        data += len(self.seed_times).to_bytes(4, "little")
+        for seed_time in self.seed_times:
+            data += seed_time.to_bytes(2, "little")
+        for key, seeds in self.data.items():
+            data += key.encode("utf-8") + b"\0"
+            data += len(seeds).to_bytes(4, "little")
+            for seed in seeds:
+                data += seed.to_bytes(3, "little")
+        return data
+
+
 def pull_frlg_seeds():
     """Pull FRLG seeds from spreadsheet"""
     time_stamp = datetime.now()
@@ -232,12 +257,13 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    fr_eng_nx_seeds = SeedDataStore(starting_frame=1821, frame_size=1)
+    fr_eng_nx_seeds = NXSeedDataStore()
     for i, row in enumerate(sheet_csv):
         if i < 2:
             continue
 
         if row[0]:
+            fr_eng_nx_seeds.add_seed_time_str(row[1])
             fr_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[2])
 
     sheet_txt = requests.get(
@@ -245,14 +271,15 @@ def pull_frlg_seeds():
         timeout=15,
     ).text
     sheet_csv = csv.reader(sheet_txt.split("\n"))
-    lg_eng_nx_seeds = SeedDataStore(starting_frame=1821, frame_size=1)
+    lg_eng_nx_seeds = NXSeedDataStore()
     for i, row in enumerate(sheet_csv):
         if i < 2:
             continue
 
         if row[0]:
-            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[2])
-            lg_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[3])
+            lg_eng_nx_seeds.add_seed_time_str(row[1])
+            lg_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[2])
+            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[3])
 
     fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
     lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")

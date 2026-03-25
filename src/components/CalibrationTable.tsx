@@ -80,9 +80,9 @@ const CalibrationTable = memo(function CalibrationTable({
                             // SWITCH: Continue-screen proofing: hide results that require to pass the continue screen in less than 200 frames (tight, but doable)
                             return null;
                         }
-                        const seedMS = frameToMS(row.seedFrame, gameConsole);
+                        const seedMS = frameToMS(row.seedTime / 16, gameConsole);
                         const offsetMS =
-                            seedMS - frameToMS(target.seedFrame, gameConsole);
+                            seedMS - frameToMS(target.seedTime / 16, gameConsole);
 
                         return (
                             <TableRow key={index}>

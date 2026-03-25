@@ -96,12 +96,12 @@ inline Profile3 build_profile(Game game, u16 trainer_id, u16 secret_id)
 
 class ExtendedGeneratorState : public GeneratorState {
 public:
-    ExtendedGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, u16 species, u8 form, const GeneratorState& state)
+    ExtendedGeneratorState(u16 initial_seed, u32 seed_time, u32 ttv_advances, u16 species, u8 form, const GeneratorState& state)
         : GeneratorState(state)
         , species(species)
         , form(form)
         , initialSeed(initial_seed)
-        , seedFrame(seed_frame)
+        , seedTime(seed_time)
         , ttvAdvances(ttv_advances)
     {
     }
@@ -121,16 +121,16 @@ public:
     u16 species;
     u8 form;
     u16 initialSeed;
-    u16 seedFrame;
+    u32 seedTime;
     u32 ttvAdvances;
 };
 
 class ExtendedWildGeneratorState : public WildGeneratorState {
 public:
-    ExtendedWildGeneratorState(u16 initial_seed, u16 seed_frame, u32 ttv_advances, Method method, const WildGeneratorState& state)
+    ExtendedWildGeneratorState(u16 initial_seed, u32 seed_time, u32 ttv_advances, Method method, const WildGeneratorState& state)
         : WildGeneratorState(state)
         , initialSeed(initial_seed)
-        , seedFrame(seed_frame)
+        , seedTime(seed_time)
         , ttvAdvances(ttv_advances)
     {
         this->method = static_cast<std::underlying_type_t<Method>>(method) + 4;
@@ -153,7 +153,7 @@ public:
     using WildGeneratorState::stats;
 
     u16 initialSeed;
-    u16 seedFrame;
+    u32 seedTime;
     u32 ttvAdvances;
     int method;
 };
