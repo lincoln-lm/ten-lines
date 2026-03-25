@@ -77,9 +77,9 @@ const CalibrationTable = memo(function CalibrationTable({
                         } else if (index > 1000) {
                             return null;
                         }
-                        const seedMS = frameToMS(row.seedFrame, gameConsole);
+                        const seedMS = frameToMS(row.seedTime / 16, gameConsole);
                         const offsetMS =
-                            seedMS - frameToMS(target.seedFrame, gameConsole);
+                            seedMS - frameToMS(target.seedTime / 16, gameConsole);
 
                         return (
                             <TableRow key={index}>

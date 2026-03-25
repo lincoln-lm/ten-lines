@@ -6,20 +6,20 @@
 
 struct InitialSeedResult {
     u32 advances;
-    u32 seedFrame;
+    u32 seedTime;
     std::string key;
     u16 initialSeed;
 };
 
 struct FRLGContiguousSeedEntry {
-    u32 seedFrame;
+    u32 seedTime;
     u16 initialSeed;
 };
 
 struct FRLGSeedEntry {
     const char* key;
     const char button_mode;
-    u32 seedFrame;
+    u32 seedTime;
     u16 initialSeed;
 };
 
@@ -27,16 +27,30 @@ struct FRLGSeedDataStore {
     std::map<u16, std::vector<FRLGSeedEntry>> seed_map;
     std::map<std::string, std::vector<FRLGSeedEntry>> contiguous_seeds;
 
-    FRLGSeedDataStore(const std::vector<u8>& seed_data_vector)
+    FRLGSeedDataStore(const std::vector<u8>& seed_data_vector, const bool is_nx_format)
     {
         u32 ptr = 0;
+        std::vector<u16> seed_times;
+        if (is_nx_format) {
+            u32 seed_times_count = *reinterpret_cast<const u32*>(&seed_data_vector[ptr]);
+            ptr += sizeof(u32);
+            seed_times.reserve(seed_times_count);
+            for (u32 i = 0; i < seed_times_count; i++) {
+                seed_times.emplace_back(*reinterpret_cast<const u16*>(&seed_data_vector[ptr]));
+                ptr += sizeof(u16);
+            }
+        }
         while (ptr < seed_data_vector.size()) {
+            u16 starting_frame;
+            u8 frame_size;
             const char* key = reinterpret_cast<const char*>(&seed_data_vector[ptr]);
             ptr += strlen(key) + 1;
-            u16 starting_frame = *reinterpret_cast<const u16*>(&seed_data_vector[ptr]);
-            ptr += sizeof(u16);
-            u8 frame_size = seed_data_vector[ptr];
-            ptr += sizeof(u8);
+            if (!is_nx_format) {
+                starting_frame = *reinterpret_cast<const u16*>(&seed_data_vector[ptr]);
+                ptr += sizeof(u16);
+                frame_size = seed_data_vector[ptr];
+                ptr += sizeof(u8);
+            }
             u32 entries_count = *reinterpret_cast<const u32*>(&seed_data_vector[ptr]);
             ptr += sizeof(u32);
             std::vector<FRLGSeedEntry> contiguous_entries;
@@ -53,7 +67,13 @@ struct FRLGSeedDataStore {
                     continue;
                 }
                 const char button_mode = *(strchr(key, '_') + 1);
-                FRLGSeedEntry entry { key, button_mode, starting_frame + i / frame_size, seed };
+                u32 seed_time;
+                if (is_nx_format) {
+                    seed_time = (u32)seed_times[i] + 5737;
+                } else {
+                    seed_time = (starting_frame + i / frame_size) * 16;
+                }
+                FRLGSeedEntry entry { key, button_mode, seed_time, seed };
                 contiguous_entries.emplace_back(entry);
                 auto it = seed_map.find(seed);
                 if (it == seed_map.end()) {

@@ -35,14 +35,14 @@ emscripten::typed_array<ExtendedGeneratorState> generate_blisy_events(
     for (int i = 0; i < seeds.size(); i++) {
         FRLGContiguousSeedEntry entry = seeds[i];
         u16 seed = entry.initialSeed;
-        u16 seed_frame = entry.seedFrame;
+        u16 seed_time = entry.seedTime;
         // these events pull the current rng state and use it to immediately generate the pokemon following the GC method
         PokeRNG rng(seed, initial_advances + offset);
         for (u32 cnt = 0; cnt <= max_advances; cnt++, rng.next()) {
             GameCubeGenerator generator(0, 0, 0, static_template->getSpecie() == 385 ? Method::Channel : Method::XDColo, false, profile, filter);
             auto generator_results = generator.generate(rng.getSeed(), static_template);
             for (auto& generator_result : generator_results) {
-                ExtendedGeneratorState current_result(seed, seed_frame, 0, static_template->getSpecie(), static_template->getForm(), generator_result);
+                ExtendedGeneratorState current_result(seed, seed_time, 0, static_template->getSpecie(), static_template->getForm(), generator_result);
                 current_result.advances = cnt + initial_advances;
                 results.push_back(current_result);
             }
@@ -96,7 +96,7 @@ void check_seeds_static(
         FRLGContiguousSeedEntry entry = seeds[i];
 
         u16 seed = entry.initialSeed;
-        u16 seed_frame = entry.seedFrame;
+        u32 seed_time = entry.seedTime;
         for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++) {
             // final frame = frames spent in ttv + frames spent outside of ttv
             // for the sake of timing, = ttv advances + regular advances
@@ -118,7 +118,7 @@ void check_seeds_static(
                 filter);
             auto generator_results = generator.generate(seed);
             for (auto& generator_result : generator_results) {
-                results.push_back(ExtendedGeneratorState(seed, seed_frame, ttv_advances, species, form, generator_result));
+                results.push_back(ExtendedGeneratorState(seed, seed_time, ttv_advances, species, form, generator_result));
             }
         }
         result_callback(results);
@@ -171,7 +171,7 @@ void check_seeds_wild(
         FRLGContiguousSeedEntry entry = seeds[i];
 
         u16 seed = entry.initialSeed;
-        u16 seed_frame = entry.seedFrame;
+        u32 seed_time = entry.seedTime;
         for (u32 ttv_advances = initial_ttv_advances; ttv_advances <= ending_ttv_advances; ttv_advances++) {
             u32 starting_advances = starting_final_frame > ttv_advances ? starting_final_frame - ttv_advances : 0;
             u32 ending_advances = ending_final_frame > ttv_advances ? ending_final_frame - ttv_advances : 0;
@@ -190,7 +190,7 @@ void check_seeds_wild(
                     filter);
                 auto generator_results = generator.generate(seed);
                 for (auto& generator_result : generator_results) {
-                    results.push_back(ExtendedWildGeneratorState(seed, seed_frame, ttv_advances, m, generator_result));
+                    results.push_back(ExtendedWildGeneratorState(seed, seed_time, ttv_advances, m, generator_result));
                 }
             }
             result_callback(results);

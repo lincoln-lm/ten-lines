@@ -170,14 +170,14 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                     <TableCell>{ttv_advances}</TableCell>
                                 )}
                                 <TableCell>
-                                    {row.seedFrame + visual_frame}
+                                    {Math.round(row.seedTime / 16 + visual_frame)}
                                 </TableCell>
                                 <TableCell>
                                     {(() => {
                                         const duration = dayjs
                                             .duration(
                                                 frameToMS(
-                                                    row.seedFrame + visual_frame,
+                                                    row.seedTime / 16 + visual_frame,
                                                     gameConsole
                                                 )
                                             )
@@ -190,7 +190,7 @@ const InitialSeedTable = memo(function InitialSeedTable({
                                 <TableCell>
                                     {/* so only the actual number gets selected on double click */}
                                     <div style={{ float: "left" }}>
-                                        {frameToMS(row.seedFrame, gameConsole)}
+                                        {frameToMS(row.seedTime / 16, gameConsole)}
                                     </div>
                                     <span>ms</span>
                                 </TableCell>
