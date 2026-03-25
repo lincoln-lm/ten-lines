@@ -65,7 +65,7 @@ function TenLinesPages() {
 
             <footer>
                 Original "10 lines" was created by Shao, FRLG seeds farmed by
-                blisy, po, HunarPG, 10Ben, and トノ
+                blisy, po, HunarPG, 10Ben, Real96, Papa Jef&eacute;, and トノ
                 <br />
                 Powered by{" "}
                 <a href="https://github.com/Admiral-Fish/PokeFinder">
