@@ -265,6 +265,19 @@ def pull_frlg_seeds():
         if row[0]:
             fr_eng_nx_seeds.add_seed_time_str(row[1])
             fr_eng_nx_seeds.add_str_seed("mono", "h", "a", row[2])
+            fr_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[3])
+            # fr_eng_nx_seeds.add_str_seed("mono", "h", "start", row[4])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "h", "start", row[5])
+            # fr_eng_nx_seeds.add_str_seed("mono", "r", "a", row[6])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "r", "a", row[7])
+            # fr_eng_nx_seeds.add_str_seed("mono", "r", "start", row[8])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "r", "start", row[9])
+            # fr_eng_nx_seeds.add_str_seed("mono", "a", "a", row[10])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "a", "a", row[11])
+            # fr_eng_nx_seeds.add_str_seed("mono", "a", "start", row[12])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "a", "start", row[13])
+            # fr_eng_nx_seeds.add_str_seed("mono", "a", "l", row[14])
+            # fr_eng_nx_seeds.add_str_seed("stereo", "a", "l", row[15])
 
     sheet_txt = requests.get(
         LG_ENG_NX_SHEET,
@@ -278,8 +291,20 @@ def pull_frlg_seeds():
 
         if row[0]:
             lg_eng_nx_seeds.add_seed_time_str(row[1])
-            lg_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[2])
-            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[3])
+            lg_eng_nx_seeds.add_str_seed("mono", "h", "a", row[2])
+            lg_eng_nx_seeds.add_str_seed("stereo", "h", "a", row[3])
+            # lg_eng_nx_seeds.add_str_seed("mono", "h", "start", row[4])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "h", "start", row[5])
+            # lg_eng_nx_seeds.add_str_seed("mono", "r", "a", row[6])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "r", "a", row[7])
+            # lg_eng_nx_seeds.add_str_seed("mono", "r", "start", row[8])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "r", "start", row[9])
+            # lg_eng_nx_seeds.add_str_seed("mono", "a", "a", row[10])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "a", "a", row[11])
+            # lg_eng_nx_seeds.add_str_seed("mono", "a", "start", row[12])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "a", "start", row[13])
+            # lg_eng_nx_seeds.add_str_seed("mono", "a", "l", row[14])
+            # lg_eng_nx_seeds.add_str_seed("stereo", "a", "l", row[15])
 
     fr_eng_seeds.save(sys.argv[1] + "/src/generated/fr_eng.bin")
     lg_eng_seeds.save(sys.argv[1] + "/src/generated/lg_eng.bin")
