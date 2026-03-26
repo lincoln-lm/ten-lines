@@ -31,22 +31,32 @@ function RangeInput({
     const [maxValid, setMaxValid] = useState(true);
     const minChange = (
         event: React.ChangeEvent<HTMLInputElement>,
-        { value: newMin, isValid }: { value: string; isValid: boolean }
+        { value: newMin, isValid: newMinValid }: { value: string; isValid: boolean }
     ) => {
-        setMinValid(isValid);
+        setMinValid(newMinValid);
+        // Re-evaluate max validity with the new min boundary
+        const newMaxValid = newMinValid
+            ? parseInt(value[1]) >= parseInt(newMin) && parseInt(value[1]) <= maximumValue
+            : maxValid;
+        if (newMaxValid !== maxValid) setMaxValid(newMaxValid);
         onChange(event, {
             value: [newMin, value[1]],
-            isValid: isValid && maxValid,
+            isValid: newMinValid && newMaxValid,
         });
     };
     const maxChange = (
         event: React.ChangeEvent<HTMLInputElement>,
-        { value: newMax, isValid }: { value: string; isValid: boolean }
+        { value: newMax, isValid: newMaxValid }: { value: string; isValid: boolean }
     ) => {
-        setMaxValid(isValid);
+        setMaxValid(newMaxValid);
+        // Re-evaluate min validity with the new max boundary
+        const newMinValid = newMaxValid
+            ? parseInt(value[0]) >= minimumValue && parseInt(value[0]) <= parseInt(newMax)
+            : minValid;
+        if (newMinValid !== minValid) setMinValid(newMinValid);
         onChange(event, {
             value: [value[0], newMax],
-            isValid: minValid && isValid,
+            isValid: newMinValid && newMaxValid,
         });
     };
 
