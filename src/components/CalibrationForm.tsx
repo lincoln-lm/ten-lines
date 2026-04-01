@@ -813,6 +813,7 @@ export default function CalibrationForm({
                     }));
                 }}
                 value={calibrationFormState.nature}
+                helperText="Required for IV calculation"
                 select
                 fullWidth
             >
