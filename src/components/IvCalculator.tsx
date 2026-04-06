@@ -30,8 +30,8 @@ function IvCalculator({
         const lines = value.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            const lineEntries = line.split(" ");
-            if (line == "") return `Line ${i + 1} Missing Level`;
+            const lineEntries = line.split(" ").filter((s) => s !== "");
+            if (lineEntries.length == 0) return `Line ${i + 1} Missing Level`;
             const level = parseInt(lineEntries[0]) ?? 0;
             if (level > 100 || level < 1) return `Line ${i + 1} Invalid Level`;
             if (lineEntries.length == 1) return `Line ${i + 1} Missing HP`;
