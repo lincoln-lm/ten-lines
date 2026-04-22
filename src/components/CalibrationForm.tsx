@@ -526,7 +526,14 @@ export default function CalibrationForm({
                     ]
                 }</TextField>
             <Autocomplete
-                options={seedList}
+                options={seedList.slice(
+                        Math.max(targetSeedIndex - 50, 0), 
+                        Math.min(targetSeedIndex + 50, seedList.length)
+                    ).concat(
+                        seedList.slice(0, Math.max(targetSeedIndex - 50, 0))
+                    ).concat(
+                        seedList.slice(Math.min(targetSeedIndex + 50, seedList.length), seedList.length)
+                    )}
                 value={targetSeed}
                 onChange={(_event, newValue) => {
                     setCalibrationURLState({
