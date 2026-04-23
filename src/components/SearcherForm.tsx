@@ -39,6 +39,7 @@ export interface SearcherFormState {
     wildLocation: number;
     wildPokemon: number;
     wildLead: number;
+    wildLevel: number;
     method: number;
 }
 
@@ -96,6 +97,7 @@ export default function CalibrationForm({
             wildLocation: 0,
             wildPokemon: 0,
             wildLead: 255,
+            wildLevel: -1,
             method: 1,
         });
     const { game, trainerID, secretID, setSearcherURLState } =
@@ -164,11 +166,15 @@ export default function CalibrationForm({
                     searcherFormState.hiddenPower,
                     ivRanges,
                     proxy((results: ExtendedWildSearcherState[]) => {
+                        const levelFilter = searcherFormState.wildLevel;
+                        const filtered = levelFilter !== -1
+                            ? results.filter((r) => r.level === levelFilter)
+                            : results;
                         setRows((rows) => {
-                            if (rows.length > 1000 || results.length === 0) {
+                            if (rows.length > 1000 || filtered.length === 0) {
                                 return rows;
                             }
-                            return [...rows, ...results];
+                            return [...rows, ...filtered];
                         });
                     }),
                     proxy(setSearching)
@@ -307,13 +313,15 @@ export default function CalibrationForm({
                     wildLocation={searcherFormState.wildLocation}
                     wildPokemon={searcherFormState.wildPokemon}
                     wildLead={searcherFormState.wildLead}
+                    wildLevel={searcherFormState.wildLevel}
                     game={SEED_IDENTIFIER_TO_GAME[game]}
                     onChange={(
                         wildCategory,
                         wildLocation,
                         wildPokemon,
                         wildLead,
-                        _
+                        _,
+                        wildLevel
                     ) => {
                         setSearcherFormState((data) => ({
                             ...data,
@@ -321,6 +329,7 @@ export default function CalibrationForm({
                             wildLocation,
                             wildPokemon,
                             wildLead,
+                            wildLevel,
                         }));
                     }}
                     shouldFilterPokemon={true}

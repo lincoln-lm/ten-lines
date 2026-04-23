@@ -55,6 +55,7 @@ export interface CalibrationFormState {
     wildPokemon: number;
     wildLead: number;
     shouldFilterPokemon: boolean;
+    wildLevel: number;
     method: number;
 }
 
@@ -154,6 +155,7 @@ export default function CalibrationForm({
             wildPokemon: 0,
             wildLead: 255,
             shouldFilterPokemon: false,
+            wildLevel: -1,
             method: 1,
         });
     const {
@@ -354,11 +356,15 @@ export default function CalibrationForm({
                     calibrationFormState.gender,
                     ivRanges,
                     proxy((results: ExtendedWildGeneratorState[]) => {
+                        const levelFilter = calibrationFormState.wildLevel;
+                        const filtered = levelFilter !== -1
+                            ? results.filter((r) => r.level === levelFilter)
+                            : results;
                         setRows((rows) => {
-                            if (rows.length > 1000 || results.length === 0) {
+                            if (rows.length > 1000 || filtered.length === 0) {
                                 return rows;
                             }
-                            return [...rows, ...results];
+                            return [...rows, ...filtered];
                         });
                     }),
                     proxy(setSearching)
@@ -761,6 +767,7 @@ export default function CalibrationForm({
                     wildLocation={calibrationFormState.wildLocation}
                     wildPokemon={calibrationFormState.wildPokemon}
                     wildLead={calibrationFormState.wildLead}
+                    wildLevel={calibrationFormState.wildLevel}
                     shouldFilterPokemon={
                         calibrationFormState.shouldFilterPokemon
                     }
@@ -770,7 +777,8 @@ export default function CalibrationForm({
                         wildLocation,
                         wildPokemon,
                         wildLead,
-                        shouldFilterPokemon
+                        shouldFilterPokemon,
+                        wildLevel
                     ) => {
                         setCalibrationFormState((data) => ({
                             ...data,
@@ -779,6 +787,7 @@ export default function CalibrationForm({
                             wildPokemon,
                             wildLead,
                             shouldFilterPokemon,
+                            wildLevel,
                         }));
                     }}
                 />
