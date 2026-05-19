@@ -259,6 +259,15 @@ static inline std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_O
             { 'r', "none", 0 },
         } },
 
+    { "fr_jpn_nx",
+        {
+            { 'a', "none", 0 },
+
+            { 'h', "none", 0 },
+
+            { 'r', "none", 0 },
+        } },
+
     { "lg_nx",
         {
             { 'a', "none", 0 },
@@ -266,6 +275,15 @@ static inline std::map<std::string, std::vector<HeldButtonOffset>> HELD_BUTTON_O
             { 'h', "none", 0 },
             { 'h', "blackout_r", -36 },
             { 'h', "blackout_l", -36 },
+
+            { 'r', "none", 0 },
+        } },
+
+    { "lg_jpn_nx",
+        {
+            { 'a', "none", 0 },
+
+            { 'h', "none", 0 },
 
             { 'r', "none", 0 },
         } },
